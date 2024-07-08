@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:template_app/app_settings/app_general_settings.dart';
-import 'package:template_app/widgets/AppScaffold/app_scaffold.dart';
+import 'package:find_a_therapist_app/app_settings/app_general_settings.dart';
+import 'package:find_a_therapist_app/widgets/AppScaffold/app_scaffold.dart';
 import '../../generated/l10n.dart';
 import '../../providers/providers_all.dart';
 import '../../utils/ui/is_dark_mode.dart';

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 import 'package:flutter/services.dart';
-import 'package:template_app/app_settings/auth_config.dart';
-import 'package:template_app/generated/l10n.dart';
+import 'package:find_a_therapist_app/app_settings/auth_config.dart';
+import 'package:find_a_therapist_app/generated/l10n.dart';
 import '../../app_settings/theme_settings.dart';
 import '../../providers/providers_all.dart';
 import '../../utils/navigation/push_route_with_animation.dart';
@@ -117,8 +117,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     SizedBox(
                       width: 233,
                       child: ElevatedButton(
-                        onPressed:
-                            _attemptingLogin ? null : () => attemptLogin(ref),
+                        onPressed: _attemptingLogin
+                            ? null
+                            : () => attemptLoginWithEmailAndPassword(ref),
                         child: Text(S.of(context).loginButton),
                       ),
                     ),
@@ -135,37 +136,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   borderRadius: BorderRadius.circular(10)),
                               text: S.of(context).signInWithGoogleButtonLabel,
                               onPressed: () async {
-                            NotificationSnackbar.showSnackBar(
-                              message: S
-                                  .of(context)
-                                  .signingInWithGoogleSnackbarMessage,
-                              variant: SnackbarVariant.info,
-                              duration: SnackbarDuration.long,
-                            );
-
-                            try {
-                              await ref.read(authProvider).signInWithGoogle();
-                            } on PlatformException catch (error) {
-                              NotificationSnackbar.showSnackBar(
-                                message: S
-                                    .of(context)
-                                    .errorSigningInWithGoogleSnackbarMessage,
-                                variant: SnackbarVariant.error,
-                                duration: SnackbarDuration.long,
-                              );
-
-                              debugPrint(
-                                  'Error signing in with Google: ${error.toString()}');
-                            } catch (error) {
-                              NotificationSnackbar.showSnackBar(
-                                message: S
-                                    .of(context)
-                                    .errorSigningInWithGoogleSnackbarMessage,
-                                variant: SnackbarVariant.error,
-                                duration: SnackbarDuration.long,
-                              );
-
-                              debugPrint('Error: ${error.toString()}');
+                            if (AuthConfig.allowGoogleSignIn) {
+                              attemptLoginWithGoogle(ref);
                             }
                           }),
                         ],
@@ -264,7 +236,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  void attemptLogin(WidgetRef ref) async {
+  void attemptLoginWithEmailAndPassword(WidgetRef ref) async {
     debugPrint('Attempting login...');
     var error = false;
     setState(() {
@@ -410,6 +382,63 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         _attemptingLogin = false;
       });
       NotificationSnackbar.hideCurrentSnackBar();
+    }
+  }
+
+  void attemptLoginWithGoogle(WidgetRef ref) async {
+    NotificationSnackbar.showSnackBar(
+      message: S.of(context).signingInWithGoogleSnackbarMessage,
+      variant: SnackbarVariant.info,
+      duration: SnackbarDuration.long,
+    );
+
+    try {
+      bool userSignedIn = await ref.read(authProvider).signInWithGoogle();
+      if (userSignedIn) {
+        void userTappedConfirm() {
+          NotificationSnackbar.hideCurrentSnackBar();
+          NotificationSnackbar.showSnackBar(
+              message: S.of(context).loginSuccessfulMessage,
+              variant: SnackbarVariant.success,
+              duration: SnackbarDuration.short,
+              delay: 1);
+          Navigator.of(context).pushReplacement(pushRouteWithAnimation(
+              const HomeScreen(),
+              direction: SlideDirection.right));
+        }
+
+        if (mounted) {
+          NotificationModal.successfulModal(
+              title: S.of(context).successfulLogin,
+              message: S.of(context).successfulLoginRedirectToHomeMessage,
+              context: context,
+              onTapConfirm: () => userTappedConfirm());
+        }
+      } else {
+        if (mounted) {
+          NotificationSnackbar.showSnackBar(
+            message: S.of(context).loginErrorMessage,
+            variant: SnackbarVariant.error,
+            duration: SnackbarDuration.long,
+          );
+        }
+      }
+    } on PlatformException catch (error) {
+      NotificationSnackbar.showSnackBar(
+        message: S.of(context).errorSigningInWithGoogleSnackbarMessage,
+        variant: SnackbarVariant.error,
+        duration: SnackbarDuration.long,
+      );
+
+      debugPrint('Error signing in with Google: ${error.toString()}');
+    } catch (error) {
+      NotificationSnackbar.showSnackBar(
+        message: S.of(context).errorSigningInWithGoogleSnackbarMessage,
+        variant: SnackbarVariant.error,
+        duration: SnackbarDuration.long,
+      );
+
+      debugPrint('Error: ${error.toString()}');
     }
   }
 }
