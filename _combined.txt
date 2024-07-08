@@ -1,0 +1,2488 @@
+.
+├── README.md
+├── _combined.txt
+├── analysis_options.yaml
+├── concatenate_dart_files.sh
+├── lib
+│   ├── _bin
+│   │   └── config.dart
+│   ├── app_settings
+│   │   ├── app_general_settings.dart
+│   │   ├── app_info.dart
+│   │   ├── auth_config.dart
+│   │   ├── language_settings.dart
+│   │   └── theme_settings.dart
+│   ├── assets
+│   │   ├── images
+│   │   └── lottie_animations
+│   │       ├── animation.json
+│   │       ├── animation10.json
+│   │       ├── animation11.json
+│   │       ├── animation2.json
+│   │       ├── animation3.json
+│   │       ├── animation4.json
+│   │       ├── animation5.json
+│   │       ├── animation6.json
+│   │       ├── animation7.json
+│   │       ├── animation8.json
+│   │       └── animation9.json
+│   ├── generated
+│   │   ├── intl
+│   │   │   ├── messages_all.dart
+│   │   │   ├── messages_de.dart
+│   │   │   ├── messages_en.dart
+│   │   │   └── messages_es.dart
+│   │   └── l10n.dart
+│   ├── globals.dart
+│   ├── l10n
+│   │   ├── intl_de.arb
+│   │   ├── intl_en.arb
+│   │   └── intl_es.arb
+│   ├── main.dart
+│   ├── models
+│   │   ├── current_user_data.dart
+│   │   ├── general_models.dart
+│   │   └── theme_models.dart
+│   ├── providers
+│   │   ├── auth_provider.dart
+│   │   ├── locale_provider.dart
+│   │   ├── providers_all.dart
+│   │   └── theme_provider.dart
+│   ├── screens
+│   │   ├── home_screen
+│   │   │   └── home_screen.dart
+│   │   ├── loading_screen
+│   │   │   └── loading_screen.dart
+│   │   └── login_screen
+│   │       └── login_screen.dart
+│   ├── services
+│   │   └── error_reporting_service.dart
+│   ├── theme
+│   │   └── main_theme
+│   │       ├── buttons_theme.dart
+│   │       ├── chip_theme.dart
+│   │       ├── input_theme.dart
+│   │       └── main_theme.dart
+│   ├── utils
+│   │   ├── debug
+│   │   │   ├── log_configurations.dart
+│   │   │   └── notify_that_app_is_runing_in_debug_mode.dart
+│   │   ├── navigation
+│   │   │   └── push_route_with_animation.dart
+│   │   ├── ui
+│   │   │   └── is_dark_mode.dart
+│   │   └── validation
+│   │       └── is_email_valid.dart
+│   └── widgets
+│       ├── AppScaffold
+│       │   └── app_scaffold.dart
+│       ├── LoadingCircle
+│       │   └── loading_circle.dart
+│       ├── NotificationModal
+│       │   └── notification_modal.dart
+│       ├── NotificationSnackbar
+│       │   └── notification_snackbar.dart
+│       ├── ThemeAppBar
+│       │   └── template_app_bar.dart
+│       ├── ThemeFloatingSpeedDialMenu
+│       │   └── theme_floating_speed_dial_menu.dart
+│       └── ThemeInputTextField
+│           └── theme_input_text_field.dart
+├── pubspec.lock
+├── pubspec.yaml
+└── template_app.iml
+
+32 directories, 61 files
+///// lib/main.dart /////
+import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:skeletonizer/skeletonizer.dart';
+import 'package:template_app/app_settings/app_info.dart';
+import 'package:template_app/app_settings/auth_config.dart';
+import 'package:template_app/app_settings/language_settings.dart';
+import 'package:template_app/app_settings/theme_settings.dart';
+import 'package:template_app/generated/l10n.dart';
+import 'package:template_app/providers/providers_all.dart';
+import 'package:template_app/screens/home_screen/home_screen.dart';
+import 'package:template_app/theme/main_theme/main_theme.dart';
+import 'package:template_app/utils/debug/log_configurations.dart';
+import 'globals.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initializeApp();
+  logConfigurations();
+  runApp(const ProviderScope(child: MyApp()));
+}
+
+Future<void> initializeApp() async {
+  if (AuthConfig.useFirebase) {
+    try {
+      await Firebase.initializeApp();
+    } catch (e) {
+      debugPrint('Error: Firebase initialization failed. $e');
+
+      ///TODO: Show an error screen here or retry the initialization.
+    }
+  }
+}
+
+class MyApp extends ConsumerWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeNotifier = ref.watch(themeProvider);
+    final localeNotifier = ref.watch(localeProvider);
+
+    return SkeletonizerConfig(
+      data: const SkeletonizerConfigData(
+          effect: ShimmerEffect(),
+          enableSwitchAnimation: true,
+          containersColor: ThemeSettings.forceSeedColor
+              ? ThemeSettings.seedColor
+              : Colors.grey),
+      child: MaterialApp(
+        scaffoldMessengerKey: snackbarKey,
+        title: AppInfo.appName,
+        theme: MainTheme.lightTheme,
+        darkTheme: MainTheme.darkTheme,
+        themeMode: themeNotifier.themeMode,
+        locale: localeNotifier.locale,
+        supportedLocales: LanguageSettings.supportedLocales
+            .map((e) => Locale.fromSubtags(languageCode: e))
+            .toList(),
+        localizationsDelegates: const [
+          S.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        localeResolutionCallback: (locale, supportedLocales) {
+          if (LanguageSettings.forceDefaultLanguage) {
+            return const Locale(LanguageSettings.appDefaultLanguage);
+          }
+          if (locale != null) {
+            for (var supportedLocale in supportedLocales) {
+              if (supportedLocale.languageCode == locale.languageCode) {
+                return supportedLocale;
+              }
+            }
+          }
+          return supportedLocales.first;
+        },
+        home: const MainScreen(),
+      ),
+    );
+  }
+}
+
+class MainScreen extends StatelessWidget {
+  const MainScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const HomeScreen();
+  }
+}
+
+///// lib/app_settings/app_general_settings.dart /////
+class AppGeneralSettings {
+  static const bool useTopAppBar = false;
+  static const bool useFloatingSpeedDialMenu = true;
+  static const bool useAppDrawerMenu = false;
+  static const String minimumiOSVersion =
+      '13.0'; // Set this manually in Xcode & Podfile
+  static const String minimumAndroidVersion =
+      '23'; // Set this manually in android/app/build.gradle
+}
+
+class DebugConfig {
+  static const bool debugMode = false; // If true, login screen will be skipped
+  static const String debugScreen = '/home'; //TODO
+}
+
+///// lib/app_settings/app_info.dart /////
+class AppInfo {
+  static const String appName = 'Template App';
+}
+
+///// lib/app_settings/auth_config.dart /////
+class AuthConfig {
+  static const bool useProtectedRoutes = true;
+  static const bool useFirebase = false;
+  static const bool allowGoogleSignIn = false;
+  //TODO: Add scope functionality:
+  static const List<String> googleSignInScopes = ['email'];
+  static const bool allowFacebookSignIn = false;
+  static const bool allowAppleSignIn = false;
+  static const bool allowAnonymousSignIn = false;
+  static const bool allowEmailSignIn = false;
+}
+
+///// lib/app_settings/language_settings.dart /////
+class LanguageSettings {
+  static const String appDefaultLanguage = 'es';
+  static const bool forceDefaultLanguage = false;
+  static const List<String> supportedLocales = ['en', 'es', 'de'];
+}
+
+///// lib/app_settings/theme_settings.dart /////
+import 'package:flutter/material.dart';
+import '../models/general_models.dart';
+import '../models/theme_models.dart';
+
+class ThemeSettings {
+  static const String defaultThemeMode = 'light';
+  static const bool forceDefaultThemeMode = false;
+  static const bool useMaterial3 = true;
+  static const bool useSafeArea = true;
+  static const EdgeInsetsGeometry scaffoldPadding = EdgeInsets.only(
+    top: 30,
+    bottom: 0,
+    left: 20,
+    right: 20,
+  );
+  static const Color seedColor = Colors.blueGrey;
+  static const bool forceSeedColor = false;
+  static const String defaultScrollPhysics =
+      'always'; // 'never', 'always', 'clamp'
+  static const bool useFlutterToast = false;
+  static const String textInputBorderStyle = 'border'; // 'border' / 'no-border'
+  static const bool glassTextInputs = true;
+  static const double buttonsElevation = 1.1;
+  static const double buttonsHeight = 47;
+  static const double buttonsOpacity = 0.8;
+
+  static const LottieAnimationBackground primaryLottieBackgroundAnimation =
+      LottieAnimationBackground(
+    animationPath: 'lib/assets/lottie_animations/animation9.json',
+    width: 200,
+    x: 0,
+    y: 0,
+    blur: 80,
+    active: true,
+    opacity: 0.8,
+  );
+
+  static const LottieAnimationBackground secondaryLottieBackgroundAnimation =
+      LottieAnimationBackground(
+    animationPath: 'lib/assets/lottie_animations/animation4.json',
+    width: 200,
+    x: 0,
+    y: 390,
+    blur: 80,
+    active: true,
+    opacity: 0.8,
+  );
+
+  static const ternaryLottieBackgroundAnimation = LottieAnimationBackground(
+    animationPath: 'lib/assets/lottie_animations/animation10.json',
+    width: 200,
+    x: 0,
+    y: 0,
+    blur: 50,
+    active: true,
+    opacity: 0.5,
+  );
+
+  static const ThemeColors scaffoldBackgroundColor = ThemeColors(
+    lightModePrimary: Color(0xFFFFF8FE),
+    darkModePrimary: Color(0xFF121212),
+  );
+
+  static const ThemeColors appBarBackgroundColor = ThemeColors(
+    lightModePrimary: Colors.blueGrey,
+    darkModePrimary: Colors.blueGrey,
+  );
+
+  static const ThemeColors primaryTextColor = ThemeColors(
+    lightModePrimary: Colors.black,
+    darkModePrimary: Colors.white,
+  );
+
+  static const ThemeColors secondaryTextColor = ThemeColors(
+    lightModePrimary: Colors.black,
+    darkModePrimary: Colors.white,
+  );
+
+  static const ThemeColors hintTextColor = ThemeColors(
+    lightModePrimary: Colors.grey,
+    darkModePrimary: Colors.grey,
+  );
+
+  static const ThemeColors primaryContainerBackgroundColor = ThemeColors(
+    lightModePrimary: Colors.blueGrey,
+    darkModePrimary: Colors.red,
+  );
+
+  static const ThemeColors elevatedButtonBackgroundColor = ThemeColors(
+    lightModePrimary: Colors.blueGrey,
+    darkModePrimary: Colors.white,
+  );
+
+  static const ThemeColors elevatedButtonTextColor = ThemeColors(
+    lightModePrimary: Colors.white,
+    darkModePrimary: Colors.black,
+  );
+
+  static const ThemeColors outlinedButtonBackgroundColor = ThemeColors(
+    lightModePrimary: Colors.blueGrey,
+    darkModePrimary: Colors.blueGrey,
+  );
+
+  static const ThemeColors outlinedButtonTextColor = ThemeColors(
+    lightModePrimary: Colors.black,
+    darkModePrimary: Colors.white,
+  );
+
+  static const ThemeColors textButtonTextColor = ThemeColors(
+    lightModePrimary: Colors.black,
+    darkModePrimary: Colors.white,
+  );
+
+  static const BorderRadius buttonsBorderRadius = BorderRadius.all(
+    Radius.circular(5),
+  );
+
+  static const BorderRadius inputsBorderRadius = BorderRadius.all(
+    Radius.circular(5),
+  );
+
+  static const BorderRadius cardBorderRadius = BorderRadius.all(
+    Radius.circular(5),
+  );
+
+  static const BorderRadius chipBorderRadius = BorderRadius.all(
+    Radius.circular(5),
+  );
+
+  static const Color snackBarErrorBackgroundColor = Colors.red;
+  static const Color snackBarErrorTextColor = Colors.white;
+  static const Color snackBarSuccessBackgroundColor = Colors.green;
+  static const Color snackBarSuccessTextColor = Colors.white;
+  static const Color snackBarInfoBackgroundColor = Colors.grey;
+  static const Color snackBarInfoTextColor = Colors.white;
+
+  static const FontConfig appBarTextStyle = FontConfig(
+    name: 'Roboto',
+    isGoogleFont: true,
+  );
+
+  static const FontConfig primaryTextStyle = FontConfig(
+    name: 'Roboto',
+    isGoogleFont: true,
+  );
+
+  static const FontConfig secondaryTextStyle = FontConfig(
+    name: 'Open Sans',
+    isGoogleFont: true,
+  );
+
+  static const FontConfig tertiaryTextStyle = FontConfig(
+    name: 'Lato',
+    isGoogleFont: true,
+  );
+
+  static const FontConfig snackbarTextStyle = FontConfig(
+    name: 'Roboto',
+    isGoogleFont: true,
+  );
+
+  static const double appBarTitleFontSize = 20;
+  static const double bodyLargeFontSize = 16;
+  static const double bodyMediumFontSize = 13;
+  static const double bodySmallFontSize = 12;
+  static const double snackbarFontSize = 14;
+
+  static const TextThemes textThemes = TextThemes(
+    primaryFont: primaryTextStyle,
+    secondaryFont: secondaryTextStyle,
+    tertiaryFont: tertiaryTextStyle,
+  );
+}
+
+///// lib/screens/home_screen/home_screen.dart /////
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:skeletonizer/skeletonizer.dart';
+import 'package:template_app/app_settings/app_general_settings.dart';
+import 'package:template_app/widgets/AppScaffold/app_scaffold.dart';
+import '../../generated/l10n.dart';
+import '../../providers/providers_all.dart';
+import '../../utils/ui/is_dark_mode.dart';
+
+class HomeScreen extends ConsumerStatefulWidget {
+  const HomeScreen({super.key});
+
+  @override
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  bool useAppBar = AppGeneralSettings.useTopAppBar;
+  ValueNotifier<bool> isDialOpen = ValueNotifier(false);
+  int _sliderValue = 0;
+  int _stepperIndex = 0;
+  bool exampleSwitchValue = false;
+  static const bool isLoading = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return AppScaffold(
+      appBarTitle: S.of(context).homeScreenTitle,
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Skeletonizer(
+              enabled: isLoading,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(S.of(context).exampleTitle,
+                      style: Theme.of(context).textTheme.headlineSmall),
+                  const SizedBox(height: 10),
+                  Text(S.of(context).exampleDescription,
+                      style: Theme.of(context).textTheme.bodyMedium),
+                  const SizedBox(height: 20),
+                  Text(S.of(context).buttonsSectionTitle,
+                      style: Theme.of(context).textTheme.titleSmall),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(double.infinity, 47),
+                      ),
+                      child: Text(S.of(context).elevatedButtonLabel)),
+                  TextButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(double.infinity, 47),
+                      ),
+                      child: Text(S.of(context).textButtonLabel)),
+                  OutlinedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(double.infinity, 47),
+                      ),
+                      child: Text(S.of(context).outlinedButtonLabel)),
+                  const SizedBox(height: 20),
+                  Text(S.of(context).switchesSectionTitle,
+                      style: Theme.of(context).textTheme.titleSmall),
+                  const SizedBox(height: 10),
+                  SwitchListTile(
+                    title: Text(S.of(context).exampleSwitch),
+                    value: exampleSwitchValue,
+                    onChanged: (value) {
+                      setState(() {
+                        exampleSwitchValue = value;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  Text(S.of(context).inputsSectionTitle,
+                      style: Theme.of(context).textTheme.titleSmall),
+                  const SizedBox(height: 10),
+                  TextField(
+                    decoration: InputDecoration(
+                      labelText: S.of(context).textFieldLabel,
+                      border: const OutlineInputBorder(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Divider(),
+            const SizedBox(height: 20),
+            Skeletonizer(
+              enabled: isLoading,
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        S.of(context).lightMode,
+                        style: TextStyle(
+                          fontWeight: isDarkMode(context)
+                              ? FontWeight.normal
+                              : FontWeight.bold,
+                        ),
+                      ),
+                      const Text(
+                        ' / ',
+                      ),
+                      Text(
+                        S.of(context).darkMode,
+                        style: TextStyle(
+                          fontWeight: isDarkMode(context)
+                              ? FontWeight.bold
+                              : FontWeight.normal,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Center(
+                    child: Switch(
+                      thumbIcon: WidgetStateProperty.all(Icon(
+                        isDarkMode(context)
+                            ? Icons.dark_mode
+                            : Icons.light_mode,
+                        color: Colors.white,
+                      )),
+                      value: isDarkMode(context),
+                      onChanged: (value) {
+                        ref.read(themeProvider).toggleTheme(value);
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          ref
+                              .read(localeProvider)
+                              .setLocale(const Locale('en'));
+                        },
+                        child: const Text(
+                          '🇺🇸',
+                          style: TextStyle(fontSize: 30),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      const Text('/'),
+                      const SizedBox(width: 10),
+                      GestureDetector(
+                        onTap: () {
+                          ref
+                              .read(localeProvider)
+                              .setLocale(const Locale('es'));
+                        },
+                        child: const Text(
+                          '🇪🇸',
+                          style: TextStyle(fontSize: 30),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      const Text('/'),
+                      const SizedBox(width: 10),
+                      GestureDetector(
+                        onTap: () {
+                          ref
+                              .read(localeProvider)
+                              .setLocale(const Locale('de'));
+                        },
+                        child: const Text(
+                          '🇩🇪',
+                          style: TextStyle(fontSize: 30),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 10),
+            const Divider(),
+            Skeletonizer(
+                enabled: isLoading,
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(S.of(context).chipsSectionTitle,
+                          style: Theme.of(context).textTheme.titleSmall),
+                      const SizedBox(height: 10),
+                      Wrap(
+                        spacing: 10,
+                        children: [
+                          Chip(
+                            label: Text(S.of(context).chipOneLabel),
+                          ),
+                          Chip(label: Text(S.of(context).chipTwoLabel)),
+                          Chip(label: Text(S.of(context).chipThreeLabel)),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      Text(S.of(context).slidersSectionTitle,
+                          style: Theme.of(context).textTheme.titleSmall),
+                      const SizedBox(height: 10),
+                      Slider(
+                        value: _sliderValue.toDouble(),
+                        onChanged: (value) {
+                          setState(() {
+                            _sliderValue = value.toInt();
+                          });
+                        },
+                        min: 0,
+                        max: 100,
+                        // inactiveColor: Colors.white.withOpacity(0.4),
+
+                        divisions: 100,
+                      ),
+                      Text('${S.of(context).sliderValueLabel}: $_sliderValue%'),
+                    ])),
+            const Divider(),
+            Skeletonizer(
+              enabled: isLoading,
+              child: Stepper(
+                physics: const NeverScrollableScrollPhysics(),
+                margin: const EdgeInsets.all(0),
+                controlsBuilder: (context, details) {
+                  return Row(
+                    children: [
+                      OutlinedButton(
+                        onPressed: details.onStepContinue,
+                        child: const Text('Continue'),
+                      ),
+                      TextButton(
+                        style: TextButton.styleFrom(
+                          minimumSize: const Size(92, 0),
+                        ),
+                        onPressed: details.onStepCancel,
+                        child: const Text('Back'),
+                      ),
+                    ],
+                  );
+                },
+                currentStep: _stepperIndex,
+                onStepTapped: (index) {
+                  setState(() {
+                    _stepperIndex = index;
+                  });
+                },
+                onStepContinue: () {
+                  if (_stepperIndex < 2) {
+                    setState(() {
+                      _stepperIndex++;
+                    });
+                  }
+                },
+                onStepCancel: () {
+                  if (_stepperIndex > 0) {
+                    setState(() {
+                      _stepperIndex--;
+                    });
+                  }
+                },
+                steps: [
+                  Step(
+                    title: Text(S.of(context).stepOneTitle),
+                    content: SizedBox(
+                        height: 100,
+                        child:
+                            Center(child: Text(S.of(context).stepOneContent))),
+                    isActive: _stepperIndex == 0,
+                  ),
+                  Step(
+                    title: Text(S.of(context).stepTwoTitle),
+                    content: SizedBox(
+                        height: 100,
+                        child:
+                            Center(child: Text(S.of(context).stepTwoContent))),
+                    isActive: _stepperIndex == 1,
+                  ),
+                  Step(
+                    title: Text(S.of(context).stepThreeTitle),
+                    content: SizedBox(
+                        height: 100,
+                        child: Center(
+                            child: Text(S.of(context).stepThreeContent))),
+                    isActive: _stepperIndex == 2,
+                  ),
+                ],
+              ),
+            ),
+            const Divider(),
+            Skeletonizer(
+              enabled: isLoading,
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    RichText(
+                      text: TextSpan(
+                        text: S.of(context).exampleDisplayLargePrefix,
+                        style: Theme.of(context).textTheme.displayLarge,
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: 'Large',
+                            style: Theme.of(context)
+                                .textTheme
+                                .displayLarge
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    RichText(
+                      text: TextSpan(
+                        text: S.of(context).exampleDisplayMediumPrefix,
+                        style: Theme.of(context).textTheme.displayMedium,
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: 'Medium',
+                            style: Theme.of(context)
+                                .textTheme
+                                .displayMedium
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    RichText(
+                      text: TextSpan(
+                        text: S.of(context).exampleDisplaySmallPrefix,
+                        style: Theme.of(context).textTheme.displaySmall,
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: 'Small',
+                            style: Theme.of(context)
+                                .textTheme
+                                .displaySmall
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    RichText(
+                      text: TextSpan(
+                        text: S.of(context).exampleHeadlineLargePrefix,
+                        style: Theme.of(context).textTheme.headlineLarge,
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: 'Large',
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineLarge
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    RichText(
+                      text: TextSpan(
+                        text: S.of(context).exampleHeadlineMediumPrefix,
+                        style: Theme.of(context).textTheme.headlineMedium,
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: 'Medium',
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineMedium
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    RichText(
+                      text: TextSpan(
+                        text: S.of(context).exampleHeadlineSmallPrefix,
+                        style: Theme.of(context).textTheme.headlineSmall,
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: 'Small',
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineSmall
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    RichText(
+                      text: TextSpan(
+                        text: S.of(context).exampleTitleLargePrefix,
+                        style: Theme.of(context).textTheme.titleLarge,
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: 'Large',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleLarge
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    RichText(
+                      text: TextSpan(
+                        text: S.of(context).exampleTitleMediumPrefix,
+                        style: Theme.of(context).textTheme.titleMedium,
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: 'Medium',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    RichText(
+                      text: TextSpan(
+                        text: S.of(context).exampleTitleSmallPrefix,
+                        style: Theme.of(context).textTheme.titleSmall,
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: 'Small',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleSmall
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    RichText(
+                      text: TextSpan(
+                        text: S.of(context).exampleBodyLargePrefix,
+                        style: Theme.of(context).textTheme.bodyLarge,
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: 'Large',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyLarge
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    RichText(
+                      text: TextSpan(
+                        text: S.of(context).exampleBodyMediumPrefix,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: 'Medium',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    RichText(
+                      text: TextSpan(
+                        text: S.of(context).exampleBodySmallPrefix,
+                        style: Theme.of(context).textTheme.bodySmall,
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: 'Small',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodySmall
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    RichText(
+                      text: TextSpan(
+                        text: S.of(context).exampleLabelLargePrefix,
+                        style: Theme.of(context).textTheme.labelLarge,
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: 'Large',
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelLarge
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    RichText(
+                      text: TextSpan(
+                        text: S.of(context).exampleLabelMediumPrefix,
+                        style: Theme.of(context).textTheme.labelMedium,
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: 'Medium',
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelMedium
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    RichText(
+                      text: TextSpan(
+                        text: S.of(context).exampleLabelSmallPrefix,
+                        style: Theme.of(context).textTheme.labelSmall,
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: 'Small',
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelSmall
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ]),
+            ),
+            const SizedBox(height: 80),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+///// lib/screens/login_screen/login_screen.dart /////
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sign_in_button/sign_in_button.dart';
+import 'package:flutter/services.dart';
+import 'package:template_app/app_settings/auth_config.dart';
+import 'package:template_app/generated/l10n.dart';
+import '../../app_settings/theme_settings.dart';
+import '../../providers/providers_all.dart';
+import '../../utils/navigation/push_route_with_animation.dart';
+import '../../utils/ui/is_dark_mode.dart';
+import '../../utils/validation/is_email_valid.dart';
+import '../../widgets/AppScaffold/app_scaffold.dart';
+import '../../widgets/NotificationModal/notification_modal.dart';
+import '../../widgets/NotificationSnackbar/notification_snackbar.dart';
+import '../../widgets/ThemeInputTextField/theme_input_text_field.dart';
+import '../home_screen/home_screen.dart';
+
+class LoginScreen extends ConsumerStatefulWidget {
+  const LoginScreen({super.key});
+
+  @override
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends ConsumerState<LoginScreen> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final FocusNode _emailFocusNode = FocusNode();
+  final FocusNode _passwordFocusNode = FocusNode();
+  bool _isEmailValid = true;
+  bool _isPasswordValid = true;
+  final int minPasswordLength = 6;
+  bool _attemptingLogin = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return AppScaffold(
+      appBarTitle: S.of(context).loginScreenTitle,
+      isProtected: false,
+      useSafeArea: false,
+      hideFloatingSpeedDialMenu: true,
+      backgroundAnimation: ThemeSettings.primaryLottieBackgroundAnimation,
+      backgroundAnimationDarkMode:
+          ThemeSettings.secondaryLottieBackgroundAnimation,
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Center(
+              child: SizedBox(
+                width: 300,
+                child: Column(
+                  children: <Widget>[
+                    const SizedBox(height: 120),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          const Icon(Icons.email_outlined),
+                          const SizedBox(width: 5),
+                          Text(
+                            S.of(context).emailLabel,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                    ThemeInputTextField(
+                      controller: _emailController,
+                      focusNode: _emailFocusNode,
+                      hintText: S.of(context).emailHintText,
+                      isEmailInput: true,
+                      isValid: _isEmailValid,
+                      errorText: S.of(context).invalidEmailMessage,
+                      onChanged: (value) {
+                        if (isEmailValid(value)) {
+                          setState(() {
+                            _isEmailValid = true;
+                          });
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          const Icon(Icons.lock_outline),
+                          const SizedBox(width: 5),
+                          Text(
+                            S.of(context).passwordLabel,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                    ThemeInputTextField(
+                      controller: _passwordController,
+                      focusNode: _passwordFocusNode,
+                      hintText: S.of(context).passwordHintText,
+                      isPasswordInput: true,
+                      hidePasswordVisibilityIcon: false,
+                      isValid: _isPasswordValid,
+                      errorText: S.of(context).invalidPasswordMessage,
+                      onChanged: (value) {
+                        if (value.isNotEmpty &&
+                            value.length >= minPasswordLength) {
+                          setState(() {
+                            _isPasswordValid = true;
+                          });
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 32.0),
+                    SizedBox(
+                      width: 233,
+                      child: ElevatedButton(
+                        onPressed:
+                            _attemptingLogin ? null : () => attemptLogin(ref),
+                        child: Text(S.of(context).loginButton),
+                      ),
+                    ),
+                    Visibility(
+                      visible: AuthConfig.allowGoogleSignIn,
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 22.0),
+                          SignInButton(Buttons.google,
+                              elevation: ThemeSettings.buttonsElevation,
+                              padding: const EdgeInsets.all(5.5),
+                              clipBehavior: Clip.hardEdge,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10)),
+                              text: S.of(context).signInWithGoogleButtonLabel,
+                              onPressed: () async {
+                            NotificationSnackbar.showSnackBar(
+                              message: S
+                                  .of(context)
+                                  .signingInWithGoogleSnackbarMessage,
+                              variant: SnackbarVariant.info,
+                              duration: SnackbarDuration.long,
+                            );
+
+                            try {
+                              await ref.read(authProvider).signInWithGoogle();
+                            } on PlatformException catch (error) {
+                              NotificationSnackbar.showSnackBar(
+                                message: S
+                                    .of(context)
+                                    .errorSigningInWithGoogleSnackbarMessage,
+                                variant: SnackbarVariant.error,
+                                duration: SnackbarDuration.long,
+                              );
+
+                              debugPrint(
+                                  'Error signing in with Google: ${error.toString()}');
+                            } catch (error) {
+                              NotificationSnackbar.showSnackBar(
+                                message: S
+                                    .of(context)
+                                    .errorSigningInWithGoogleSnackbarMessage,
+                                variant: SnackbarVariant.error,
+                                duration: SnackbarDuration.long,
+                              );
+                              debugPrint('Error: ${error.toString()}');
+                            }
+                          }),
+                        ],
+                      ),
+                    ),
+                    const Divider(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          S.of(context).lightMode,
+                          style: TextStyle(
+                            fontWeight: isDarkMode(context)
+                                ? FontWeight.normal
+                                : FontWeight.bold,
+                          ),
+                        ),
+                        const Text(
+                          ' / ',
+                        ),
+                        Text(
+                          S.of(context).darkMode,
+                          style: TextStyle(
+                            fontWeight: isDarkMode(context)
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Switch(
+                      thumbIcon: WidgetStateProperty.all(Icon(
+                        isDarkMode(context)
+                            ? Icons.dark_mode
+                            : Icons.light_mode,
+                        color: Colors.white,
+                      )),
+                      value: isDarkMode(context),
+                      onChanged: (value) {
+                        ref.read(themeProvider).toggleTheme(value);
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            ref
+                                .read(localeProvider)
+                                .setLocale(const Locale('en'));
+                          },
+                          child: const Text(
+                            '🇺🇸',
+                            style: TextStyle(fontSize: 30),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        const Text('/'),
+                        const SizedBox(width: 10),
+                        GestureDetector(
+                          onTap: () {
+                            ref
+                                .read(localeProvider)
+                                .setLocale(const Locale('es'));
+                          },
+                          child: const Text(
+                            '🇪🇸',
+                            style: TextStyle(fontSize: 30),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        const Text('/'),
+                        const SizedBox(width: 10),
+                        GestureDetector(
+                          onTap: () {
+                            ref
+                                .read(localeProvider)
+                                .setLocale(const Locale('de'));
+                          },
+                          child: const Text(
+                            '🇩🇪',
+                            style: TextStyle(fontSize: 30),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void attemptLogin(WidgetRef ref) async {
+    debugPrint('Attempting login...');
+    var error = false;
+    setState(() {
+      _isEmailValid = true;
+      _isPasswordValid = true;
+    });
+
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+      List<String> emptyFields = [];
+      if (_emailController.text.isEmpty) {
+        debugPrint('Please insert a valid email');
+        emptyFields.add(S.of(context).email);
+        setState(() {
+          _isEmailValid = false;
+        });
+        NotificationSnackbar.showSnackBar(
+          message: S.of(context).invalidEmailSnackbarMessage,
+          variant: SnackbarVariant.error,
+          duration: SnackbarDuration.short,
+        );
+      }
+      if (_passwordController.text.isEmpty) {
+        debugPrint('Please insert a valid password');
+        emptyFields.add(S.of(context).password);
+        setState(() {
+          _isPasswordValid = false;
+        });
+        NotificationSnackbar.showSnackBar(
+          message: S.of(context).invalidPasswordSnackbarMessage,
+          variant: SnackbarVariant.error,
+          duration: SnackbarDuration.short,
+        );
+        error = true;
+      }
+
+      debugPrint('Error: The following fields are empty: $emptyFields');
+
+      NotificationSnackbar.showSnackBar(
+        message:
+            '${S.of(context).pleaseFillTheFollowingFields} ${emptyFields.join(', ')}.',
+        variant: SnackbarVariant.error,
+        duration: SnackbarDuration.short,
+      );
+      error = true;
+
+      NotificationModal.loginFieldsAreEmpty(
+          context: context, onTapConfirm: () {}, emptyFields: emptyFields);
+    }
+
+    if (_emailController.text.isNotEmpty &&
+        !isEmailValid(_emailController.text)) {
+      debugPrint('Email is not valid');
+      setState(() {
+        _isEmailValid = false;
+      });
+      NotificationSnackbar.showSnackBar(
+        message: S.of(context).invalidEmailMessage,
+        variant: SnackbarVariant.error,
+        duration: SnackbarDuration.short,
+      );
+      error = true;
+    }
+
+    if (_passwordController.text.isNotEmpty &&
+        _passwordController.text.length < minPasswordLength) {
+      debugPrint('Password is too short. Minimum length: $minPasswordLength');
+      setState(() {
+        _isPasswordValid = false;
+      });
+      NotificationSnackbar.showSnackBar(
+        message: S.of(context).invalidPasswordTooShortMessage,
+        variant: SnackbarVariant.error,
+        duration: SnackbarDuration.short,
+      );
+      error = true;
+    }
+
+    if (error) {
+      debugPrint('Login aborted.');
+      return;
+    }
+
+    setState(() {
+      _attemptingLogin = true;
+    });
+
+    NotificationSnackbar.showSnackBar(
+      message: S.of(context).signingInMessage,
+      variant: SnackbarVariant.info,
+      duration: SnackbarDuration.long,
+    );
+    try {
+      bool userSignedIn = await ref
+          .read(authProvider)
+          .signInWithEmail(_emailController.text, _passwordController.text);
+
+      if (userSignedIn) {
+        void userTappedConfirm() {
+          NotificationSnackbar.hideCurrentSnackBar();
+          NotificationSnackbar.showSnackBar(
+              message: S.of(context).loginSuccessfulMessage,
+              variant: SnackbarVariant.success,
+              duration: SnackbarDuration.short,
+              delay: 1);
+          Navigator.of(context).pushReplacement(pushRouteWithAnimation(
+              const HomeScreen(),
+              direction: SlideDirection.right));
+        }
+
+        NotificationModal.successfulModal(
+            title: S.of(context).successfulLogin,
+            message: S.of(context).successfulLoginRedirectToHomeMessage,
+            context: context,
+            onTapConfirm: () => userTappedConfirm());
+      } else {
+        NotificationSnackbar.showSnackBar(
+          message: S.of(context).loginErrorMessage,
+          variant: SnackbarVariant.error,
+          duration: SnackbarDuration.long,
+        );
+      }
+    } catch (error) {
+      NotificationSnackbar.showSnackBar(
+        message: S.of(context).loginErrorMessage,
+        variant: SnackbarVariant.error,
+        duration: SnackbarDuration.long,
+      );
+      NotificationModal.failedLogin(
+          context: context,
+          onTapConfirm: () {},
+          errorMessage: S.of(context).loginErrorMessage);
+      debugPrint('Error logging in: ${error.toString()}');
+    } finally {
+      setState(() {
+        _attemptingLogin = false;
+      });
+      NotificationSnackbar.hideCurrentSnackBar();
+    }
+  }
+}
+
+///// lib/widgets/AppScaffold/app_scaffold.dart /////
+import 'dart:ui';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lottie/lottie.dart';
+import 'package:template_app/app_settings/app_general_settings.dart';
+import 'package:template_app/app_settings/auth_config.dart';
+import 'package:template_app/providers/providers_all.dart';
+import 'package:template_app/screens/loading_screen/loading_screen.dart';
+import 'package:template_app/utils/ui/is_dark_mode.dart';
+import '../../app_settings/theme_settings.dart';
+
+import '../../models/general_models.dart';
+import '../../screens/login_screen/login_screen.dart';
+import '../../utils/navigation/push_route_with_animation.dart';
+
+import '../ThemeAppBar/template_app_bar.dart';
+import '../ThemeFloatingSpeedDialMenu/theme_floating_speed_dial_menu.dart';
+
+class AppScaffold extends ConsumerStatefulWidget {
+  final Widget body;
+  final bool hideFloatingSpeedDialMenu;
+  final String appBarTitle;
+  final bool isProtected;
+  final bool? useSafeArea;
+  final ScrollPhysics? scrollPhysics;
+  final LottieAnimationBackground?
+      backgroundAnimation; // Cambiado a LottieAnimationBackground
+  final LottieAnimationBackground?
+      backgroundAnimationDarkMode; // Nueva propiedad
+
+  const AppScaffold({
+    super.key,
+    required this.body,
+    required this.appBarTitle,
+    this.useSafeArea,
+    this.hideFloatingSpeedDialMenu = false,
+    this.isProtected = true,
+    this.scrollPhysics,
+    this.backgroundAnimation,
+    this.backgroundAnimationDarkMode, // Nueva propiedad
+  });
+
+  @override
+  AppScaffoldState createState() => AppScaffoldState();
+}
+
+class AppScaffoldState extends ConsumerState<AppScaffold> {
+  bool _navigated = false;
+
+  ScrollPhysics getScrollPhysics() {
+    switch (ThemeSettings.defaultScrollPhysics) {
+      case 'never':
+        return const NeverScrollableScrollPhysics();
+      case 'always':
+        return const AlwaysScrollableScrollPhysics();
+      case 'clamp':
+        return const ClampingScrollPhysics();
+      default:
+        return const AlwaysScrollableScrollPhysics();
+    }
+  }
+
+  LottieAnimationBackground? getLottieAnimation() {
+    final themeIsDark = isDarkMode(context);
+    if (themeIsDark && widget.backgroundAnimationDarkMode != null) {
+      return widget.backgroundAnimationDarkMode;
+    }
+    return widget.backgroundAnimation;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final auth = ref.watch(authProvider);
+
+    if (!DebugConfig.debugMode &&
+        AuthConfig.useProtectedRoutes &&
+        widget.isProtected &&
+        !auth.isAuthenticated &&
+        !_navigated) {
+      _navigated = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.of(context).pushReplacement(pushRouteWithAnimation(
+            const LoginScreen(),
+            direction: SlideDirection.left));
+      });
+    }
+
+    if (!auth.isAuthenticated && widget.isProtected) {
+      return const LoadingScreen();
+    }
+
+    ValueNotifier<bool> isFloatingMenuOpen = ValueNotifier(false);
+
+    final animationConfig = getLottieAnimation();
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    return SafeArea(
+      bottom: widget.useSafeArea != null
+          ? widget.useSafeArea!
+          : ThemeSettings.useSafeArea,
+      top: widget.useSafeArea != null
+          ? widget.useSafeArea!
+          : ThemeSettings.useSafeArea,
+      child: Scaffold(
+        appBar: AppGeneralSettings.useTopAppBar
+            ? ThemeAppBar(
+                title: widget.appBarTitle,
+              )
+            : null,
+        body: Stack(
+          fit: StackFit.expand,
+          children: [
+            if (animationConfig != null && animationConfig.active)
+              Positioned(
+                left: (screenWidth / 2) +
+                    animationConfig.x -
+                    (screenWidth * (animationConfig.width / 100) / 2),
+                top: (screenHeight / 2) +
+                    animationConfig.y -
+                    (screenWidth * (animationConfig.width / 100) / 2),
+                width: screenWidth * (animationConfig.width / 100),
+                child: Opacity(
+                  opacity: animationConfig.opacity,
+                  child: Lottie.asset(
+                    animationConfig.animationPath,
+                  ),
+                ),
+              ),
+            if (animationConfig != null &&
+                animationConfig.blur > 0 &&
+                animationConfig.active)
+              Positioned(
+                child: SizedBox(
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(
+                        sigmaX: animationConfig.blur,
+                        sigmaY: animationConfig.blur),
+                    child: Container(
+                      color: Colors.transparent,
+                    ),
+                  ),
+                ),
+              ),
+            SingleChildScrollView(
+              physics: widget.scrollPhysics ?? getScrollPhysics(),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: ThemeSettings.scaffoldPadding,
+                    child: widget.body,
+                  ),
+                ],
+              ),
+            ),
+            if (!widget.hideFloatingSpeedDialMenu &&
+                AppGeneralSettings.useFloatingSpeedDialMenu)
+              Positioned.fill(
+                child: ValueListenableBuilder(
+                  valueListenable: isFloatingMenuOpen,
+                  builder: (context, value, child) {
+                    return value
+                        ? BackdropFilter(
+                            filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
+                            child: Container(
+                              color: Colors.black.withOpacity(0.1),
+                            ),
+                          )
+                        : const SizedBox.shrink();
+                  },
+                ),
+              ),
+          ],
+        ),
+        floatingActionButton: ThemeFloatingSpeedDialMenu(
+          hideFloatingSpeedDialMenu: widget.hideFloatingSpeedDialMenu,
+          isDialOpenNotifier: isFloatingMenuOpen,
+        ),
+      ),
+    );
+  }
+}
+
+///// lib/widgets/NotificationSnackbar/notification_snackbar.dart /////
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:template_app/app_settings/theme_settings.dart';
+
+import '../../globals.dart';
+
+class SnackbarDuration {
+  static const String short = 'short';
+  static const String long = 'long';
+}
+
+class SnackbarVariant {
+  static const String error = 'error';
+  static const String success = 'success';
+  static const String info = 'info';
+}
+
+class NotificationSnackbar {
+  static void showSnackBar({
+    required String message,
+    required String variant,
+    required String duration,
+    int delay = 0,
+  }) async {
+    if (delay > 0) {
+      await Future.delayed(Duration(seconds: delay));
+    }
+
+    if (ThemeSettings.useFlutterToast) {
+      Fluttertoast.cancel();
+      Fluttertoast.showToast(
+        msg: message,
+        toastLength: duration == SnackbarDuration.long
+            ? Toast.LENGTH_LONG
+            : Toast.LENGTH_SHORT,
+        gravity: ToastGravity.SNACKBAR,
+        timeInSecForIosWeb: duration == SnackbarDuration.long ? 3 : 2,
+        backgroundColor: variant == SnackbarVariant.success
+            ? ThemeSettings.snackBarSuccessBackgroundColor
+            : variant == SnackbarVariant.info
+                ? ThemeSettings.snackBarInfoBackgroundColor
+                : ThemeSettings.snackBarErrorBackgroundColor,
+        textColor: ThemeSettings.snackBarErrorTextColor,
+        fontSize: ThemeSettings.snackbarFontSize,
+      );
+      return;
+    }
+
+    snackbarKey.currentState?.showSnackBar(SnackBar(
+      duration: duration == SnackbarDuration.short
+          ? const Duration(seconds: 2)
+          : const Duration(seconds: 5),
+      backgroundColor: variant == SnackbarVariant.success
+          ? ThemeSettings.snackBarSuccessBackgroundColor
+          : variant == SnackbarVariant.info
+              ? ThemeSettings.snackBarInfoBackgroundColor
+              : ThemeSettings.snackBarErrorBackgroundColor,
+      content: Text(message,
+          style: TextStyle(
+              color: variant == SnackbarVariant.success
+                  ? ThemeSettings.snackBarSuccessTextColor
+                  : variant == SnackbarVariant.info
+                      ? ThemeSettings.snackBarInfoTextColor
+                      : ThemeSettings.snackBarErrorTextColor,
+              fontSize: ThemeSettings.snackbarFontSize)),
+    ));
+  }
+
+  static void hideCurrentSnackBar() {
+    if (ThemeSettings.useFlutterToast) {
+      Fluttertoast.cancel();
+      return;
+    }
+    snackbarKey.currentState?.hideCurrentSnackBar();
+  }
+}
+
+///// lib/widgets/NotificationModal/notification_modal.dart /////
+import 'package:flutter/material.dart';
+import 'package:template_app/app_settings/theme_settings.dart';
+import 'package:template_app/generated/l10n.dart';
+import 'package:intl/intl.dart';
+
+class NotificationModal {
+  static void successfulModal({
+    required BuildContext context,
+    required String title,
+    required String message,
+    required VoidCallback onTapConfirm,
+  }) {
+    showModalBottomSheet(
+      enableDrag: false,
+      isDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return SizedBox(
+          height: 300,
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                const CircleAvatar(
+                  backgroundColor: ThemeSettings.snackBarSuccessBackgroundColor,
+                  radius: 30,
+                  child: Icon(Icons.check, size: 50, color: Colors.white),
+                ),
+                const SizedBox(height: 20),
+                Text(title, style: Theme.of(context).textTheme.headlineSmall),
+                const SizedBox(height: 8),
+                Text(message, style: Theme.of(context).textTheme.bodyLarge),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: 200,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      onTapConfirm();
+                    },
+                    child: Text(S.of(context).gotIt),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  static void failedLogin({
+    required BuildContext context,
+    required VoidCallback onTapConfirm,
+    required String errorMessage,
+  }) {
+    showModalBottomSheet(
+      isDismissible: false,
+      enableDrag: false,
+      context: context,
+      builder: (BuildContext context) {
+        return SizedBox(
+          height: 300,
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                CircleAvatar(
+                  backgroundColor: Theme.of(context).colorScheme.error,
+                  radius: 30,
+                  child: const Icon(Icons.close, size: 50, color: Colors.white),
+                ),
+                const SizedBox(height: 15),
+                Padding(
+                  padding: const EdgeInsets.all(2.0),
+                  child: Text(S.of(context).loginFailed,
+                      style: Theme.of(context).textTheme.headlineSmall),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 32.0, vertical: 12.0),
+                  child: Text(errorMessage,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodyLarge),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: 200,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      onTapConfirm();
+                    },
+                    child: Text(S.of(context).ok),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  static void loginFieldsAreEmpty({
+    required BuildContext context,
+    required Function onTapConfirm,
+    required List<String> emptyFields,
+  }) {
+    showModalBottomSheet(
+      isDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return SizedBox(
+          height: 300,
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                const Icon(Icons.warning, size: 50, color: Colors.amber),
+                const SizedBox(height: 15),
+                Text(S.of(context).emptyFields,
+                    style: Theme.of(context).textTheme.headlineSmall),
+                const SizedBox(height: 8),
+                Text(S.of(context).fillAllFields,
+                    style: Theme.of(context).textTheme.bodyLarge),
+                const SizedBox(height: 5),
+                ...emptyFields
+                    .map((element) => Text(toBeginningOfSentenceCase(element),
+                        textAlign: TextAlign.start,
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ))),
+                const SizedBox(height: 17),
+                SizedBox(
+                  width: 200,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      onTapConfirm();
+                    },
+                    child: Text(S.of(context).ok),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  static void failedLogout({
+    required BuildContext context,
+    required onTapConfirm,
+  }) {
+    showModalBottomSheet(
+      isDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return SizedBox(
+          height: 300,
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                CircleAvatar(
+                  backgroundColor: Theme.of(context).colorScheme.error,
+                  radius: 30,
+                  child: const Icon(Icons.close, size: 50, color: Colors.white),
+                ),
+                const SizedBox(height: 20),
+                Text(S.of(context).failedLogout,
+                    style: Theme.of(context).textTheme.headlineSmall),
+                const SizedBox(height: 8),
+                Text(S.of(context).failedLogoutMessage,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyLarge),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: 200,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      onTapConfirm();
+                    },
+                    child: Text(S.of(context).ok),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  static void unauthorizedAccess({
+    required BuildContext context,
+    required onTapConfirm,
+    required String screenName,
+  }) {
+    showModalBottomSheet(
+      isDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return SizedBox(
+          height: 300,
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                CircleAvatar(
+                  backgroundColor: Theme.of(context).colorScheme.error,
+                  radius: 30,
+                  child: const Icon(Icons.close, size: 50, color: Colors.white),
+                ),
+                const SizedBox(height: 20),
+                Text(S.of(context).unauthorizedAccess,
+                    style: Theme.of(context).textTheme.headlineSmall),
+                const SizedBox(height: 8),
+                Text(S.of(context).unauthorizedAccessMessage(screenName),
+                    style: Theme.of(context).textTheme.bodyLarge),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: 200,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      onTapConfirm();
+                    },
+                    child: Text(S.of(context).ok),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  static void unableToLoginDueToNoInternet({
+    required BuildContext context,
+    required onTapConfirm,
+  }) {
+    showModalBottomSheet(
+      isDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return SizedBox(
+          height: 300,
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                const Icon(Icons.signal_wifi_connected_no_internet_4_outlined,
+                    size: 50, color: Colors.grey),
+                const SizedBox(height: 20),
+                Text(S.of(context).unableToLoginNoInternet,
+                    style: Theme.of(context).textTheme.headlineSmall),
+                const SizedBox(height: 8),
+                SizedBox(
+                  width: 300,
+                  child: Text(S.of(context).noInternetMessage,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodyLarge),
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: 200,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      onTapConfirm();
+                    },
+                    child: Text(S.of(context).ok),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+///// lib/theme/main_theme/main_theme.dart /////
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:template_app/app_settings/theme_settings.dart';
+import 'package:template_app/theme/main_theme/chip_theme.dart';
+import 'package:template_app/theme/main_theme/input_theme.dart';
+
+import '../../models/theme_models.dart';
+import 'buttons_theme.dart';
+
+class MainTheme {
+  /// --------------- LIGHT THEME ---------------
+  static ThemeData get lightTheme {
+    final base = ThemeData.light(useMaterial3: ThemeSettings.useMaterial3);
+    return _buildTheme(base, Brightness.light);
+  }
+
+  /// --------------- DARK THEME ---------------
+
+  static ThemeData get darkTheme {
+    final base = ThemeData.dark(useMaterial3: ThemeSettings.useMaterial3);
+    return _buildTheme(base, Brightness.dark);
+  }
+
+  static ThemeData _buildTheme(ThemeData base, Brightness brightness) {
+    ColorScheme colorScheme;
+
+    if (ThemeSettings.forceSeedColor) {
+      colorScheme = ColorScheme.fromSeed(
+        seedColor: ThemeSettings.seedColor,
+        brightness: brightness,
+      );
+    } else {
+      colorScheme = brightness == Brightness.light
+          ? ColorScheme.light(
+              // primary: Config.primaryTextColor.lightModePrimary,
+              primary: ThemeSettings.primaryTextColor.lightModePrimary,
+              // secondary: Config.secondaryTextColor.lightModePrimary,
+              surface: ThemeSettings.scaffoldBackgroundColor.lightModePrimary,
+              secondary: ThemeSettings.secondaryTextColor.lightModePrimary,
+
+              error: Colors.red,
+              onPrimary: Colors.white,
+              onSecondary: Colors.white,
+              onSurface: ThemeSettings.primaryTextColor.lightModePrimary,
+              onError: Colors.white,
+              brightness: brightness,
+            )
+          : ColorScheme.dark(
+              primary: ThemeSettings.primaryTextColor.darkModePrimary,
+              onPrimary: Colors.black,
+              primaryContainer:
+                  ThemeSettings.primaryContainerBackgroundColor.darkModePrimary,
+              secondary: ThemeSettings.secondaryTextColor.darkModePrimary,
+              error: Colors.red[900]!,
+              surface: ThemeSettings.scaffoldBackgroundColor.darkModePrimary,
+              onSurface: ThemeSettings.primaryTextColor.darkModePrimary,
+              surfaceContainerHigh: Colors.red,
+              onSecondary: Colors.black,
+              onError: Colors.black,
+              brightness: brightness,
+            );
+    }
+
+    return base.copyWith(
+      colorScheme: colorScheme,
+      scaffoldBackgroundColor: colorScheme.surface,
+      hintColor: colorScheme.onSurface,
+      sliderTheme: base.sliderTheme.copyWith(
+        inactiveTrackColor: colorScheme.onSurface.withOpacity(0.5),
+      ),
+      textTheme:
+          _buildTextTheme(base.textTheme, ThemeSettings.primaryTextStyle),
+      appBarTheme: AppBarTheme(
+        foregroundColor: colorScheme.onPrimary,
+        titleTextStyle: ThemeSettings.appBarTextStyle.isGoogleFont
+            ? GoogleFonts.getFont(ThemeSettings.appBarTextStyle.name,
+                textStyle: TextStyle(
+                    fontSize: ThemeSettings.appBarTitleFontSize,
+                    color: colorScheme.onPrimary))
+            : TextStyle(
+                fontFamily: ThemeSettings.appBarTextStyle.name,
+                fontSize: ThemeSettings.appBarTitleFontSize,
+                color: colorScheme.onPrimary),
+        backgroundColor: ThemeSettings.forceSeedColor
+            ? colorScheme.primary
+            : (brightness == Brightness.light
+                ? ThemeSettings.appBarBackgroundColor.lightModePrimary
+                : ThemeSettings.appBarBackgroundColor.darkModePrimary),
+      ),
+      chipTheme: ChipDecorationTheme.chipTheme(brightness, colorScheme),
+      inputDecorationTheme:
+          InputTheme.inputDecorationTheme(brightness, colorScheme),
+      elevatedButtonTheme:
+          ButtonsTheme.elevatedButtonTheme(brightness, colorScheme),
+      outlinedButtonTheme:
+          ButtonsTheme.outlinedButtonTheme(brightness, colorScheme),
+      textButtonTheme: ButtonsTheme.textButtonTheme(brightness, colorScheme),
+      dividerTheme: base.dividerTheme.copyWith(
+        space: 70,
+        color: colorScheme.onSurface.withOpacity(0.2),
+        thickness: 1,
+        indent: 50,
+        endIndent: 50,
+      ),
+    );
+  }
+
+  static TextTheme _buildTextTheme(TextTheme base, FontConfig font) {
+    return base.copyWith(
+      displayLarge: _applyFont(base.displayLarge, font),
+      displayMedium: _applyFont(base.displayMedium, font),
+      displaySmall: _applyFont(base.displaySmall, font),
+      headlineLarge: _applyFont(base.headlineLarge, font),
+      headlineMedium: _applyFont(base.headlineMedium, font),
+      headlineSmall: _applyFont(base.headlineSmall, font),
+      titleLarge: _applyFont(base.titleLarge, font),
+      titleMedium: _applyFont(base.titleMedium, font),
+      titleSmall: _applyFont(base.titleSmall, font),
+      bodyLarge: _applyFont(
+          base.bodyLarge?.copyWith(
+            fontSize: ThemeSettings.bodyLargeFontSize,
+          ),
+          font),
+      bodyMedium: _applyFont(
+          base.bodyMedium?.copyWith(
+            fontSize: ThemeSettings.bodyMediumFontSize,
+          ),
+          font),
+      bodySmall: _applyFont(
+          base.bodySmall?.copyWith(
+            fontSize: ThemeSettings.bodySmallFontSize,
+          ),
+          font),
+      labelLarge: _applyFont(base.labelLarge, font),
+      labelMedium: _applyFont(base.labelMedium, font),
+      labelSmall: _applyFont(base.labelSmall, font),
+    );
+  }
+
+  static TextStyle? _applyFont(TextStyle? style, FontConfig font) {
+    if (style == null) return null;
+    return font.isGoogleFont
+        ? GoogleFonts.getFont(font.name, textStyle: style)
+        : style.copyWith(fontFamily: font.name, fontSize: style.fontSize);
+  }
+}
+
+///// lib/providers/auth_provider.dart /////
+import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:template_app/app_settings/app_general_settings.dart';
+import 'package:template_app/app_settings/auth_config.dart';
+
+class AuthorizationProvider extends ChangeNotifier {
+  final FlutterSecureStorage storage = const FlutterSecureStorage();
+  final FirebaseAuth? _firebaseAuth =
+      AuthConfig.useFirebase ? FirebaseAuth.instance : null;
+
+  final GoogleSignIn _googleSignIn =
+      GoogleSignIn(scopes: AuthConfig.googleSignInScopes);
+  String? _authToken;
+
+  AuthorizationProvider() {
+    _loadAuthToken();
+  }
+
+  String? get authToken => _authToken;
+
+  Future<void> _loadAuthToken() async {
+    _authToken = await storage.read(key: 'auth_token');
+    notifyListeners();
+  }
+
+  Future<void> setAuthToken(String token) async {
+    await storage.write(key: 'auth_token', value: token);
+    _authToken = token;
+    notifyListeners();
+  }
+
+  Future<void> clearAuthToken() async {
+    await storage.delete(key: 'auth_token');
+    _authToken = null;
+    debugPrint('Auth token cleared. User will be logged out.');
+    notifyListeners();
+  }
+
+  Future<void> signOut(BuildContext context) async {
+    if (DebugConfig.debugMode) {
+      debugPrint(
+          'Error: Debug mode is on. Disable it from AppGeneralSettings.debugMode in order to proceed with sign out.');
+      return;
+    }
+    await clearAuthToken();
+    if (AuthConfig.useFirebase) {
+      await _firebaseAuth?.signOut();
+    }
+  }
+
+  bool get isAuthenticated =>
+      DebugConfig.debugMode || (_authToken != null && _authToken!.isNotEmpty);
+
+  Future<bool> signInWithEmail(String email, String password) async {
+    bool success = false;
+    try {
+      debugPrint('Signing in with email/password...');
+
+      if (AuthConfig.useFirebase) {
+        final UserCredential authResult = await _firebaseAuth!
+            .signInWithEmailAndPassword(email: email, password: password);
+        _authToken = authResult.user!.uid;
+        await setAuthToken(_authToken!);
+      } else {
+        _authToken = email;
+        await setAuthToken(_authToken!);
+      }
+
+      notifyListeners();
+      success = true;
+      debugPrint('User logged in successfully.✅');
+      return success;
+    } catch (error) {
+      debugPrint('Error during email/password Sign In: ${error.toString()}');
+      success = false;
+      return success;
+    }
+  }
+
+  Future<bool> signInWithGoogle() async {
+    bool success = false;
+    if (AuthConfig.allowGoogleSignIn) {
+      try {
+        debugPrint('Signing in with Google...');
+
+        final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+        if (googleUser != null) {
+          debugPrint('Google Sign In successful.');
+          final GoogleSignInAuthentication googleAuth =
+              await googleUser.authentication;
+          final credential = GoogleAuthProvider.credential(
+            accessToken: googleAuth.accessToken,
+            idToken: googleAuth.idToken,
+          );
+
+          if (AuthConfig.useFirebase) {
+            final UserCredential? authResult =
+                await _firebaseAuth?.signInWithCredential(credential);
+            _authToken = authResult?.user!.uid;
+            await setAuthToken(_authToken!);
+          } else {
+            _authToken = googleAuth.accessToken;
+            await setAuthToken(_authToken!);
+          }
+
+          notifyListeners();
+          success = true;
+          debugPrint('User logged in successfully.');
+          return success;
+        }
+      } catch (error) {
+        debugPrint(
+            'Error trying to signing in user using Google: ${error.toString()}');
+        success = false;
+        return success;
+      }
+    }
+    return success;
+  }
+}
+
+///// lib/providers/locale_provider.dart /////
+import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:template_app/app_settings/language_settings.dart';
+
+class LocaleProvider extends ChangeNotifier {
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+
+  Locale _locale = Locale(
+    LanguageSettings.supportedLocales
+            .contains(LanguageSettings.appDefaultLanguage)
+        ? LanguageSettings.appDefaultLanguage
+        : LanguageSettings.supportedLocales.first,
+  );
+
+  LocaleProvider() {
+    _loadLocale();
+  }
+
+  Locale get locale => _locale;
+
+  Future<void> setLocale(Locale locale) async {
+    if (LanguageSettings.forceDefaultLanguage) {
+      debugPrint(
+          'Error: Language change forbidden. Forced locale is on. Set LanguageSettings.forceLanguage to "false" in order to allow language change.');
+      return;
+    }
+
+    if (!LanguageSettings.supportedLocales.contains(locale.languageCode)) {
+      debugPrint(
+          'Unsupported locale: ${locale.languageCode.toUpperCase()}, please use one of the following: ${LanguageSettings.supportedLocales}. Or add the new locale to the supportedLocales list in config.dart');
+      return;
+    }
+
+    _locale = locale;
+    notifyListeners();
+    await _storage.write(
+        key: 'user_defined_locale', value: locale.languageCode);
+  }
+
+  Future<void> _loadLocale() async {
+    String? languageCode = await _storage.read(key: 'user_defined_locale');
+    if (languageCode != null) {
+      _locale = Locale(languageCode);
+      notifyListeners();
+    }
+  }
+}
+
+///// lib/providers/providers_all.dart /////
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:template_app/providers/auth_provider.dart';
+import 'package:template_app/providers/locale_provider.dart';
+import 'package:template_app/providers/theme_provider.dart';
+
+final authProvider = ChangeNotifierProvider((ref) => AuthorizationProvider());
+final themeProvider = ChangeNotifierProvider((ref) => ThemeProvider());
+final localeProvider = ChangeNotifierProvider((ref) => LocaleProvider());
+
+///// lib/providers/theme_provider.dart /////
+import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:template_app/app_settings/theme_settings.dart';
+
+class ThemeProvider extends ChangeNotifier {
+  ThemeMode _themeMode = ThemeMode.system;
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+
+  ThemeProvider() {
+    _loadThemeMode();
+  }
+
+  ThemeMode get themeMode => _themeMode;
+
+  void toggleTheme(bool isDarkMode) async {
+    if (ThemeSettings.forceDefaultThemeMode) {
+      debugPrint(
+          'Error: Theme mode change forbidden. Forced theme is on. Disable it from ThemeSettings.forceDefaultThemeMode in order to proceed with theme change.');
+      return;
+    }
+
+    _themeMode = isDarkMode ? ThemeMode.dark : ThemeMode.light;
+    notifyListeners();
+
+    String userDefinedTheme = isDarkMode ? 'dark' : 'light';
+    await _storage.write(
+        key: 'user_defined_theme_mode', value: userDefinedTheme);
+  }
+
+  void _loadThemeMode() async {
+    if (ThemeSettings.forceDefaultThemeMode) {
+      _themeMode = ThemeSettings.defaultThemeMode == 'dark'
+          ? ThemeMode.dark
+          : ThemeMode.light;
+      notifyListeners();
+      return;
+    }
+
+    String? userDefinedTheme =
+        await _storage.read(key: 'user_defined_theme_mode');
+
+    if (userDefinedTheme != null) {
+      bool isDarkMode = userDefinedTheme == 'dark';
+      _themeMode = isDarkMode ? ThemeMode.dark : ThemeMode.light;
+      notifyListeners();
+    }
+  }
+}
+
+///// lib/models/current_user_data.dart /////
+class CurrentUserData {
+  final String userId;
+  final String? email;
+  final bool isAnonymous;
+
+  CurrentUserData(
+      {required this.userId, this.email, required this.isAnonymous});
+}
+
+///// pubspec.yaml /////
+name: template_app
+description: "A new Flutter project."
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.2.6 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # Cupertino Icons is a Flutter plugin for using Cupertino icons in a Flutter app. (Example of use: Icon(CupertinoIcons.share))
+  cupertino_icons: ^1.0.8
+  # Riverpod is a Flutter plugin for managing state in a Flutter app.
+  flutter_riverpod: ^2.5.1
+  # Flutter Secure Storage is a Flutter plugin for storing data securely on the device.
+  flutter_secure_storage: ^9.2.2
+  # Google Fonts is a Flutter plugin for using Google Fonts in a Flutter app.
+  google_fonts: ^6.2.1
+  # Fluttertoast is a Flutter plugin for showing toast messages in a Flutter app.
+  fluttertoast: ^8.2.6
+  # Google Sign In is a Flutter plugin for signing with Google. It is a wrapper around the native Google Sign In libraries.
+  google_sign_in: ^6.2.1
+  # Sign In Button is a Flutter plugin for creating sign-in buttons in a Flutter app.
+  sign_in_button: ^3.2.0
+
+
+#  # -----------------  GENERAL PACKAGES  -----------------
+#  # Url Launcher is a Flutter plugin for launching a URL in the mobile platform. Supports iOS and Android.
+#  url_launcher: ^6.3.0
+#  # Cached network image is a Flutter library to show images from the internet and keep them in the cache directory.
+#  cached_network_image: ^3.3.1
+#  # Google Fonts is a Flutter plugin for using Google Fonts in a Flutter app.
+#  google_fonts: ^6.2.1
+#  # Flutter Email Validator is a Flutter plugin for validating email addresses in a Flutter app.
+#  email_validator: ^2.1.17
+#  # Permission Handler is a Flutter plugin for requesting permissions in a Flutter app.
+#  permission_handler: ^11.3.1
+#  # Image Picker is a plugin for selecting images from the Android and iOS image library, and taking new pictures with the camera:
+#  image_picker: ^1.1.2
+  # Skeletonizer is a Flutter plugin for creating skeleton loading animations in a Flutter app.
+  skeletonizer: ^1.3.0
+
+  # Device Info Plus is a Flutter plugin for getting information about the device the app is running on.
+  device_info_plus: ^10.1.0
+  # Package Info Plus is a Flutter plugin for getting information about the package the app is running on.
+  package_info_plus: ^8.0.0
+#  # HTTP is a Flutter plugin for performing HTTP requests. It is a wrapper around the Dart http package.
+#  http: ^1.2.1
+#  # Webview is a Flutter plugin for rendering web content in a Flutter widget.
+#  webview_flutter: ^4.8.0
+#  # Share Plus is a Flutter plugin for sharing content (Links to the app, text, emails, files, etc.) from a Flutter app to other apps.
+#  share_plus: ^9.0.0
+#  # Add 2 Calendar is a Flutter plugin for adding events to the calendar in a Flutter app.
+#  add_2_calendar: ^3.0.1
+#  # Geo Locator is a Flutter plugin for getting the location of the device in a Flutter app.
+#  geolocator: ^12.0.0
+#  # Map Launcher is a Flutter plugin for launching maps in a Flutter app.
+#  map_launcher: ^2.0.1
+#  # Google Maps Flutter is a Flutter plugin for embedding Google Maps in a Flutter app.
+#  google_maps_flutter: ^2.7.0
+#  # Connectivity Plus is a Flutter plugin for getting information about the network connectivity in a Flutter app.
+#  connectivity_plus: ^6.0.3
+#  # Expandable is a Flutter plugin for creating expandable widgets in a Flutter app.
+#  expandable: ^5.0.1
+#  # Photo View is a Flutter plugin for showing photos in a full-screen view with zooming and panning gestures.
+#  photo_view: ^0.15.0
+#  # Percent Indicator is a Flutter plugin for showing percentage indicators in a Flutter app.
+#  percent_indicator: ^3.0.1
+
+#  # -----------------  WIDGET DESIGN PACKAGES  -----------------
+  # Flutter Speed Dial is a Flutter plugin for creating a speed dial menu widget in a Flutter app.
+  flutter_speed_dial: ^7.0.0
+#  # Badges is a Flutter plugin for creating fancy animated badges in a Flutter app.
+#  badges: ^3.1.2
+#  # Flutter Native Splash is a Flutter plugin for creating a splash screen in a Flutter app.
+#  flutter_native_splash: ^2.4.0
+#  # Awesome Dialog is a Flutter plugin for creating awesome dialogs in a Flutter app.
+#  awesome_dialog: ^3.2.1
+#  # Flutter Staggered Grid View is a Flutter plugin for creating staggered grid views in a Flutter app.
+#  flutter_staggered_grid_view: ^0.7.0
+#  # Animated Toggle Switch is a Flutter plugin for creating animated toggle switches in a Flutter app.
+#  animated_toggle_switch: ^1.0.0
+#  #Flutter Typeahead is a Flutter input where you can show suggestions to users as they type.
+#  flutter_typeahead: ^2.0.0
+#  # Mesh Gradient is a Flutter plugin for creating mesh gradients in a Flutter app.
+#  mesh_gradient: ^1.3.6
+
+  # -----------------  ANIMATIONS  -----------------
+  # Lottie is a Flutter plugin for using Lottie animations in a Flutter app.
+  lottie: ^3.1.2
+
+#  # -----------------  FONT PACKAGES  -----------------
+#  # Auto Size Text is a Flutter plugin for creating auto-size text in a Flutter app.
+#  auto_size_text: ^3.0.0
+
+#  # -----------------  ICONS PACKAGES  -----------------
+#  # Material Design Icons is a Flutter plugin for using Material Design icons in a Flutter app. (Example of use: Icon(MdiIcons.add))
+#  material_design_icons_flutter: ^7.0.7296
+#  # Font Awesome Icons is a Flutter plugin for using Font Awesome icons in a Flutter app. (Example of use: Icon(FontAwesomeIcons.addressBook))
+#  font_awesome_flutter: ^10.7.0
+#  # Icofont Icons is a Flutter plugin for using Icofont icons in a Flutter app. (Example of use: Icon(IcoFontIcons.addressBook))
+#  icofont_flutter: ^1.4.0
+
+#  # -----------------  MEDIA PACKAGES  -----------------
+#  # Video Player is a Flutter plugin for playing videos in a Flutter app.
+#  video_player: ^2.8.7
+#  # Audio Player is a Flutter plugin for playing audio in a Flutter app.
+#  audioplayers: ^6.0.0
+
+#  # -----------------  UI THEMES  -----------------
+#  # Macos UI is a Flutter plugin for creating MacOS themes in a Flutter app.
+#  macos_ui: ^2.0.7
+#  # Chicago Theme is a Flutter plugin for creating Chicago themes in a Flutter app.
+#  chicago_theme: ^0.4.3-dev
+#  # Win32 GUI is a Flutter plugin for creating Win32 GUI themes in a Flutter app.
+#  win32_gui 1.1.5
+
+# ----------------- FIREBASE PACKAGES -----------------
+#  # Firebase Core is a Flutter plugin to use the Firebase platform services.
+  firebase_core: ^3.1.1
+#  # Flutter Auth is a Flutter plugin that enables Android and iOS authentication using passwords, phone numbers, and identity providers like Google, Facebook, and Twitter.
+  firebase_auth: ^5.1.1
+#  # Cloud Firestore is a flexible, scalable database for mobile, web, and server development from Firebase and Google Cloud Platform.
+#  cloud_firestore: ^5.0.1
+#  # Firebase Database is a Flutter plugin to use the Firebase Realtime Database API and allow storing and syncing data with a NoSQL cloud database.
+#  firebase_database: ^11.0.1
+#  # Firebase Storage is a Flutter plugin to use the Firebase Cloud Storage API and allow uploading, downloading, and deleting files in the cloud.
+#  firebase_storage: ^12.0.1
+#  # Firebase Messaging is a Flutter plugin to use the Firebase Cloud Messaging (FCM) API and allow sending push notifications to Android and iOS users.
+#  firebase_messaging: ^15.0.1
+#  # Firebase In-App Messaging is a Flutter plugin to use the Firebase In-App Messaging API and allow sending in-app messages to Android and iOS users.
+#  firebase_in_app_messaging: ^0.8.0+1
+#  # Firebase Crashlytics is a Flutter plugin to use the Firebase Crashlytics API and allow sending crash reports to Firebase.
+#  firebase_crashlytics: ^4.0.1
+#  # Firebase Analytics is a Flutter plugin to use the Firebase Analytics API and allow sending events to Google Analytics.
+#  firebase_analytics: ^11.0.1
+#  # Firebase Performance Monitoring is a Flutter plugin to use the Firebase Performance Monitoring API and allow sending performance data to Firebase.
+#  firebase_performance: ^0.10.0+1
+#  # Firebase Remote Config is a Flutter plugin to use the Firebase Remote Config API and allow fetching remote configuration values from Firebase.
+#  firebase_remote_config: ^5.0.1
+
+  intl: any
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  intl_utils: ^2.8.7
+
+flutter:
+
+  uses-material-design: true
+
+  # To add assets to your application, add an assets section, like this:
+  # assets:
+  #   - images/a_dot_burr.jpeg
+  #   - images/a_dot_ham.jpeg
+
+  # To add entire folders of assets to your application, add an assets section, like this:
+  assets:
+    - lib/assets/lottie_animations/
+    - lib/assets/images/
+
+
+  # fonts:
+  #   - family: Schyler
+  #     fonts:
+  #       - asset: fonts/Schyler-Regular.ttf
+  #       - asset: fonts/Schyler-Italic.ttf
+  #         style: italic
+  #   - family: Trajan Pro
+  #     fonts:
+  #       - asset: fonts/TrajanPro.ttf
+  #       - asset: fonts/TrajanPro_Bold.ttf
+  #         weight: 700
+  #
+
+
