@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "884785471762",
+    "project_id": "find-a-therapist-app",
+    "storage_bucket": "find-a-therapist-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:884785471762:android:d86d8f8b5f4ccc91abd3cb",
+        "android_client_info": {
+          "package_name": "com.matiasespina1991.find_a_therapist_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDveJYPGHPx9V8qq1Ax3Vg2MfocCJkVAhA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

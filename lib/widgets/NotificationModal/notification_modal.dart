@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:template_app/app_settings/theme_settings.dart';
-import 'package:template_app/generated/l10n.dart';
+import 'package:find_a_therapist_app/app_settings/theme_settings.dart';
+import 'package:find_a_therapist_app/generated/l10n.dart';
 import 'package:intl/intl.dart';
 
 class NotificationModal {

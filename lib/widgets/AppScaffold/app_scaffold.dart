@@ -3,13 +3,13 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
-import 'package:template_app/app_settings/app_general_settings.dart';
-import 'package:template_app/app_settings/auth_config.dart';
-import 'package:template_app/providers/providers_all.dart';
-import 'package:template_app/screens/loading_screen/loading_screen.dart';
-import 'package:template_app/utils/ui/is_dark_mode.dart';
-import 'package:template_app/widgets/NotificationModal/notification_modal.dart';
-import 'package:template_app/widgets/NotificationSnackbar/notification_snackbar.dart';
+import 'package:find_a_therapist_app/app_settings/app_general_settings.dart';
+import 'package:find_a_therapist_app/app_settings/auth_config.dart';
+import 'package:find_a_therapist_app/providers/providers_all.dart';
+import 'package:find_a_therapist_app/screens/loading_screen/loading_screen.dart';
+import 'package:find_a_therapist_app/utils/ui/is_dark_mode.dart';
+import 'package:find_a_therapist_app/widgets/NotificationModal/notification_modal.dart';
+import 'package:find_a_therapist_app/widgets/NotificationSnackbar/notification_snackbar.dart';
 import '../../app_settings/theme_settings.dart';
 import '../../generated/l10n.dart';
 import '../../models/general_models.dart';
@@ -60,6 +60,8 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
   Widget build(BuildContext context) {
     final auth = ref.watch(authProvider);
     final connectivity = ref.watch(connectivityProvider);
+
+    print('auth.isAuthenticated: ${auth.isAuthenticated}');
 
     _handleProtectedRoutes(auth);
     _checkConnectivity(connectivity);
