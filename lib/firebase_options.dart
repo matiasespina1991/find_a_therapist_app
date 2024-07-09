@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDveJYPGHPx9V8qq1Ax3Vg2MfocCJkVAhA',
-    appId: '1:884785471762:android:d86d8f8b5f4ccc91abd3cb',
+    appId: '1:884785471762:android:d6c4cf1dc8bcec35abd3cb',
     messagingSenderId: '884785471762',
     projectId: 'find-a-therapist-app',
     storageBucket: 'find-a-therapist-app.appspot.com',
@@ -59,10 +59,12 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDeEn5w_S__vLaUUVodC6-rfphRQgRifYk',
-    appId: '1:884785471762:ios:a906b35316071cb6abd3cb',
+    appId: '1:884785471762:ios:163a442aa1f0254cabd3cb',
     messagingSenderId: '884785471762',
     projectId: 'find-a-therapist-app',
     storageBucket: 'find-a-therapist-app.appspot.com',
-    iosBundleId: 'com.matiasespina1991.escribaApp.RunnerTests',
+    androidClientId: '884785471762-nbdugrtnpb1v62fil4jqklovkjv0g7rq.apps.googleusercontent.com',
+    iosClientId: '884785471762-3dgjeptfoefi4bj7p8likjcadb6oaet1.apps.googleusercontent.com',
+    iosBundleId: 'com.matiasespina1991.template',
   );
 }

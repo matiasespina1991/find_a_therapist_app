@@ -10,6 +10,7 @@ import 'package:find_a_therapist_app/screens/loading_screen/loading_screen.dart'
 import 'package:find_a_therapist_app/utils/ui/is_dark_mode.dart';
 import 'package:find_a_therapist_app/widgets/NotificationModal/notification_modal.dart';
 import 'package:find_a_therapist_app/widgets/NotificationSnackbar/notification_snackbar.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import '../../app_settings/theme_settings.dart';
 import '../../generated/l10n.dart';
 import '../../models/general_models.dart';
@@ -61,7 +62,9 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
     final auth = ref.watch(authProvider);
     final connectivity = ref.watch(connectivityProvider);
 
-    print('auth.isAuthenticated: ${auth.isAuthenticated}');
+    if (auth.isLoading) {
+      return const LoadingScreen();
+    }
 
     _handleProtectedRoutes(auth);
     _checkConnectivity(connectivity);
@@ -79,7 +82,7 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
           fit: StackFit.expand,
           children: [
             _buildBackgroundAnimation(),
-            _buildMainContent(),
+            _buildMainContent(auth.isAuthenticated),
             _buildFloatingMenuBackdrop(),
           ],
         ),
@@ -198,14 +201,17 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
     return const SizedBox.shrink();
   }
 
-  Widget _buildMainContent() {
+  Widget _buildMainContent(bool isAuthenticated) {
     return SingleChildScrollView(
       physics: widget.scrollPhysics ?? getScrollPhysics(),
       child: Column(
         children: [
-          Padding(
-            padding: ThemeSettings.scaffoldPadding,
-            child: widget.body,
+          Skeletonizer(
+            enabled: !isAuthenticated && widget.isProtected,
+            child: Padding(
+              padding: ThemeSettings.scaffoldPadding,
+              child: widget.body,
+            ),
           ),
         ],
       ),
