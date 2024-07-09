@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>884785471762-3dgjeptfoefi4bj7p8likjcadb6oaet1.apps.googleusercontent.com</string>
+	<string>884785471762-lpu6l71abbotj07j5kc1cdcj0sulq71a.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.884785471762-3dgjeptfoefi4bj7p8likjcadb6oaet1</string>
+	<string>com.googleusercontent.apps.884785471762-lpu6l71abbotj07j5kc1cdcj0sulq71a</string>
 	<key>ANDROID_CLIENT_ID</key>
 	<string>884785471762-nbdugrtnpb1v62fil4jqklovkjv0g7rq.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
@@ -15,7 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.matiasespina1991.template</string>
+	<string>com.matiasespina1991.findatherapistapp</string>
 	<key>PROJECT_ID</key>
 	<string>find-a-therapist-app</string>
 	<key>STORAGE_BUCKET</key>
@@ -31,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:884785471762:ios:163a442aa1f0254cabd3cb</string>
+	<string>1:884785471762:ios:c1a7a322974d33c2abd3cb</string>
 </dict>
 </plist>

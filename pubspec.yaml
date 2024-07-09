@@ -1,4 +1,4 @@
-name: find_a_therapist_app
+name: findatherapistapp
 description: "An app to easily find the perfect therapist."
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev

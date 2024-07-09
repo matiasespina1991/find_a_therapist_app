@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:find_a_therapist_app/providers/auth_provider.dart';
-import 'package:find_a_therapist_app/providers/locale_provider.dart';
-import 'package:find_a_therapist_app/providers/theme_provider.dart';
+import 'package:findatherapistapp/providers/auth_provider.dart';
+import 'package:findatherapistapp/providers/locale_provider.dart';
+import 'package:findatherapistapp/providers/theme_provider.dart';
 
 import '../services/connectivity_service.dart';
 
