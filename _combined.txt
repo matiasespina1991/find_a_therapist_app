@@ -103,7 +103,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:find_a_therapist_app/providers/providers_all.dart';
+import 'package:findatherapistapp/providers/providers_all.dart';
 import 'app_settings/auth_config.dart';
 import 'globals.dart';
 import 'app_settings/app_info.dart';
@@ -417,8 +417,8 @@ class ThemeSettings {
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:find_a_therapist_app/app_settings/app_general_settings.dart';
-import 'package:find_a_therapist_app/widgets/AppScaffold/app_scaffold.dart';
+import 'package:findatherapistapp/app_settings/app_general_settings.dart';
+import 'package:findatherapistapp/widgets/AppScaffold/app_scaffold.dart';
 import '../../generated/l10n.dart';
 import '../../providers/providers_all.dart';
 import '../../utils/ui/is_dark_mode.dart';
@@ -973,8 +973,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 import 'package:flutter/services.dart';
-import 'package:find_a_therapist_app/app_settings/auth_config.dart';
-import 'package:find_a_therapist_app/generated/l10n.dart';
+import 'package:findatherapistapp/app_settings/auth_config.dart';
+import 'package:findatherapistapp/generated/l10n.dart';
 import '../../app_settings/theme_settings.dart';
 import '../../providers/providers_all.dart';
 import '../../utils/navigation/push_route_with_animation.dart';
@@ -1420,13 +1420,13 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
-import 'package:find_a_therapist_app/app_settings/app_general_settings.dart';
-import 'package:find_a_therapist_app/app_settings/auth_config.dart';
-import 'package:find_a_therapist_app/providers/providers_all.dart';
-import 'package:find_a_therapist_app/screens/loading_screen/loading_screen.dart';
-import 'package:find_a_therapist_app/utils/ui/is_dark_mode.dart';
-import 'package:find_a_therapist_app/widgets/NotificationModal/notification_modal.dart';
-import 'package:find_a_therapist_app/widgets/NotificationSnackbar/notification_snackbar.dart';
+import 'package:findatherapistapp/app_settings/app_general_settings.dart';
+import 'package:findatherapistapp/app_settings/auth_config.dart';
+import 'package:findatherapistapp/providers/providers_all.dart';
+import 'package:findatherapistapp/screens/loading_screen/loading_screen.dart';
+import 'package:findatherapistapp/utils/ui/is_dark_mode.dart';
+import 'package:findatherapistapp/widgets/NotificationModal/notification_modal.dart';
+import 'package:findatherapistapp/widgets/NotificationSnackbar/notification_snackbar.dart';
 import '../../app_settings/theme_settings.dart';
 import '../../generated/l10n.dart';
 import '../../models/general_models.dart';
@@ -1713,7 +1713,7 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
 ///// lib/widgets/NotificationSnackbar/notification_snackbar.dart /////
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:find_a_therapist_app/app_settings/theme_settings.dart';
+import 'package:findatherapistapp/app_settings/theme_settings.dart';
 
 import '../../globals.dart';
 
@@ -1807,8 +1807,8 @@ class NotificationSnackbar {
 
 ///// lib/widgets/NotificationModal/notification_modal.dart /////
 import 'package:flutter/material.dart';
-import 'package:find_a_therapist_app/app_settings/theme_settings.dart';
-import 'package:find_a_therapist_app/generated/l10n.dart';
+import 'package:findatherapistapp/app_settings/theme_settings.dart';
+import 'package:findatherapistapp/generated/l10n.dart';
 import 'package:intl/intl.dart';
 
 class NotificationModal {
@@ -2185,9 +2185,9 @@ class NotificationModal {
 ///// lib/theme/main_theme/main_theme.dart /////
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:find_a_therapist_app/app_settings/theme_settings.dart';
-import 'package:find_a_therapist_app/theme/main_theme/chip_theme.dart';
-import 'package:find_a_therapist_app/theme/main_theme/input_theme.dart';
+import 'package:findatherapistapp/app_settings/theme_settings.dart';
+import 'package:findatherapistapp/theme/main_theme/chip_theme.dart';
+import 'package:findatherapistapp/theme/main_theme/input_theme.dart';
 
 import '../../models/theme_models.dart';
 import 'buttons_theme.dart';
@@ -2334,8 +2334,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:find_a_therapist_app/app_settings/app_general_settings.dart';
-import 'package:find_a_therapist_app/app_settings/auth_config.dart';
+import 'package:findatherapistapp/app_settings/app_general_settings.dart';
+import 'package:findatherapistapp/app_settings/auth_config.dart';
 
 class AuthorizationProvider extends ChangeNotifier {
   final FlutterSecureStorage storage = const FlutterSecureStorage();
@@ -2461,7 +2461,7 @@ class AuthorizationProvider extends ChangeNotifier {
 ///// lib/providers/locale_provider.dart /////
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:find_a_therapist_app/app_settings/language_settings.dart';
+import 'package:findatherapistapp/app_settings/language_settings.dart';
 
 class LocaleProvider extends ChangeNotifier {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
@@ -2509,9 +2509,9 @@ class LocaleProvider extends ChangeNotifier {
 
 ///// lib/providers/providers_all.dart /////
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:find_a_therapist_app/providers/auth_provider.dart';
-import 'package:find_a_therapist_app/providers/locale_provider.dart';
-import 'package:find_a_therapist_app/providers/theme_provider.dart';
+import 'package:findatherapistapp/providers/auth_provider.dart';
+import 'package:findatherapistapp/providers/locale_provider.dart';
+import 'package:findatherapistapp/providers/theme_provider.dart';
 
 import '../services/connectivity_service.dart';
 
@@ -2524,7 +2524,7 @@ final connectivityProvider =
 ///// lib/providers/theme_provider.dart /////
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:find_a_therapist_app/app_settings/theme_settings.dart';
+import 'package:findatherapistapp/app_settings/theme_settings.dart';
 
 class ThemeProvider extends ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.system;
@@ -2582,7 +2582,7 @@ class CurrentUserData {
 }
 
 ///// pubspec.yaml /////
-name: find_a_therapist_app
+name: find-a-therapist-app
 description: "An app to easily find the perfect therapist."
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev

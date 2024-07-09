@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:884785471762:android:d6c4cf1dc8bcec35abd3cb",
+        "mobilesdk_app_id": "1:884785471762:android:1fcf57c42fcb0276abd3cb",
         "android_client_info": {
-          "package_name": "com.matiasespina1991.find_a_therapist_app"
+          "package_name": "com.matiasespina1991.findatherapistapp"
         }
       },
       "oauth_client": [
@@ -31,10 +31,10 @@
               "client_type": 3
             },
             {
-              "client_id": "884785471762-rsdo6ve84r8088mmle046b8sqdoi6ve6.apps.googleusercontent.com",
+              "client_id": "884785471762-3dgjeptfoefi4bj7p8likjcadb6oaet1.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.matiasespina1991.escribaApp.RunnerTests"
+                "bundle_id": "com.matiasespina1991.template"
               }
             }
           ]

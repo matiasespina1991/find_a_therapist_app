@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:find_a_therapist_app/app_settings/theme_settings.dart';
+import 'package:findatherapistapp/app_settings/theme_settings.dart';
 
 import '../../globals.dart';
 
