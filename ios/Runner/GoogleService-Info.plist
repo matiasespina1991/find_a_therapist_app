@@ -2,6 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CLIENT_ID</key>
+	<string>884785471762-3dgjeptfoefi4bj7p8likjcadb6oaet1.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.884785471762-3dgjeptfoefi4bj7p8likjcadb6oaet1</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>884785471762-nbdugrtnpb1v62fil4jqklovkjv0g7rq.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
 	<string>AIzaSyDeEn5w_S__vLaUUVodC6-rfphRQgRifYk</string>
 	<key>GCM_SENDER_ID</key>
@@ -9,7 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.matiasespina1991.escribaApp.RunnerTests</string>
+	<string>com.matiasespina1991.template</string>
 	<key>PROJECT_ID</key>
 	<string>find-a-therapist-app</string>
 	<key>STORAGE_BUCKET</key>
@@ -25,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:884785471762:ios:a906b35316071cb6abd3cb</string>
+	<string>1:884785471762:ios:163a442aa1f0254cabd3cb</string>
 </dict>
 </plist>

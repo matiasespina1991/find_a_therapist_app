@@ -13,6 +13,7 @@ class AuthorizationProvider extends ChangeNotifier {
       GoogleSignIn(scopes: AuthConfig.googleSignInScopes);
   String? _authToken;
   User? _user;
+  bool _isLoading = true;
 
   AuthorizationProvider() {
     _initializeUser();
@@ -20,6 +21,7 @@ class AuthorizationProvider extends ChangeNotifier {
 
   String? get authToken => _authToken;
   User? get user => _user;
+  bool get isLoading => _isLoading;
 
   Future<void> _initializeUser() async {
     if (AuthConfig.useFirebase) {
@@ -30,6 +32,8 @@ class AuthorizationProvider extends ChangeNotifier {
     } else {
       _authToken = await storage.read(key: 'auth_token');
     }
+
+    _isLoading = false;
     notifyListeners();
 
     _googleSignIn.onCurrentUserChanged
@@ -110,7 +114,8 @@ class AuthorizationProvider extends ChangeNotifier {
   }
 
   bool get isAuthenticated =>
-      DebugConfig.debugMode || (_authToken != null && _authToken!.isNotEmpty);
+      !isLoading &&
+      (DebugConfig.debugMode || (_authToken != null && _authToken!.isNotEmpty));
 
   Future<bool> signInWithEmail(String email, String password) async {
     bool success = false;
