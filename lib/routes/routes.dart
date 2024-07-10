@@ -1,10 +1,11 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
-import '../screens/home_screen/home_screen.dart';
-import '../screens/login_screen/login_screen.dart';
-import '../screens/therapist_area_screens/therapist_profile_screen.dart';
-import '../screens/user_area_screens/user_profile_screen/user_profile_screen.dart';
-import '../screens/user_area_screens/user_request_screen/user_request_screen.dart';
+
+import '../screens/common/home_screen/home_screen.dart';
+import '../screens/common/login_screen/login_screen.dart';
+import '../screens/therapist_area/therapist_profile_screen.dart';
+import '../screens/user_area/user_profile_screen/user_profile_screen.dart';
+import '../screens/user_area/user_request_screen/user_request_screen.dart';
 
 class RouteConfig {
   final String path;

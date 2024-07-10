@@ -7,7 +7,6 @@ import 'package:lottie/lottie.dart';
 import 'package:findatherapistapp/app_settings/app_general_settings.dart';
 import 'package:findatherapistapp/app_settings/auth_config.dart';
 import 'package:findatherapistapp/providers/providers_all.dart';
-import 'package:findatherapistapp/screens/loading_screen/loading_screen.dart';
 import 'package:findatherapistapp/utils/ui/is_dark_mode.dart';
 import 'package:findatherapistapp/widgets/NotificationModal/notification_modal.dart';
 import 'package:findatherapistapp/widgets/NotificationSnackbar/notification_snackbar.dart';
@@ -15,6 +14,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 import '../../app_settings/theme_settings.dart';
 import '../../generated/l10n.dart';
 import '../../models/general_models.dart';
+import '../../screens/common/loading_screen/loading_screen.dart';
 import '../ThemeAppBar/template_app_bar.dart';
 import '../ThemeFloatingSpeedDialMenu/theme_floating_speed_dial_menu.dart';
 

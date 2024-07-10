@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../widgets/AppScaffold/app_scaffold.dart';
+import '../../../widgets/AppScaffold/app_scaffold.dart';
 
 class NotFoundScreen extends StatelessWidget {
   const NotFoundScreen({super.key});

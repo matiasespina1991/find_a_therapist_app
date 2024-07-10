@@ -3,7 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:findatherapistapp/app_settings/app_general_settings.dart';
 import 'package:findatherapistapp/widgets/AppScaffold/app_scaffold.dart';
-import '../../generated/l10n.dart';
+
+import '../../../generated/l10n.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});

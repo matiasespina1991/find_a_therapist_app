@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../app_settings/theme_settings.dart';
-import '../../widgets/LoadingCircle/loading_circle.dart';
+import '../../../app_settings/theme_settings.dart';
+import '../../../widgets/LoadingCircle/loading_circle.dart';
 
 class LoadingScreen extends StatelessWidget {
   const LoadingScreen({super.key});
