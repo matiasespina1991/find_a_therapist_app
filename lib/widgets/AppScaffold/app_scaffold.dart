@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 import 'package:findatherapistapp/app_settings/app_general_settings.dart';
 import 'package:findatherapistapp/app_settings/auth_config.dart';
@@ -14,9 +15,6 @@ import 'package:skeletonizer/skeletonizer.dart';
 import '../../app_settings/theme_settings.dart';
 import '../../generated/l10n.dart';
 import '../../models/general_models.dart';
-import '../../routes/app_routes.dart';
-import '../../utils/navigation/navigate.dart';
-import '../../utils/navigation/navigation.dart';
 import '../ThemeAppBar/template_app_bar.dart';
 import '../ThemeFloatingSpeedDialMenu/theme_floating_speed_dial_menu.dart';
 
@@ -95,7 +93,19 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
   }
 
   LoadingScreen? _handleProtectedRoutes(auth) {
-    if (DebugConfig.debugScreen != null && DebugConfig.forceDebugScreen) {
+    if (DebugConfig.forceDebugScreen) {
+      final String debugRoutePath = DebugConfig.debugScreen.path;
+      final String debugRouteName =
+          DebugConfig.debugScreen.name ?? debugRoutePath;
+
+      debugPrint(
+          '[DebugConfig.forceDebugScreen is set to true. Locked screen is: $debugRouteName. Navigation suspended.]');
+      if (mounted) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          context.go(debugRoutePath);
+        });
+      }
+
       return null;
     }
 
@@ -104,14 +114,14 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
         widget.isProtected &&
         !auth.isAuthenticated) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigate.to(context, Routes.loginScreen,
-            type: NavigationType.replacement, direction: SlideDirection.left);
+        context.go('/login');
       });
     }
 
     if (!auth.isAuthenticated && widget.isProtected) {
       return const LoadingScreen();
     }
+    return null;
   }
 
   void _checkConnectivity(connectivity) {

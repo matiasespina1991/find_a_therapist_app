@@ -4,9 +4,14 @@ import 'package:findatherapistapp/providers/locale_provider.dart';
 import 'package:findatherapistapp/providers/theme_provider.dart';
 
 import '../services/connectivity_service.dart';
+import 'navigation_provider.dart';
 
 final authProvider = ChangeNotifierProvider((ref) => AuthorizationProvider());
 final themeProvider = ChangeNotifierProvider((ref) => ThemeProvider());
 final localeProvider = ChangeNotifierProvider((ref) => LocaleProvider());
 final connectivityProvider =
     ChangeNotifierProvider((ref) => ConnectivityService());
+
+final navigationStateProvider = StateProvider<bool>((ref) => false);
+final navigationProvider =
+    ChangeNotifierProvider((ref) => NavigationProvider());

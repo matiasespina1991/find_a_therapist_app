@@ -14,7 +14,7 @@ files=(
 #    "lib/widgets/NotificationSnackbar/notification_snackbar.dart"
 #    "lib/widgets/NotificationModal/notification_modal.dart"
     "lib/theme/main_theme/main_theme.dart"
-#    "lib/providers/auth_provider.dart"
+    "lib/providers/auth_provider.dart"
 #    "lib/providers/locale_provider.dart"
     "lib/providers/providers_all.dart"
 #    "lib/providers/theme_provider.dart"

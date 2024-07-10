@@ -222,9 +222,9 @@ class AppGeneralSettings {
 
 class DebugConfig {
   static const bool debugMode = false; // If true, login screen will be skipped
-  static const String? debugScreen = Routes.loginScreen;
+  static const String? debugScreen = Routes.notFoundScreen;
   static const forceDebugScreen =
-      true; // If true, the route set in debugScreen will be shown and screen protection will be ignored
+      false; // If true, the route set in debugScreen will be shown and screen protection will be ignored
 }
 
 ///// lib/app_settings/app_info.dart /////
@@ -848,8 +848,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               variant: SnackbarVariant.success,
               duration: SnackbarDuration.short,
               delay: 1);
-          // Navigate.to(context, Routes.homeScreen,
-          //     type: NavigationType.replacement);
+
+          print('Navigating to home screen...');
+          Navigate.to(context, Routes.homeScreen,
+              type: NavigationType.replacement);
         }
 
         if (mounted) {
@@ -901,24 +903,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     try {
       bool userSignedIn = await ref.read(authProvider).signInWithGoogle();
       if (userSignedIn) {
-        void userTappedConfirm() {
-          // NotificationSnackbar.hideCurrentSnackBar();
-          // NotificationSnackbar.showSnackBar(
-          //     message: S.of(context).loginSuccessfulMessage,
-          //     variant: SnackbarVariant.success,
-          //     duration: SnackbarDuration.short,
-          //     delay: 1);
-          // Navigate.to(context, Routes.homeScreen,
-          //     type: NavigationType.replacement);
-        }
-
-        if (mounted) {
-          NotificationModal.successfulModal(
-              title: S.of(context).successfulLogin,
-              message: S.of(context).successfulLoginRedirectToHomeMessage,
-              context: context,
-              onTapConfirm: () => userTappedConfirm());
-        }
+        NotificationModal.successfulModal(
+          title: S.of(context).successfulLogin,
+          message: S.of(context).successfulLoginRedirectToHomeMessage,
+          context: context,
+          onTapConfirm: () {
+            NotificationSnackbar.hideCurrentSnackBar();
+            NotificationSnackbar.showSnackBar(
+              message: S.of(context).loginSuccessfulMessage,
+              variant: SnackbarVariant.success,
+              duration: SnackbarDuration.short,
+              delay: 1,
+            );
+            Navigate.to(context, Routes.homeScreen,
+                type: NavigationType.replacement);
+          },
+        );
       } else {
         if (mounted) {
           NotificationSnackbar.showSnackBar(
@@ -1162,7 +1162,7 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
             enabled: !isAuthenticated &&
                 widget.isProtected &&
                 !DebugConfig.forceDebugScreen &&
-                DebugConfig.debugMode,
+                !DebugConfig.debugMode,
             child: Padding(
               padding: ThemeSettings.scaffoldPadding,
               child: widget.body,
@@ -1403,6 +1403,196 @@ class MainTheme {
   }
 }
 
+///// lib/providers/auth_provider.dart /////
+import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:findatherapistapp/app_settings/app_general_settings.dart';
+import 'package:findatherapistapp/app_settings/auth_config.dart';
+
+class AuthorizationProvider extends ChangeNotifier {
+  final FlutterSecureStorage storage = const FlutterSecureStorage();
+  final FirebaseAuth? _firebaseAuth =
+      AuthConfig.useFirebase ? FirebaseAuth.instance : null;
+  final GoogleSignIn _googleSignIn =
+      GoogleSignIn(scopes: AuthConfig.googleSignInScopes);
+  String? _authToken;
+  User? _user;
+  bool _isLoading = true;
+
+  AuthorizationProvider() {
+    _initializeUser();
+  }
+
+  String? get authToken => _authToken;
+  User? get user => _user;
+  bool get isLoading => _isLoading;
+
+  Future<void> _initializeUser() async {
+    if (AuthConfig.useFirebase) {
+      _user = _firebaseAuth?.currentUser;
+      if (_user != null) {
+        _authToken = _user!.uid;
+      }
+    } else {
+      _authToken = await storage.read(key: 'auth_token');
+    }
+
+    _isLoading = false;
+    notifyListeners();
+
+    _googleSignIn.onCurrentUserChanged
+        .listen((GoogleSignInAccount? account) async {
+      if (account != null) {
+        _user = await _handleSignIn(account);
+        if (_user != null) {
+          _authToken = _user?.uid;
+          await setAuthToken(_authToken!);
+        }
+      } else {
+        _user = null;
+        _authToken = null;
+      }
+      notifyListeners();
+    });
+
+    GoogleSignInAccount? currentUser = await _googleSignIn.signInSilently();
+    if (currentUser != null) {
+      _user = await _handleSignIn(currentUser);
+      if (_user != null) {
+        _authToken = _user?.uid;
+        await setAuthToken(_authToken!);
+        notifyListeners();
+      }
+    }
+  }
+
+  Future<User?> _handleSignIn(GoogleSignInAccount account) async {
+    try {
+      final GoogleSignInAuthentication googleAuth =
+          await account.authentication;
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        idToken: googleAuth.idToken,
+        accessToken: googleAuth.accessToken,
+      );
+
+      if (AuthConfig.useFirebase) {
+        final UserCredential authResult =
+            await _firebaseAuth!.signInWithCredential(credential);
+        return authResult.user;
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Error during Google sign-in: $e');
+      return null;
+    }
+  }
+
+  Future<void> setAuthToken(String token) async {
+    await storage.write(key: 'auth_token', value: token);
+    _authToken = token;
+    notifyListeners();
+  }
+
+  Future<void> clearAuthToken() async {
+    await storage.delete(key: 'auth_token');
+    _authToken = null;
+    _user = null;
+    debugPrint('Auth token cleared. User will be logged out.');
+    notifyListeners();
+  }
+
+  Future<void> signOut(BuildContext context) async {
+    if (DebugConfig.debugMode) {
+      debugPrint(
+          'Error: Debug mode is on. Disable it from AppGeneralSettings.debugMode in order to proceed with sign out.');
+      return;
+    }
+    await clearAuthToken();
+    if (AuthConfig.useFirebase) {
+      await _firebaseAuth?.signOut();
+    }
+
+    if (AuthConfig.allowGoogleSignIn) {
+      await _googleSignIn.signOut();
+    }
+  }
+
+  bool get isAuthenticated =>
+      !isLoading &&
+      (DebugConfig.debugMode || (_authToken != null && _authToken!.isNotEmpty));
+
+  Future<bool> signInWithEmail(String email, String password) async {
+    bool success = false;
+    try {
+      debugPrint('Signing in with email/password...');
+
+      if (AuthConfig.useFirebase) {
+        final UserCredential authResult = await _firebaseAuth!
+            .signInWithEmailAndPassword(email: email, password: password);
+        _authToken = authResult.user!.uid;
+        _user = authResult.user;
+        await setAuthToken(_authToken!);
+      } else {
+        _authToken = email;
+        await setAuthToken(_authToken!);
+      }
+
+      notifyListeners();
+      success = true;
+      debugPrint('User logged in successfully.✅');
+      return success;
+    } catch (error) {
+      debugPrint('Error during email/password Sign In: ${error.toString()}');
+      success = false;
+      return success;
+    }
+  }
+
+  Future<bool> signInWithGoogle() async {
+    bool success = false;
+    if (AuthConfig.allowGoogleSignIn) {
+      try {
+        debugPrint('Signing in with Google...');
+
+        final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+        if (googleUser != null) {
+          debugPrint('Google Sign In successful.');
+          final GoogleSignInAuthentication googleAuth =
+              await googleUser.authentication;
+          final credential = GoogleAuthProvider.credential(
+            accessToken: googleAuth.accessToken,
+            idToken: googleAuth.idToken,
+          );
+
+          if (AuthConfig.useFirebase) {
+            final UserCredential? authResult =
+                await _firebaseAuth?.signInWithCredential(credential);
+            _authToken = authResult?.user!.uid;
+            _user = authResult?.user;
+            await setAuthToken(_authToken!);
+          } else {
+            _authToken = googleAuth.accessToken;
+            await setAuthToken(_authToken!);
+          }
+
+          notifyListeners();
+          success = true;
+          debugPrint('User logged in successfully.');
+          return success;
+        }
+      } catch (error) {
+        debugPrint(
+            'Error trying to signing in user using Google: ${error.toString()}');
+        success = false;
+        return success;
+      }
+    }
+    return success;
+  }
+}
+
 ///// lib/providers/providers_all.dart /////
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:findatherapistapp/providers/auth_provider.dart';
@@ -1417,34 +1607,37 @@ final localeProvider = ChangeNotifierProvider((ref) => LocaleProvider());
 final connectivityProvider =
     ChangeNotifierProvider((ref) => ConnectivityService());
 
-///// lib/utils/navigation/navigate.dart /////
-// lib/utils/navigation/navigate.dart
+final navigationStateProvider = StateProvider<bool>((ref) => false);
 
+///// lib/utils/navigation/navigate.dart /////
 import 'package:findatherapistapp/app_settings/app_general_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:findatherapistapp/routes/app_routes.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../providers/providers_all.dart';
 import 'navigation.dart';
 
 class Navigate {
   static bool _isNavigating = false;
 
-  static void to(
+  static Future<void> to(
     BuildContext context,
-    String routeName, {
+    String directionRouteName, {
     SlideDirection direction = SlideDirection.right,
     NavigationType type = NavigationType.push,
   }) async {
     if (DebugConfig.forceDebugScreen) {
-      debugPrint(
-          'DebugConfig.forceDebugScreen is enabled. Navigation has been disabled. Current route: $routeName.');
+      String? currentRouteName = Routes.getCurrentRouteName(context);
 
+      debugPrint(
+          '[DebugConfig.forceDebugScreen is set to true. Locked screen is: <$currentRouteName>. Navigation to </$directionRouteName> suspended.]');
       return;
     }
 
     if (_isNavigating) return;
     _isNavigating = true;
 
-    final routeConfig = Routes.routes[routeName];
+    final routeConfig = Routes.routes[directionRouteName];
 
     if (routeConfig == null) {
       Navigator.of(context).pushNamed('/404');
@@ -1455,21 +1648,28 @@ class Navigate {
     final route = pushRouteWithAnimation(routeConfig.builder(context),
         direction: direction);
 
-    if (type == NavigationType.replacement) {
-      Navigator.of(context)
-          .pushReplacement(route)
-          .then((_) => _isNavigating = false);
-    } else {
-      Navigator.of(context).push(route).then((_) => _isNavigating = false);
+    try {
+      if (type == NavigationType.replacement) {
+        // debugPrint('Navigating with replacement to: $directionRouteName');
+        Navigator.of(context).pushReplacement(route);
+      } else {
+        // debugPrint('Navigating with push to: $directionRouteName');
+        Navigator.of(context).push(route);
+      }
+      // debugPrint('Navigation to $directionRouteName completed.');
+    } catch (e) {
+      debugPrint('Navigation error: $e');
+    } finally {
+      _isNavigating = false;
     }
   }
 
   static void back(BuildContext context) {
-    Navigator.of(context).popUntil((route) => route.isFirst);
+    Navigator.of(context).pop();
   }
 
   static void pop(BuildContext context) {
-    Navigator.of(context).popUntil((route) => route.isFirst);
+    Navigator.of(context).pop();
   }
 }
 

@@ -28,6 +28,8 @@ dependencies:
   google_sign_in: ^6.2.1
   # Sign In Button is a Flutter plugin for creating sign-in buttons in a Flutter app.
   sign_in_button: ^3.2.0
+  # Go Router is a Flutter plugin for routing in a Flutter app.
+  go_router: ^14.2.0
 
 
 #  # -----------------  GENERAL PACKAGES  -----------------

@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 import 'package:findatherapistapp/app_settings/auth_config.dart';
 import 'package:findatherapistapp/generated/l10n.dart';
 import '../../app_settings/theme_settings.dart';
 import '../../providers/providers_all.dart';
-import '../../routes/app_routes.dart';
-import '../../utils/navigation/navigate.dart';
-import '../../utils/navigation/navigation.dart';
 import '../../utils/ui/is_dark_mode.dart';
 import '../../utils/validation/is_email_valid.dart';
 import '../../widgets/AppScaffold/app_scaffold.dart';
@@ -134,8 +132,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               padding: const EdgeInsets.all(5.5),
                               clipBehavior: Clip.hardEdge,
                               shape: const RoundedRectangleBorder(
-                                borderRadius: ThemeSettings.buttonsBorderRadius,
-                              ),
+                                  borderRadius:
+                                      ThemeSettings.buttonsBorderRadius),
                               text: S.of(context).signInWithGoogleButtonLabel,
                               onPressed: () async {
                             if (AuthConfig.allowGoogleSignIn) {
@@ -343,8 +341,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               variant: SnackbarVariant.success,
               duration: SnackbarDuration.short,
               delay: 1);
-          Navigate.to(context, Routes.homeScreen,
-              type: NavigationType.replacement);
+          context.go('/');
         }
 
         if (mounted) {
@@ -392,7 +389,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       variant: SnackbarVariant.info,
       duration: SnackbarDuration.long,
     );
-
     try {
       bool userSignedIn = await ref.read(authProvider).signInWithGoogle();
       if (userSignedIn) {
@@ -408,8 +404,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               duration: SnackbarDuration.short,
               delay: 1,
             );
-            Navigate.to(context, Routes.homeScreen,
-                type: NavigationType.replacement);
+            context.go('/');
           },
         );
       } else {
