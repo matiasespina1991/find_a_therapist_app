@@ -280,7 +280,7 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
             TextButton(
               child: const Text('OK'),
               onPressed: () {
-                Navigator.of(context).pop();
+                context.pop();
               },
             ),
           ],
