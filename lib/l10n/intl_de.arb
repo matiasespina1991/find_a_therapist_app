@@ -8,10 +8,9 @@
   "loginButton": "Anmelden",
   "logoutButton": "Abmelden",
   "settingsButton": "Einstellungen",
-
   "sendButton": "Senden",
-    "cancelButton": "Abbrechen",
-    "forgotPasswordButton": "Passwort vergessen?",
+   "cancelButton": "Abbrechen",
+   "forgotPasswordButton": "Passwort vergessen?",
 
   "signingInMessage": "Anmeldung...",
   "loginSuccessfulMessage": "Erfolgreich angemeldet!",
