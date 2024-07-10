@@ -14,8 +14,9 @@ import 'package:skeletonizer/skeletonizer.dart';
 import '../../app_settings/theme_settings.dart';
 import '../../generated/l10n.dart';
 import '../../models/general_models.dart';
-import '../../screens/login_screen/login_screen.dart';
-import '../../utils/navigation/push_route_with_animation.dart';
+import '../../routes/app_routes.dart';
+import '../../utils/navigation/navigate.dart';
+import '../../utils/navigation/navigation.dart';
 import '../ThemeAppBar/template_app_bar.dart';
 import '../ThemeFloatingSpeedDialMenu/theme_floating_speed_dial_menu.dart';
 
@@ -46,7 +47,6 @@ class AppScaffold extends ConsumerStatefulWidget {
 }
 
 class AppScaffoldState extends ConsumerState<AppScaffold> {
-  bool _navigated = false;
   bool _connectivityChecked = false;
   bool _userWentOffline = false;
   Timer? _connectivityTimer;
@@ -94,22 +94,18 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
     );
   }
 
-  _handleProtectedRoutes(auth) {
+  LoadingScreen? _handleProtectedRoutes(auth) {
     if (DebugConfig.debugScreen != null && DebugConfig.forceDebugScreen) {
-      debugPrint(
-          'Force debug screen is enabled. Jumping to screen: ${DebugConfig.debugScreen!}');
-      return;
+      return null;
     }
+
     if (!DebugConfig.debugMode &&
         AuthConfig.useProtectedRoutes &&
         widget.isProtected &&
-        !auth.isAuthenticated &&
-        !_navigated) {
-      _navigated = true;
+        !auth.isAuthenticated) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigator.of(context).pushReplacement(pushRouteWithAnimation(
-            const LoginScreen(),
-            direction: SlideDirection.left));
+        Navigate.to(context, Routes.loginScreen,
+            type: NavigationType.replacement, direction: SlideDirection.left);
       });
     }
 
@@ -215,7 +211,7 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
             enabled: !isAuthenticated &&
                 widget.isProtected &&
                 !DebugConfig.forceDebugScreen &&
-                DebugConfig.debugMode,
+                !DebugConfig.debugMode,
             child: Padding(
               padding: ThemeSettings.scaffoldPadding,
               child: widget.body,

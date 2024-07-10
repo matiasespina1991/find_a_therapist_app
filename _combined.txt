@@ -51,6 +51,8 @@
 │   │   ├── locale_provider.dart
 │   │   ├── providers_all.dart
 │   │   └── theme_provider.dart
+│   ├── routes
+│   │   └── app_routes.dart
 │   ├── screens
 │   │   ├── _bin_screens
 │   │   │   └── _demo_widgets_screen.dart
@@ -58,8 +60,10 @@
 │   │   │   └── home_screen.dart
 │   │   ├── loading_screen
 │   │   │   └── loading_screen.dart
-│   │   └── login_screen
-│   │       └── login_screen.dart
+│   │   ├── login_screen
+│   │   │   └── login_screen.dart
+│   │   └── not_found_screen
+│   │       └── not_found_screen.dart
 │   ├── services
 │   │   ├── connectivity_service.dart
 │   │   └── error_reporting_service.dart
@@ -74,7 +78,8 @@
 │   │   │   ├── log_configurations.dart
 │   │   │   └── notify_that_app_is_runing_in_debug_mode.dart
 │   │   ├── navigation
-│   │   │   └── push_route_with_animation.dart
+│   │   │   ├── navigate.dart
+│   │   │   └── navigation.dart
 │   │   ├── ui
 │   │   │   └── is_dark_mode.dart
 │   │   └── validation
@@ -99,8 +104,10 @@
 ├── rename_imports.sh
 └── template_app.iml
 
-33 directories, 67 files
+35 directories, 70 files
 ///// lib/main.dart /////
+import 'package:findatherapistapp/app_settings/app_general_settings.dart';
+import 'package:findatherapistapp/routes/app_routes.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -180,6 +187,11 @@ class MyApp extends ConsumerWidget {
           }
           return supportedLocales.first;
         },
+        initialRoute:
+            (DebugConfig.debugScreen != null && DebugConfig.forceDebugScreen)
+                ? Routes.getPath(DebugConfig.debugScreen!)
+                : Routes.getPath(Routes.homeScreen),
+        onGenerateRoute: Routes.generateRoute,
         home: const MainScreen(),
       ),
     );
@@ -196,6 +208,8 @@ class MainScreen extends StatelessWidget {
 }
 
 ///// lib/app_settings/app_general_settings.dart /////
+import '../routes/app_routes.dart';
+
 class AppGeneralSettings {
   static const bool useTopAppBar = false;
   static const bool useFloatingSpeedDialMenu = true;
@@ -208,7 +222,9 @@ class AppGeneralSettings {
 
 class DebugConfig {
   static const bool debugMode = false; // If true, login screen will be skipped
-  static const String debugScreen = '/home'; //TODO
+  static const String? debugScreen = Routes.loginScreen;
+  static const forceDebugScreen =
+      true; // If true, the route set in debugScreen will be shown and screen protection will be ignored
 }
 
 ///// lib/app_settings/app_info.dart /////
@@ -436,8 +452,6 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   bool useAppBar = AppGeneralSettings.useTopAppBar;
   ValueNotifier<bool> isDialOpen = ValueNotifier(false);
-  int _sliderValue = 0;
-  int _stepperIndex = 0;
   bool exampleSwitchValue = false;
   static const bool isLoading = false;
 
@@ -497,14 +511,15 @@ import 'package:findatherapistapp/app_settings/auth_config.dart';
 import 'package:findatherapistapp/generated/l10n.dart';
 import '../../app_settings/theme_settings.dart';
 import '../../providers/providers_all.dart';
-import '../../utils/navigation/push_route_with_animation.dart';
+import '../../routes/app_routes.dart';
+import '../../utils/navigation/navigate.dart';
+import '../../utils/navigation/navigation.dart';
 import '../../utils/ui/is_dark_mode.dart';
 import '../../utils/validation/is_email_valid.dart';
 import '../../widgets/AppScaffold/app_scaffold.dart';
 import '../../widgets/NotificationModal/notification_modal.dart';
 import '../../widgets/NotificationSnackbar/notification_snackbar.dart';
 import '../../widgets/ThemeInputTextField/theme_input_text_field.dart';
-import '../home_screen/home_screen.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -833,9 +848,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               variant: SnackbarVariant.success,
               duration: SnackbarDuration.short,
               delay: 1);
-          Navigator.of(context).pushReplacement(pushRouteWithAnimation(
-              const HomeScreen(),
-              direction: SlideDirection.right));
+          // Navigate.to(context, Routes.homeScreen,
+          //     type: NavigationType.replacement);
         }
 
         if (mounted) {
@@ -888,15 +902,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       bool userSignedIn = await ref.read(authProvider).signInWithGoogle();
       if (userSignedIn) {
         void userTappedConfirm() {
-          NotificationSnackbar.hideCurrentSnackBar();
-          NotificationSnackbar.showSnackBar(
-              message: S.of(context).loginSuccessfulMessage,
-              variant: SnackbarVariant.success,
-              duration: SnackbarDuration.short,
-              delay: 1);
-          Navigator.of(context).pushReplacement(pushRouteWithAnimation(
-              const HomeScreen(),
-              direction: SlideDirection.right));
+          // NotificationSnackbar.hideCurrentSnackBar();
+          // NotificationSnackbar.showSnackBar(
+          //     message: S.of(context).loginSuccessfulMessage,
+          //     variant: SnackbarVariant.success,
+          //     duration: SnackbarDuration.short,
+          //     delay: 1);
+          // Navigate.to(context, Routes.homeScreen,
+          //     type: NavigationType.replacement);
         }
 
         if (mounted) {
@@ -952,8 +965,9 @@ import 'package:skeletonizer/skeletonizer.dart';
 import '../../app_settings/theme_settings.dart';
 import '../../generated/l10n.dart';
 import '../../models/general_models.dart';
-import '../../screens/login_screen/login_screen.dart';
-import '../../utils/navigation/push_route_with_animation.dart';
+import '../../routes/app_routes.dart';
+import '../../utils/navigation/navigate.dart';
+import '../../utils/navigation/navigation.dart';
 import '../ThemeAppBar/template_app_bar.dart';
 import '../ThemeFloatingSpeedDialMenu/theme_floating_speed_dial_menu.dart';
 
@@ -984,7 +998,6 @@ class AppScaffold extends ConsumerStatefulWidget {
 }
 
 class AppScaffoldState extends ConsumerState<AppScaffold> {
-  bool _navigated = false;
   bool _connectivityChecked = false;
   bool _userWentOffline = false;
   Timer? _connectivityTimer;
@@ -1032,17 +1045,18 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
     );
   }
 
-  _handleProtectedRoutes(auth) {
+  LoadingScreen? _handleProtectedRoutes(auth) {
+    if (DebugConfig.debugScreen != null && DebugConfig.forceDebugScreen) {
+      return null;
+    }
+
     if (!DebugConfig.debugMode &&
         AuthConfig.useProtectedRoutes &&
         widget.isProtected &&
-        !auth.isAuthenticated &&
-        !_navigated) {
-      _navigated = true;
+        !auth.isAuthenticated) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigator.of(context).pushReplacement(pushRouteWithAnimation(
-            const LoginScreen(),
-            direction: SlideDirection.left));
+        Navigate.to(context, Routes.loginScreen,
+            type: NavigationType.replacement, direction: SlideDirection.left);
       });
     }
 
@@ -1145,7 +1159,10 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
       child: Column(
         children: [
           Skeletonizer(
-            enabled: !isAuthenticated && widget.isProtected,
+            enabled: !isAuthenticated &&
+                widget.isProtected &&
+                !DebugConfig.forceDebugScreen &&
+                DebugConfig.debugMode,
             child: Padding(
               padding: ThemeSettings.scaffoldPadding,
               child: widget.body,
@@ -1236,480 +1253,6 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
           variant: 'success',
           duration: 'long');
     }
-  }
-}
-
-///// lib/widgets/NotificationSnackbar/notification_snackbar.dart /////
-import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:findatherapistapp/app_settings/theme_settings.dart';
-
-import '../../globals.dart';
-
-class SnackbarDuration {
-  static const String short = 'short';
-  static const String long = 'long';
-}
-
-class SnackbarVariant {
-  static const String error = 'error';
-  static const String success = 'success';
-  static const String info = 'info';
-}
-
-class NotificationSnackbar {
-  static void showSnackBar({
-    IconData? icon,
-    required String message,
-    required String variant,
-    required String duration,
-    int delay = 0,
-  }) async {
-    if (delay > 0) {
-      await Future.delayed(Duration(seconds: delay));
-    }
-
-    if (ThemeSettings.useFlutterToast) {
-      Fluttertoast.cancel();
-      Fluttertoast.showToast(
-        msg: message,
-        toastLength: duration == SnackbarDuration.long
-            ? Toast.LENGTH_LONG
-            : Toast.LENGTH_SHORT,
-        gravity: ToastGravity.SNACKBAR,
-        timeInSecForIosWeb: duration == SnackbarDuration.long ? 3 : 2,
-        backgroundColor: variant == SnackbarVariant.success
-            ? ThemeSettings.snackBarSuccessBackgroundColor
-            : variant == SnackbarVariant.info
-                ? ThemeSettings.snackBarInfoBackgroundColor
-                : ThemeSettings.snackBarErrorBackgroundColor,
-        textColor: ThemeSettings.snackBarErrorTextColor,
-        fontSize: ThemeSettings.snackbarFontSize,
-      );
-      return;
-    }
-
-    snackbarKey.currentState?.showSnackBar(SnackBar(
-      duration: duration == "infinite"
-          ? const Duration(days: 1)
-          : duration == SnackbarDuration.short
-              ? const Duration(seconds: 2)
-              : const Duration(seconds: 5),
-      backgroundColor: variant == SnackbarVariant.success
-          ? ThemeSettings.snackBarSuccessBackgroundColor
-          : variant == SnackbarVariant.info
-              ? ThemeSettings.snackBarInfoBackgroundColor
-              : ThemeSettings.snackBarErrorBackgroundColor,
-      content: Row(
-        children: [
-          if (icon != null)
-            Icon(
-              icon,
-              color: variant == SnackbarVariant.success
-                  ? ThemeSettings.snackBarSuccessTextColor
-                  : variant == SnackbarVariant.info
-                      ? ThemeSettings.snackBarInfoTextColor
-                      : ThemeSettings.snackBarErrorTextColor,
-            ),
-          SizedBox(width: icon != null ? 8 : 0),
-          Flexible(
-            child: Text(message,
-                style: TextStyle(
-                    color: variant == SnackbarVariant.success
-                        ? ThemeSettings.snackBarSuccessTextColor
-                        : variant == SnackbarVariant.info
-                            ? ThemeSettings.snackBarInfoTextColor
-                            : ThemeSettings.snackBarErrorTextColor,
-                    fontSize: ThemeSettings.snackbarFontSize)),
-          ),
-        ],
-      ),
-    ));
-  }
-
-  static void hideCurrentSnackBar() {
-    if (ThemeSettings.useFlutterToast) {
-      Fluttertoast.cancel();
-      return;
-    }
-    snackbarKey.currentState?.hideCurrentSnackBar();
-  }
-}
-
-///// lib/widgets/NotificationModal/notification_modal.dart /////
-import 'package:flutter/material.dart';
-import 'package:findatherapistapp/app_settings/theme_settings.dart';
-import 'package:findatherapistapp/generated/l10n.dart';
-import 'package:intl/intl.dart';
-
-class NotificationModal {
-  static void successfulModal({
-    required BuildContext context,
-    required String title,
-    required String message,
-    required VoidCallback onTapConfirm,
-  }) {
-    showModalBottomSheet(
-      enableDrag: false,
-      isDismissible: false,
-      context: context,
-      builder: (BuildContext context) {
-        return SizedBox(
-          height: 300,
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                const CircleAvatar(
-                  backgroundColor: ThemeSettings.snackBarSuccessBackgroundColor,
-                  radius: 30,
-                  child: Icon(Icons.check, size: 50, color: Colors.white),
-                ),
-                const SizedBox(height: 20),
-                Text(title, style: Theme.of(context).textTheme.headlineSmall),
-                const SizedBox(height: 8),
-                Text(message, style: Theme.of(context).textTheme.bodyLarge),
-                const SizedBox(height: 20),
-                SizedBox(
-                  width: 200,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      onTapConfirm();
-                    },
-                    child: Text(S.of(context).gotIt),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  static void failedLogin({
-    required BuildContext context,
-    required VoidCallback onTapConfirm,
-    required String errorMessage,
-  }) {
-    showModalBottomSheet(
-      isDismissible: false,
-      enableDrag: false,
-      context: context,
-      builder: (BuildContext context) {
-        return SizedBox(
-          height: 300,
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                CircleAvatar(
-                  backgroundColor: Theme.of(context).colorScheme.error,
-                  radius: 30,
-                  child: const Icon(Icons.close, size: 50, color: Colors.white),
-                ),
-                const SizedBox(height: 15),
-                Padding(
-                  padding: const EdgeInsets.all(2.0),
-                  child: Text(S.of(context).loginFailed,
-                      style: Theme.of(context).textTheme.headlineSmall),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 32.0, vertical: 12.0),
-                  child: Text(errorMessage,
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodyLarge),
-                ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: 200,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      onTapConfirm();
-                    },
-                    child: Text(S.of(context).ok),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  static void loginFieldsAreEmpty({
-    required BuildContext context,
-    required Function onTapConfirm,
-    required List<String> emptyFields,
-  }) {
-    showModalBottomSheet(
-      isDismissible: false,
-      context: context,
-      builder: (BuildContext context) {
-        return SizedBox(
-          height: 300,
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                const Icon(Icons.warning, size: 50, color: Colors.amber),
-                const SizedBox(height: 15),
-                Text(S.of(context).emptyFields,
-                    style: Theme.of(context).textTheme.headlineSmall),
-                const SizedBox(height: 8),
-                Text(S.of(context).fillAllFields,
-                    style: Theme.of(context).textTheme.bodyLarge),
-                const SizedBox(height: 5),
-                ...emptyFields
-                    .map((element) => Text(toBeginningOfSentenceCase(element),
-                        textAlign: TextAlign.start,
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ))),
-                const SizedBox(height: 17),
-                SizedBox(
-                  width: 200,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      onTapConfirm();
-                    },
-                    child: Text(S.of(context).ok),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  static void failedLogout({
-    required BuildContext context,
-    required onTapConfirm,
-  }) {
-    showModalBottomSheet(
-      isDismissible: false,
-      context: context,
-      builder: (BuildContext context) {
-        return SizedBox(
-          height: 300,
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                CircleAvatar(
-                  backgroundColor: Theme.of(context).colorScheme.error,
-                  radius: 30,
-                  child: const Icon(Icons.close, size: 50, color: Colors.white),
-                ),
-                const SizedBox(height: 20),
-                Text(S.of(context).failedLogout,
-                    style: Theme.of(context).textTheme.headlineSmall),
-                const SizedBox(height: 8),
-                Text(S.of(context).failedLogoutMessage,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyLarge),
-                const SizedBox(height: 20),
-                SizedBox(
-                  width: 200,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      onTapConfirm();
-                    },
-                    child: Text(S.of(context).ok),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  static void unauthorizedAccess({
-    required BuildContext context,
-    required onTapConfirm,
-    required String screenName,
-  }) {
-    showModalBottomSheet(
-      isDismissible: false,
-      context: context,
-      builder: (BuildContext context) {
-        return SizedBox(
-          height: 300,
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                CircleAvatar(
-                  backgroundColor: Theme.of(context).colorScheme.error,
-                  radius: 30,
-                  child: const Icon(Icons.close, size: 50, color: Colors.white),
-                ),
-                const SizedBox(height: 20),
-                Text(S.of(context).unauthorizedAccess,
-                    style: Theme.of(context).textTheme.headlineSmall),
-                const SizedBox(height: 8),
-                Text(S.of(context).unauthorizedAccessMessage(screenName),
-                    style: Theme.of(context).textTheme.bodyLarge),
-                const SizedBox(height: 20),
-                SizedBox(
-                  width: 200,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      onTapConfirm();
-                    },
-                    child: Text(S.of(context).ok),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  static void noInternetConnection({
-    required BuildContext context,
-    required onTapConfirm,
-  }) {
-    showModalBottomSheet(
-      isDismissible: true,
-      context: context,
-      builder: (BuildContext context) {
-        return SizedBox(
-          height: 300,
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                const Icon(Icons.wifi_off, size: 50, color: Colors.grey),
-                const SizedBox(height: 20),
-                Text(S.of(context).noInternetConnection,
-                    style: Theme.of(context).textTheme.headlineSmall),
-                const SizedBox(height: 8),
-                SizedBox(
-                  width: 300,
-                  child: Text(S.of(context).youAreCurrentlyOfflineMessage,
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodyLarge),
-                ),
-                const SizedBox(height: 20),
-                SizedBox(
-                  width: 200,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      onTapConfirm();
-                    },
-                    child: Text(S.of(context).ok),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  static void backToInternetConnection({
-    required BuildContext context,
-    required onTapConfirm,
-  }) {
-    showModalBottomSheet(
-      isDismissible: true,
-      context: context,
-      builder: (BuildContext context) {
-        return SizedBox(
-          height: 300,
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                const Icon(Icons.wifi, size: 50, color: Colors.green),
-                const SizedBox(height: 20),
-                Text(S.of(context).backToInternetConnection,
-                    style: Theme.of(context).textTheme.headlineSmall),
-                const SizedBox(height: 8),
-                SizedBox(
-                  width: 300,
-                  child: Text(S.of(context).backToInternetConnection,
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodyLarge),
-                ),
-                const SizedBox(height: 20),
-                SizedBox(
-                  width: 200,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      onTapConfirm();
-                    },
-                    child: Text(S.of(context).ok),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  static void unableToLoginDueToNoInternet({
-    required BuildContext context,
-    required onTapConfirm,
-  }) {
-    showModalBottomSheet(
-      isDismissible: false,
-      context: context,
-      builder: (BuildContext context) {
-        return SizedBox(
-          height: 300,
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                const Icon(Icons.signal_wifi_connected_no_internet_4_outlined,
-                    size: 50, color: Colors.grey),
-                const SizedBox(height: 20),
-                Text(S.of(context).unableToLoginNoInternet,
-                    style: Theme.of(context).textTheme.headlineSmall),
-                const SizedBox(height: 8),
-                SizedBox(
-                  width: 300,
-                  child: Text(S.of(context).noInternetMessageOnLoginAttempt,
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodyLarge),
-                ),
-                const SizedBox(height: 20),
-                SizedBox(
-                  width: 200,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      onTapConfirm();
-                    },
-                    child: Text(S.of(context).ok),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
   }
 }
 
@@ -1860,245 +1403,6 @@ class MainTheme {
   }
 }
 
-///// lib/providers/auth_provider.dart /////
-import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:findatherapistapp/app_settings/app_general_settings.dart';
-import 'package:findatherapistapp/app_settings/auth_config.dart';
-
-class AuthorizationProvider extends ChangeNotifier {
-  final FlutterSecureStorage storage = const FlutterSecureStorage();
-  final FirebaseAuth? _firebaseAuth =
-      AuthConfig.useFirebase ? FirebaseAuth.instance : null;
-  final GoogleSignIn _googleSignIn =
-      GoogleSignIn(scopes: AuthConfig.googleSignInScopes);
-  String? _authToken;
-  User? _user;
-  bool _isLoading = true;
-
-  AuthorizationProvider() {
-    _initializeUser();
-  }
-
-  String? get authToken => _authToken;
-  User? get user => _user;
-  bool get isLoading => _isLoading;
-
-  Future<void> _initializeUser() async {
-    if (AuthConfig.useFirebase) {
-      _user = _firebaseAuth?.currentUser;
-      if (_user != null) {
-        _authToken = _user!.uid;
-      }
-    } else {
-      _authToken = await storage.read(key: 'auth_token');
-    }
-
-    _isLoading = false;
-    notifyListeners();
-
-    _googleSignIn.onCurrentUserChanged
-        .listen((GoogleSignInAccount? account) async {
-      if (account != null) {
-        _user = await _handleSignIn(account);
-        if (_user != null) {
-          _authToken = _user?.uid;
-          await setAuthToken(_authToken!);
-        }
-      } else {
-        _user = null;
-        _authToken = null;
-      }
-      notifyListeners();
-    });
-
-    GoogleSignInAccount? currentUser = await _googleSignIn.signInSilently();
-    if (currentUser != null) {
-      _user = await _handleSignIn(currentUser);
-      if (_user != null) {
-        _authToken = _user?.uid;
-        await setAuthToken(_authToken!);
-        notifyListeners();
-      }
-    }
-  }
-
-  Future<User?> _handleSignIn(GoogleSignInAccount account) async {
-    try {
-      final GoogleSignInAuthentication googleAuth =
-          await account.authentication;
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        idToken: googleAuth.idToken,
-        accessToken: googleAuth.accessToken,
-      );
-
-      if (AuthConfig.useFirebase) {
-        final UserCredential authResult =
-            await _firebaseAuth!.signInWithCredential(credential);
-        return authResult.user;
-      }
-      return null;
-    } catch (e) {
-      debugPrint('Error during Google sign-in: $e');
-      return null;
-    }
-  }
-
-  Future<void> setAuthToken(String token) async {
-    await storage.write(key: 'auth_token', value: token);
-    _authToken = token;
-    notifyListeners();
-  }
-
-  Future<void> clearAuthToken() async {
-    await storage.delete(key: 'auth_token');
-    _authToken = null;
-    _user = null;
-    debugPrint('Auth token cleared. User will be logged out.');
-    notifyListeners();
-  }
-
-  Future<void> signOut(BuildContext context) async {
-    if (DebugConfig.debugMode) {
-      debugPrint(
-          'Error: Debug mode is on. Disable it from AppGeneralSettings.debugMode in order to proceed with sign out.');
-      return;
-    }
-    await clearAuthToken();
-    if (AuthConfig.useFirebase) {
-      await _firebaseAuth?.signOut();
-    }
-
-    if (AuthConfig.allowGoogleSignIn) {
-      await _googleSignIn.signOut();
-    }
-  }
-
-  bool get isAuthenticated =>
-      !isLoading &&
-      (DebugConfig.debugMode || (_authToken != null && _authToken!.isNotEmpty));
-
-  Future<bool> signInWithEmail(String email, String password) async {
-    bool success = false;
-    try {
-      debugPrint('Signing in with email/password...');
-
-      if (AuthConfig.useFirebase) {
-        final UserCredential authResult = await _firebaseAuth!
-            .signInWithEmailAndPassword(email: email, password: password);
-        _authToken = authResult.user!.uid;
-        _user = authResult.user;
-        await setAuthToken(_authToken!);
-      } else {
-        _authToken = email;
-        await setAuthToken(_authToken!);
-      }
-
-      notifyListeners();
-      success = true;
-      debugPrint('User logged in successfully.✅');
-      return success;
-    } catch (error) {
-      debugPrint('Error during email/password Sign In: ${error.toString()}');
-      success = false;
-      return success;
-    }
-  }
-
-  Future<bool> signInWithGoogle() async {
-    bool success = false;
-    if (AuthConfig.allowGoogleSignIn) {
-      try {
-        debugPrint('Signing in with Google...');
-
-        final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-        if (googleUser != null) {
-          debugPrint('Google Sign In successful.');
-          final GoogleSignInAuthentication googleAuth =
-              await googleUser.authentication;
-          final credential = GoogleAuthProvider.credential(
-            accessToken: googleAuth.accessToken,
-            idToken: googleAuth.idToken,
-          );
-
-          if (AuthConfig.useFirebase) {
-            final UserCredential? authResult =
-                await _firebaseAuth?.signInWithCredential(credential);
-            _authToken = authResult?.user!.uid;
-            _user = authResult?.user;
-            await setAuthToken(_authToken!);
-          } else {
-            _authToken = googleAuth.accessToken;
-            await setAuthToken(_authToken!);
-          }
-
-          notifyListeners();
-          success = true;
-          debugPrint('User logged in successfully.');
-          return success;
-        }
-      } catch (error) {
-        debugPrint(
-            'Error trying to signing in user using Google: ${error.toString()}');
-        success = false;
-        return success;
-      }
-    }
-    return success;
-  }
-}
-
-///// lib/providers/locale_provider.dart /////
-import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:findatherapistapp/app_settings/language_settings.dart';
-
-class LocaleProvider extends ChangeNotifier {
-  final FlutterSecureStorage _storage = const FlutterSecureStorage();
-
-  Locale _locale = Locale(
-    LanguageSettings.supportedLocales
-            .contains(LanguageSettings.appDefaultLanguage)
-        ? LanguageSettings.appDefaultLanguage
-        : LanguageSettings.supportedLocales.first,
-  );
-
-  LocaleProvider() {
-    _loadLocale();
-  }
-
-  Locale get locale => _locale;
-
-  Future<void> setLocale(Locale locale) async {
-    if (LanguageSettings.forceDefaultLanguage) {
-      debugPrint(
-          'Error: Language change forbidden. Forced locale is on. Set LanguageSettings.forceLanguage to "false" in order to allow language change.');
-      return;
-    }
-
-    if (!LanguageSettings.supportedLocales.contains(locale.languageCode)) {
-      debugPrint(
-          'Unsupported locale: ${locale.languageCode.toUpperCase()}, please use one of the following: ${LanguageSettings.supportedLocales}. Or add the new locale to the supportedLocales list in config.dart');
-      return;
-    }
-
-    _locale = locale;
-    notifyListeners();
-    await _storage.write(
-        key: 'user_defined_locale', value: locale.languageCode);
-  }
-
-  Future<void> _loadLocale() async {
-    String? languageCode = await _storage.read(key: 'user_defined_locale');
-    if (languageCode != null) {
-      _locale = Locale(languageCode);
-      notifyListeners();
-    }
-  }
-}
-
 ///// lib/providers/providers_all.dart /////
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:findatherapistapp/providers/auth_provider.dart';
@@ -2113,64 +1417,161 @@ final localeProvider = ChangeNotifierProvider((ref) => LocaleProvider());
 final connectivityProvider =
     ChangeNotifierProvider((ref) => ConnectivityService());
 
-///// lib/providers/theme_provider.dart /////
+///// lib/utils/navigation/navigate.dart /////
+// lib/utils/navigation/navigate.dart
+
+import 'package:findatherapistapp/app_settings/app_general_settings.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:findatherapistapp/app_settings/theme_settings.dart';
+import 'package:findatherapistapp/routes/app_routes.dart';
+import 'navigation.dart';
 
-class ThemeProvider extends ChangeNotifier {
-  ThemeMode _themeMode = ThemeMode.system;
-  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+class Navigate {
+  static bool _isNavigating = false;
 
-  ThemeProvider() {
-    _loadThemeMode();
-  }
-
-  ThemeMode get themeMode => _themeMode;
-
-  void toggleTheme(bool isDarkMode) async {
-    if (ThemeSettings.forceDefaultThemeMode) {
+  static void to(
+    BuildContext context,
+    String routeName, {
+    SlideDirection direction = SlideDirection.right,
+    NavigationType type = NavigationType.push,
+  }) async {
+    if (DebugConfig.forceDebugScreen) {
       debugPrint(
-          'Error: Theme mode change forbidden. Forced theme is on. Disable it from ThemeSettings.forceDefaultThemeMode in order to proceed with theme change.');
+          'DebugConfig.forceDebugScreen is enabled. Navigation has been disabled. Current route: $routeName.');
+
       return;
     }
 
-    _themeMode = isDarkMode ? ThemeMode.dark : ThemeMode.light;
-    notifyListeners();
+    if (_isNavigating) return;
+    _isNavigating = true;
 
-    String userDefinedTheme = isDarkMode ? 'dark' : 'light';
-    await _storage.write(
-        key: 'user_defined_theme_mode', value: userDefinedTheme);
+    final routeConfig = Routes.routes[routeName];
+
+    if (routeConfig == null) {
+      Navigator.of(context).pushNamed('/404');
+      _isNavigating = false;
+      return;
+    }
+
+    final route = pushRouteWithAnimation(routeConfig.builder(context),
+        direction: direction);
+
+    if (type == NavigationType.replacement) {
+      Navigator.of(context)
+          .pushReplacement(route)
+          .then((_) => _isNavigating = false);
+    } else {
+      Navigator.of(context).push(route).then((_) => _isNavigating = false);
+    }
   }
 
-  void _loadThemeMode() async {
-    if (ThemeSettings.forceDefaultThemeMode) {
-      _themeMode = ThemeSettings.defaultThemeMode == 'dark'
-          ? ThemeMode.dark
-          : ThemeMode.light;
-      notifyListeners();
-      return;
-    }
+  static void back(BuildContext context) {
+    Navigator.of(context).popUntil((route) => route.isFirst);
+  }
 
-    String? userDefinedTheme =
-        await _storage.read(key: 'user_defined_theme_mode');
-
-    if (userDefinedTheme != null) {
-      bool isDarkMode = userDefinedTheme == 'dark';
-      _themeMode = isDarkMode ? ThemeMode.dark : ThemeMode.light;
-      notifyListeners();
-    }
+  static void pop(BuildContext context) {
+    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 }
 
-///// lib/models/current_user_data.dart /////
-class CurrentUserData {
-  final String userId;
-  final String? email;
-  final bool isAnonymous;
+///// lib/utils/navigation/navigation.dart /////
+// lib/utils/navigation/navigation.dart
 
-  CurrentUserData(
-      {required this.userId, this.email, required this.isAnonymous});
+import 'package:flutter/material.dart';
+import 'package:findatherapistapp/routes/app_routes.dart';
+
+enum SlideDirection { left, top, right, bottom }
+
+enum NavigationType { push, replacement }
+
+Route pushRouteWithAnimation(Widget page, {required SlideDirection direction}) {
+  Offset getBeginOffset() {
+    switch (direction) {
+      case SlideDirection.left:
+        return const Offset(-1.0, 0.0);
+      case SlideDirection.top:
+        return const Offset(0.0, -1.0);
+      case SlideDirection.right:
+        return const Offset(1.0, 0.0);
+      case SlideDirection.bottom:
+        return const Offset(0.0, 1.0);
+    }
+  }
+
+  return PageRouteBuilder(
+    transitionDuration: const Duration(milliseconds: 800),
+    pageBuilder: (context, animation, secondaryAnimation) => page,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      var begin = getBeginOffset();
+      const end = Offset.zero;
+      const curve = Curves.easeInOutCubic;
+
+      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+      var offsetAnimation = animation.drive(tween);
+
+      return SlideTransition(
+        position: offsetAnimation,
+        child: child,
+      );
+    },
+  );
+}
+
+///// lib/routes/app_routes.dart /////
+// lib/routes/app_routes.dart
+import 'package:flutter/material.dart';
+import '../screens/home_screen/home_screen.dart';
+import '../screens/login_screen/login_screen.dart';
+import '../screens/not_found_screen/not_found_screen.dart';
+
+class RouteConfig {
+  final String path;
+  final Widget Function(BuildContext) builder;
+
+  const RouteConfig({required this.path, required this.builder});
+}
+
+class Routes {
+  static const String homeScreen = 'home';
+  static const String loginScreen = 'login';
+  static const String notFoundScreen = 'notFound';
+
+  static final Map<String, RouteConfig> routes = {
+    homeScreen: RouteConfig(
+      path: '/home',
+      builder: (context) => const HomeScreen(),
+    ),
+    loginScreen: RouteConfig(
+      path: '/login',
+      builder: (context) => const LoginScreen(),
+    ),
+    notFoundScreen: RouteConfig(
+      path: '/404',
+      builder: (context) => const NotFoundScreen(),
+    ),
+  };
+
+  static Route<dynamic> generateRoute(RouteSettings settings) {
+    final route = routes.values.firstWhere(
+      (route) => route.path == settings.name,
+      orElse: () => routes[notFoundScreen]!, // Default to NotFoundScreen
+    );
+    return MaterialPageRoute(
+      builder: route.builder,
+      settings: settings,
+    );
+  }
+
+  static Map<String, WidgetBuilder> getRoutes() {
+    return Map.fromEntries(
+        routes.values.map((route) => MapEntry(route.path, route.builder)));
+  }
+
+  static String getPath(String routeName) => routes[routeName]?.path ?? '/404';
+
+  static String? getCurrentRouteName(BuildContext context) {
+    final route = ModalRoute.of(context);
+    return route?.settings.name;
+  }
 }
 
 ///// pubspec.yaml /////

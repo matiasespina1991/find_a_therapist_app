@@ -7,14 +7,14 @@ import 'package:findatherapistapp/generated/l10n.dart';
 import '../../app_settings/theme_settings.dart';
 import '../../providers/providers_all.dart';
 import '../../routes/app_routes.dart';
-import '../../utils/navigation/push_route_with_animation.dart';
+import '../../utils/navigation/navigate.dart';
+import '../../utils/navigation/navigation.dart';
 import '../../utils/ui/is_dark_mode.dart';
 import '../../utils/validation/is_email_valid.dart';
 import '../../widgets/AppScaffold/app_scaffold.dart';
 import '../../widgets/NotificationModal/notification_modal.dart';
 import '../../widgets/NotificationSnackbar/notification_snackbar.dart';
 import '../../widgets/ThemeInputTextField/theme_input_text_field.dart';
-import '../home_screen/home_screen.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -343,7 +343,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               variant: SnackbarVariant.success,
               duration: SnackbarDuration.short,
               delay: 1);
-          Navigator.of(context).pushReplacementNamed(Routes.homeScreen);
+          Navigate.to(context, Routes.homeScreen,
+              type: NavigationType.replacement);
         }
 
         if (mounted) {
@@ -395,25 +396,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     try {
       bool userSignedIn = await ref.read(authProvider).signInWithGoogle();
       if (userSignedIn) {
-        void userTappedConfirm() {
-          NotificationSnackbar.hideCurrentSnackBar();
-          NotificationSnackbar.showSnackBar(
+        NotificationModal.successfulModal(
+          title: S.of(context).successfulLogin,
+          message: S.of(context).successfulLoginRedirectToHomeMessage,
+          context: context,
+          onTapConfirm: () {
+            NotificationSnackbar.hideCurrentSnackBar();
+            NotificationSnackbar.showSnackBar(
               message: S.of(context).loginSuccessfulMessage,
               variant: SnackbarVariant.success,
               duration: SnackbarDuration.short,
-              delay: 1);
-          Navigator.of(context).pushReplacement(pushRouteWithAnimation(
-              const HomeScreen(),
-              direction: SlideDirection.right));
-        }
-
-        if (mounted) {
-          NotificationModal.successfulModal(
-              title: S.of(context).successfulLogin,
-              message: S.of(context).successfulLoginRedirectToHomeMessage,
-              context: context,
-              onTapConfirm: () => userTappedConfirm());
-        }
+              delay: 1,
+            );
+            Navigate.to(context, Routes.homeScreen,
+                type: NavigationType.replacement);
+          },
+        );
       } else {
         if (mounted) {
           NotificationSnackbar.showSnackBar(

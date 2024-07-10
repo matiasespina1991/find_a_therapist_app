@@ -3,6 +3,8 @@ import 'package:findatherapistapp/app_settings/theme_settings.dart';
 import 'package:findatherapistapp/generated/l10n.dart';
 import 'package:intl/intl.dart';
 
+import '../../utils/navigation/navigate.dart';
+
 class NotificationModal {
   static void successfulModal({
     required BuildContext context,
@@ -35,7 +37,7 @@ class NotificationModal {
                   width: 200,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pop(context);
+                      Navigate.pop(context);
                       onTapConfirm();
                     },
                     child: Text(S.of(context).gotIt),
@@ -88,7 +90,7 @@ class NotificationModal {
                   width: 200,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pop(context);
+                      Navigate.pop(context);
                       onTapConfirm();
                     },
                     child: Text(S.of(context).ok),
@@ -136,7 +138,7 @@ class NotificationModal {
                   width: 200,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pop(context);
+                      Navigate.pop(context);
                       onTapConfirm();
                     },
                     child: Text(S.of(context).ok),
@@ -181,7 +183,7 @@ class NotificationModal {
                   width: 200,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pop(context);
+                      Navigate.pop(context);
                       onTapConfirm();
                     },
                     child: Text(S.of(context).ok),
@@ -226,7 +228,7 @@ class NotificationModal {
                   width: 200,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pop(context);
+                      Navigate.pop(context);
                       onTapConfirm();
                     },
                     child: Text(S.of(context).ok),
@@ -270,7 +272,7 @@ class NotificationModal {
                   width: 200,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pop(context);
+                      Navigate.pop(context);
                       onTapConfirm();
                     },
                     child: Text(S.of(context).ok),
@@ -314,7 +316,7 @@ class NotificationModal {
                   width: 200,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pop(context);
+                      Navigate.pop(context);
                       onTapConfirm();
                     },
                     child: Text(S.of(context).ok),
@@ -359,7 +361,7 @@ class NotificationModal {
                   width: 200,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pop(context);
+                      Navigate.pop(context);
                       onTapConfirm();
                     },
                     child: Text(S.of(context).ok),

@@ -14,9 +14,7 @@ class RouteConfig {
 class Routes {
   static const String homeScreen = 'home';
   static const String loginScreen = 'login';
-  static const String notFoundScreen = 'not-found';
-
-  /// static const String exampleRoute = 'example-route';
+  static const String notFoundScreen = 'notFound';
 
   static final Map<String, RouteConfig> routes = {
     homeScreen: RouteConfig(
@@ -28,27 +26,15 @@ class Routes {
       builder: (context) => const LoginScreen(),
     ),
     notFoundScreen: RouteConfig(
-      path: '/not-found',
+      path: '/404',
       builder: (context) => const NotFoundScreen(),
     ),
-
-    /// exampleRoute: RouteConfig(
-    ///   path: '/example-route',
-    ///   builder: (context) => const ExampleScreen(),
-    /// ),
   };
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     final route = routes.values.firstWhere(
       (route) => route.path == settings.name,
-      orElse: () => RouteConfig(
-        path: '/not-found',
-        builder: (context) => Scaffold(
-          body: Center(
-            child: Text('No route defined for ${settings.name}'),
-          ),
-        ),
-      ),
+      orElse: () => routes[notFoundScreen]!, // Default to NotFoundScreen
     );
     return MaterialPageRoute(
       builder: route.builder,
@@ -61,5 +47,10 @@ class Routes {
         routes.values.map((route) => MapEntry(route.path, route.builder)));
   }
 
-  static String getPath(String routeName) => routes[routeName]?.path ?? '/';
+  static String getPath(String routeName) => routes[routeName]?.path ?? '/404';
+
+  static String? getCurrentRouteName(BuildContext context) {
+    final route = ModalRoute.of(context);
+    return route?.settings.name;
+  }
 }
