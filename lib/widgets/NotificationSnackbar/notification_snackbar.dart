@@ -70,14 +70,16 @@ class NotificationSnackbar {
                       : ThemeSettings.snackBarErrorTextColor,
             ),
           SizedBox(width: icon != null ? 8 : 0),
-          Text(message,
-              style: TextStyle(
-                  color: variant == SnackbarVariant.success
-                      ? ThemeSettings.snackBarSuccessTextColor
-                      : variant == SnackbarVariant.info
-                          ? ThemeSettings.snackBarInfoTextColor
-                          : ThemeSettings.snackBarErrorTextColor,
-                  fontSize: ThemeSettings.snackbarFontSize)),
+          Flexible(
+            child: Text(message,
+                style: TextStyle(
+                    color: variant == SnackbarVariant.success
+                        ? ThemeSettings.snackBarSuccessTextColor
+                        : variant == SnackbarVariant.info
+                            ? ThemeSettings.snackBarInfoTextColor
+                            : ThemeSettings.snackBarErrorTextColor,
+                    fontSize: ThemeSettings.snackbarFontSize)),
+          ),
         ],
       ),
     ));
