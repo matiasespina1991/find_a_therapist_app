@@ -7,6 +7,10 @@
   "password": "contraseña",
   "loginButton": "Iniciar sesión",
   "logoutButton": "Cerrar sesión",
+  "sendButton": "Enviar",
+   "cancelButton": "Cancelar",
+    "forgotPasswordButton": "¿Olvidaste tu contraseña?",
+
   "settingsButton": "Configuraciones",
   "signingInMessage": "Iniciando sesión...",
   "loginSuccessfulMessage": "Haz iniciado sesión!",
@@ -89,5 +93,8 @@
           "youAreCurrentlyOfflineMessage": "Actualmente estás sin conexión a Internet.",
           "backToInternetConnection": "Estás de vuelta en línea",
           "findYourTherapistButton": "Encuentra tu terapeuta",
-          "applyAsTherapistButton": "Aplicar como terapeuta"
+          "applyAsTherapistButton": "Aplicar como terapeuta",
+          "welcomeToPrefix": "Bienvenido a ",
+          "tellUsWhatYouAreLookingFor": "Cuéntanos qué estás buscando",
+          "requestTextFieldHintText": "Escribe tu solicitud aquí. Proporciona tanta información como sea posible."
 }

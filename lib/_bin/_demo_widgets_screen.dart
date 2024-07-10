@@ -30,6 +30,7 @@ class _HomeScreenState extends ConsumerState<DemoWidgetsScreen> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
+      isProtected: true,
       appBarTitle: S.of(context).homeScreenTitle,
       body: SingleChildScrollView(
         child: Column(

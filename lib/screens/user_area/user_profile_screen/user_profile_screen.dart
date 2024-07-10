@@ -12,6 +12,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return const AppScaffold(
+      isProtected: true,
       body: Placeholder(),
       appBarTitle: 'User Profile',
     );

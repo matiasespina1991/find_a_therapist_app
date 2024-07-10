@@ -140,6 +140,36 @@ class S {
     );
   }
 
+  /// `Send`
+  String get sendButton {
+    return Intl.message(
+      'Send',
+      name: 'sendButton',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cancel`
+  String get cancelButton {
+    return Intl.message(
+      'Cancel',
+      name: 'cancelButton',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Forgot your password?`
+  String get forgotPasswordButton {
+    return Intl.message(
+      'Forgot your password?',
+      name: 'forgotPasswordButton',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Signing in...`
   String get signingInMessage {
     return Intl.message(
@@ -955,6 +985,36 @@ class S {
     return Intl.message(
       'Apply as therapist',
       name: 'applyAsTherapistButton',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Welcome to `
+  String get welcomeToPrefix {
+    return Intl.message(
+      'Welcome to ',
+      name: 'welcomeToPrefix',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tell us what you are looking for`
+  String get tellUsWhatYouAreLookingFor {
+    return Intl.message(
+      'Tell us what you are looking for',
+      name: 'tellUsWhatYouAreLookingFor',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter your request here. Give us as much information as possible.`
+  String get requestTextFieldHintText {
+    return Intl.message(
+      'Enter your request here. Give us as much information as possible.',
+      name: 'requestTextFieldHintText',
       desc: '',
       args: [],
     );

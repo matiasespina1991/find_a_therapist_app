@@ -98,9 +98,9 @@ class AuthorizationProvider extends ChangeNotifier {
   }
 
   Future<void> signOut(BuildContext context) async {
-    if (DebugConfig.debugMode) {
+    if (DebugConfig.bypassLoginScreen) {
       debugPrint(
-          'Error: Debug mode is on. Disable it from AppGeneralSettings.debugMode in order to proceed with sign out.');
+          'Error: Bypass Login Screen is on. Disable it from AppGeneralSettings.bypassLoginScreen in order to proceed with sign out.');
       return;
     }
     await clearAuthToken();
@@ -115,7 +115,8 @@ class AuthorizationProvider extends ChangeNotifier {
 
   bool get isAuthenticated =>
       !isLoading &&
-      (DebugConfig.debugMode || (_authToken != null && _authToken!.isNotEmpty));
+      (DebugConfig.bypassLoginScreen ||
+          (_authToken != null && _authToken!.isNotEmpty));
 
   Future<bool> signInWithEmail(String email, String password) async {
     bool success = false;

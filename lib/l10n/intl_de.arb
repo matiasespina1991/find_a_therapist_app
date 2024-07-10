@@ -8,6 +8,11 @@
   "loginButton": "Anmelden",
   "logoutButton": "Abmelden",
   "settingsButton": "Einstellungen",
+
+  "sendButton": "Senden",
+    "cancelButton": "Abbrechen",
+    "forgotPasswordButton": "Passwort vergessen?",
+
   "signingInMessage": "Anmeldung...",
   "loginSuccessfulMessage": "Erfolgreich angemeldet!",
   "loginErrorMessage": "Fehler bei der Anmeldung. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
@@ -89,5 +94,8 @@
         "youAreCurrentlyOfflineMessage": "Sie sind derzeit offline. Bitte überprüfen Sie Ihre Internetverbindung.",
          "backToInternetConnection": "Sie sind wieder online",
           "findYourTherapistButton": "Finde deinen Therapeuten",
-         "applyAsTherapistButton": "Als Therapeut bewerben"
+         "applyAsTherapistButton": "Als Therapeut bewerben",
+         "welcomeToPrefix": "Willkommen bei ",
+           "tellUsWhatYouAreLookingFor": "Sag uns, wonach du suchst",
+             "requestTextFieldHintText": "Geben Sie hier Ihre Anfrage ein. Geben Sie uns so viele Informationen wie möglich."
 }

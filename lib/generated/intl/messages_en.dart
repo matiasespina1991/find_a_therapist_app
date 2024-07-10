@@ -32,6 +32,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("You are back online"),
         "buttonsSectionTitle": MessageLookupByLibrary.simpleMessage("Buttons"),
         "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
+        "cancelButton": MessageLookupByLibrary.simpleMessage("Cancel"),
         "chipOneLabel": MessageLookupByLibrary.simpleMessage("Chip One"),
         "chipThreeLabel": MessageLookupByLibrary.simpleMessage("Chip Three"),
         "chipTwoLabel": MessageLookupByLibrary.simpleMessage("Chip Two"),
@@ -89,6 +90,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Please fill the following field/s:"),
         "findYourTherapistButton":
             MessageLookupByLibrary.simpleMessage("Find your therapist"),
+        "forgotPasswordButton":
+            MessageLookupByLibrary.simpleMessage("Forgot your password?"),
         "gotIt": MessageLookupByLibrary.simpleMessage("Got it"),
         "homeScreenTitle": MessageLookupByLibrary.simpleMessage("Home Screen"),
         "inputsSectionTitle": MessageLookupByLibrary.simpleMessage("Inputs"),
@@ -129,6 +132,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "passwordLabel": MessageLookupByLibrary.simpleMessage("PASSWORD"),
         "pleaseFillTheFollowingFields": MessageLookupByLibrary.simpleMessage(
             "Please fill the following fields:"),
+        "requestTextFieldHintText": MessageLookupByLibrary.simpleMessage(
+            "Enter your request here. Give us as much information as possible."),
+        "sendButton": MessageLookupByLibrary.simpleMessage("Send"),
         "settingsButton": MessageLookupByLibrary.simpleMessage("Settings"),
         "signInWithGoogleButtonLabel":
             MessageLookupByLibrary.simpleMessage("Sign in with Google"),
@@ -161,6 +167,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Switch to light mode"),
         "switchesSectionTitle":
             MessageLookupByLibrary.simpleMessage("Switches"),
+        "tellUsWhatYouAreLookingFor": MessageLookupByLibrary.simpleMessage(
+            "Tell us what you are looking for"),
         "textButtonLabel": MessageLookupByLibrary.simpleMessage("Text Button"),
         "textFieldLabel":
             MessageLookupByLibrary.simpleMessage("Example TextField"),
@@ -169,6 +177,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "unauthorizedAccess":
             MessageLookupByLibrary.simpleMessage("Unauthorized Access"),
         "unauthorizedAccessMessage": m0,
+        "welcomeToPrefix": MessageLookupByLibrary.simpleMessage("Welcome to "),
         "yes": MessageLookupByLibrary.simpleMessage("Yes"),
         "youAreCurrentlyOfflineMessage": MessageLookupByLibrary.simpleMessage(
             "You are currently offline. Please check your internet connection.")

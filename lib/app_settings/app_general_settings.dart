@@ -11,8 +11,9 @@ class AppGeneralSettings {
 }
 
 class DebugConfig {
-  static const bool debugMode = false; // If true, login screen will be skipped
-  static RouteConfig debugScreen = Routes.loginScreen;
+  static const bool bypassLoginScreen =
+      true; // If true, login screen will be skipped
+  static RouteConfig debugScreen = Routes.loadingScreen;
   static const forceDebugScreen =
       false; // If true, the route set in debugScreen will be shown and screen protection will be ignored
 }

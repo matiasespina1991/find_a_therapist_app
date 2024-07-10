@@ -32,9 +32,9 @@ class AppScaffold extends ConsumerStatefulWidget {
     super.key,
     required this.body,
     required this.appBarTitle,
+    required this.isProtected,
     this.useSafeArea,
     this.hideFloatingSpeedDialMenu = false,
-    this.isProtected = true,
     this.scrollPhysics,
     this.backgroundAnimation,
     this.backgroundAnimationDarkMode,
@@ -59,10 +59,6 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
   Widget build(BuildContext context) {
     final auth = ref.watch(authProvider);
     final connectivity = ref.watch(connectivityProvider);
-
-    if (auth.isLoading) {
-      return const LoadingScreen();
-    }
 
     _handleProtectedRoutes(auth);
     _checkConnectivity(connectivity);
@@ -109,7 +105,7 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
       return null;
     }
 
-    if (!DebugConfig.debugMode &&
+    if (!DebugConfig.bypassLoginScreen &&
         AuthConfig.useProtectedRoutes &&
         widget.isProtected &&
         !auth.isAuthenticated) {
@@ -221,7 +217,7 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
             enabled: !isAuthenticated &&
                 widget.isProtected &&
                 !DebugConfig.forceDebugScreen &&
-                !DebugConfig.debugMode,
+                !DebugConfig.bypassLoginScreen,
             child: Padding(
               padding: ThemeSettings.scaffoldPadding,
               child: widget.body,

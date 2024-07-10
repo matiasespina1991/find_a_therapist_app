@@ -33,6 +33,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Estás de vuelta en línea"),
         "buttonsSectionTitle": MessageLookupByLibrary.simpleMessage("Botones"),
         "cancel": MessageLookupByLibrary.simpleMessage("Cancelar"),
+        "cancelButton": MessageLookupByLibrary.simpleMessage("Cancelar"),
         "chipOneLabel": MessageLookupByLibrary.simpleMessage("Chip Uno"),
         "chipThreeLabel": MessageLookupByLibrary.simpleMessage("Chip Tres"),
         "chipTwoLabel": MessageLookupByLibrary.simpleMessage("Chip Dos"),
@@ -93,6 +94,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Por favor completa lo/s siguiente/s campo/s:"),
         "findYourTherapistButton":
             MessageLookupByLibrary.simpleMessage("Encuentra tu terapeuta"),
+        "forgotPasswordButton":
+            MessageLookupByLibrary.simpleMessage("¿Olvidaste tu contraseña?"),
         "gotIt": MessageLookupByLibrary.simpleMessage("Entendido"),
         "homeScreenTitle":
             MessageLookupByLibrary.simpleMessage("Pantalla Principal"),
@@ -135,6 +138,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "passwordLabel": MessageLookupByLibrary.simpleMessage("CONTRASEÑA"),
         "pleaseFillTheFollowingFields": MessageLookupByLibrary.simpleMessage(
             "Por favor, rellene los siguientes campos:"),
+        "requestTextFieldHintText": MessageLookupByLibrary.simpleMessage(
+            "Escribe tu solicitud aquí. Proporciona tanta información como sea posible."),
+        "sendButton": MessageLookupByLibrary.simpleMessage("Enviar"),
         "settingsButton":
             MessageLookupByLibrary.simpleMessage("Configuraciones"),
         "signInWithGoogleButtonLabel":
@@ -169,6 +175,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Cambiar a modo claro"),
         "switchesSectionTitle":
             MessageLookupByLibrary.simpleMessage("Interruptores"),
+        "tellUsWhatYouAreLookingFor": MessageLookupByLibrary.simpleMessage(
+            "Cuéntanos qué estás buscando"),
         "textButtonLabel":
             MessageLookupByLibrary.simpleMessage("Botón de Texto"),
         "textFieldLabel":
@@ -178,6 +186,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "unauthorizedAccess":
             MessageLookupByLibrary.simpleMessage("Acceso no autorizado"),
         "unauthorizedAccessMessage": m0,
+        "welcomeToPrefix":
+            MessageLookupByLibrary.simpleMessage("Bienvenido a "),
         "yes": MessageLookupByLibrary.simpleMessage("Sí"),
         "youAreCurrentlyOfflineMessage": MessageLookupByLibrary.simpleMessage(
             "Actualmente estás sin conexión a Internet.")

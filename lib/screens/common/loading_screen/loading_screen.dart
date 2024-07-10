@@ -1,25 +1,24 @@
 import 'package:flutter/material.dart';
-
-import '../../../app_settings/theme_settings.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../widgets/AppScaffold/app_scaffold.dart';
 import '../../../widgets/LoadingCircle/loading_circle.dart';
 
-class LoadingScreen extends StatelessWidget {
+class LoadingScreen extends ConsumerStatefulWidget {
   const LoadingScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+  ConsumerState<LoadingScreen> createState() => _LoadingScreenState();
+}
 
-    return SafeArea(
-      top: ThemeSettings.useSafeArea,
-      child: Scaffold(
-        backgroundColor: isDarkMode
-            ? ThemeSettings.scaffoldBackgroundColor.darkModePrimary
-            : ThemeSettings.scaffoldBackgroundColor.lightModePrimary,
-        body: const Center(
-          child: LoadingCircle(),
-        ),
+class _LoadingScreenState extends ConsumerState<LoadingScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return const AppScaffold(
+      isProtected: false,
+      body: Center(
+        child: LoadingCircle(),
       ),
+      appBarTitle: 'Loading...',
     );
   }
 }

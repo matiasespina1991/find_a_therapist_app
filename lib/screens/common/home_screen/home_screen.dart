@@ -1,10 +1,13 @@
+import 'package:findatherapistapp/app_settings/app_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:findatherapistapp/app_settings/app_general_settings.dart';
 import 'package:findatherapistapp/widgets/AppScaffold/app_scaffold.dart';
 
 import '../../../generated/l10n.dart';
+import '../../../routes/routes.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -27,6 +30,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
+      isProtected: true,
       appBarTitle: S.of(context).homeScreenTitle,
       body: SingleChildScrollView(
         child: Column(
@@ -37,14 +41,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(S.of(context).exampleTitle,
+                  Text('${S.of(context).welcomeToPrefix}${AppInfo.appName}!',
                       style: Theme.of(context).textTheme.headlineSmall),
                   const SizedBox(height: 10),
                   Text(S.of(context).exampleDescription,
                       style: Theme.of(context).textTheme.bodyMedium),
                   const SizedBox(height: 20),
                   ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        context.go(Routes.userRequestScreen.path);
+                      },
                       style: ElevatedButton.styleFrom(
                         minimumSize: const Size(double.infinity, 47),
                       ),

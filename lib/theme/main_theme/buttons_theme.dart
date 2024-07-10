@@ -20,7 +20,8 @@ class ButtonsTheme {
                         .elevatedButtonBackgroundColor.darkModePrimary)
                 .withOpacity(ThemeSettings.buttonsOpacity),
         elevation: ThemeSettings.buttonsElevation,
-        minimumSize: const Size(double.maxFinite, ThemeSettings.buttonsHeight),
+        minimumSize:
+            const Size(double.minPositive, ThemeSettings.buttonsHeight),
         shape: const RoundedRectangleBorder(
             borderRadius: ThemeSettings.buttonsBorderRadius),
       ),

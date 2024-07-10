@@ -1,3 +1,5 @@
+import 'package:findatherapistapp/screens/common/loading_screen/loading_screen.dart';
+import 'package:findatherapistapp/screens/common/not_found_screen/not_found_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 
@@ -6,18 +8,6 @@ import '../screens/common/login_screen/login_screen.dart';
 import '../screens/therapist_area/therapist_profile_screen.dart';
 import '../screens/user_area/user_profile_screen/user_profile_screen.dart';
 import '../screens/user_area/user_request_screen/user_request_screen.dart';
-
-class RouteConfig {
-  final String path;
-  final Widget Function(BuildContext) builder;
-  final String name;
-
-  const RouteConfig({
-    required this.path,
-    required this.builder,
-    required this.name,
-  });
-}
 
 class Routes {
   /// COMMON ROUTES
@@ -33,6 +23,17 @@ class Routes {
     name: 'Home Screen',
     builder: (context) => const HomeScreen(),
   );
+
+  static RouteConfig notFoundScreen = RouteConfig(
+    path: '/404',
+    name: '404 Not Found',
+    builder: (context) => const NotFoundScreen(),
+  );
+
+  static RouteConfig loadingScreen = RouteConfig(
+      path: '/loading',
+      name: 'Loading',
+      builder: (context) => const LoadingScreen());
 
   /// USER AREA ROUTES
 
@@ -62,8 +63,10 @@ class Routes {
       homeScreen,
       userProfileScreen,
       userRequestScreen,
+      therapistProfileScreen,
+      notFoundScreen,
+      loadingScreen,
     ];
-
     return allRoutes
         .map((routeConfig) => GoRoute(
               path: routeConfig.path,
@@ -75,4 +78,16 @@ class Routes {
   static final GoRouter router = GoRouter(
     routes: _generateRoutes(),
   );
+}
+
+class RouteConfig {
+  final String path;
+  final Widget Function(BuildContext) builder;
+  final String name;
+
+  const RouteConfig({
+    required this.path,
+    required this.builder,
+    required this.name,
+  });
 }

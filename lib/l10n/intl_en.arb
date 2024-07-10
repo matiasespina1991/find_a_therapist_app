@@ -8,6 +8,10 @@
   "loginButton": "Login",
   "logoutButton": "Logout",
   "settingsButton": "Settings",
+
+   "sendButton": "Send",
+    "cancelButton": "Cancel",
+    "forgotPasswordButton": "Forgot your password?",
   "signingInMessage": "Signing in...",
   "loginSuccessfulMessage": "Login successful!",
   "loginErrorMessage": "Error logging in. Please try again or contact support.",
@@ -89,7 +93,9 @@
         "youAreCurrentlyOfflineMessage": "You are currently offline. Please check your internet connection.",
         "backToInternetConnection": "You are back online",
       "findYourTherapistButton": "Find your therapist",
-      "applyAsTherapistButton": "Apply as therapist"
-
+      "applyAsTherapistButton": "Apply as therapist",
+      "welcomeToPrefix": "Welcome to ",
+       "tellUsWhatYouAreLookingFor": "Tell us what you are looking for",
+       "requestTextFieldHintText": "Enter your request here. Give us as much information as possible."
 
 }
