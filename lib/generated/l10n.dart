@@ -1019,6 +1019,56 @@ class S {
       args: [],
     );
   }
+
+  /// `Negative aspects`
+  String get negativeAspectsTitle {
+    return Intl.message(
+      'Negative aspects',
+      name: 'negativeAspectsTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `What you don't want your therapist bring or treat`
+  String get negativeAspectsDescription {
+    return Intl.message(
+      'What you don\'t want your therapist bring or treat',
+      name: 'negativeAspectsDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Positive aspects`
+  String get positiveAspectsTitle {
+    return Intl.message(
+      'Positive aspects',
+      name: 'positiveAspectsTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `What you expect your therapist to treat`
+  String get positiveAspectsDescription {
+    return Intl.message(
+      'What you expect your therapist to treat',
+      name: 'positiveAspectsDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Not found`
+  String get notFound {
+    return Intl.message(
+      'Not found',
+      name: 'notFound',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

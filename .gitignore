@@ -11,6 +11,9 @@
 migrate_working_dir/
 _combined.txt
 
+# Environmental Variables
+/lib/app_settings/env_settings.dart
+
 # IntelliJ related
 *.iml
 *.ipr

@@ -96,5 +96,10 @@
           "applyAsTherapistButton": "Aplicar como terapeuta",
           "welcomeToPrefix": "Bienvenido a ",
           "tellUsWhatYouAreLookingFor": "Cuéntanos qué estás buscando",
-          "requestTextFieldHintText": "Escribe tu solicitud aquí. Proporciona tanta información como sea posible."
+          "requestTextFieldHintText": "Escribe tu solicitud aquí. Proporciona tanta información como sea posible.",
+           "negativeAspectsTitle": "Aspectos Negativos",
+          "negativeAspectsDescription": "Lo que no deseas que trate u ofrezca tu terapeuta",
+          "positiveAspectsTitle": "Aspectos Positivos",
+          "positiveAspectsDescription": "Lo que deseas que ofrezca tu terapeuta",
+          "notFound": "Nicht gefunden"
 }

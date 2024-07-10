@@ -123,11 +123,16 @@ class MessageLookup extends MessageLookupByLibrary {
         "loginSuccessfulMessage":
             MessageLookupByLibrary.simpleMessage("Erfolgreich angemeldet!"),
         "logoutButton": MessageLookupByLibrary.simpleMessage("Abmelden"),
+        "negativeAspectsDescription": MessageLookupByLibrary.simpleMessage(
+            "Was Sie nicht möchten, dass Ihr Therapeut mitbringt oder behandelt"),
+        "negativeAspectsTitle":
+            MessageLookupByLibrary.simpleMessage("Negative Aspekte"),
         "no": MessageLookupByLibrary.simpleMessage("Nein"),
         "noInternetConnection":
             MessageLookupByLibrary.simpleMessage("Keine Internetverbindung"),
         "noInternetMessageOnLoginAttempt": MessageLookupByLibrary.simpleMessage(
             "Du hast versucht, dich anzumelden, aber du hast keine Internetverbindung. Bitte verbinde dich mit dem Internet und versuche es erneut."),
+        "notFound": MessageLookupByLibrary.simpleMessage("Nicht gefunden"),
         "ok": MessageLookupByLibrary.simpleMessage("OK"),
         "outlinedButtonLabel":
             MessageLookupByLibrary.simpleMessage("Umrissene Taste"),
@@ -136,6 +141,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "passwordLabel": MessageLookupByLibrary.simpleMessage("PASSWORT"),
         "pleaseFillTheFollowingFields": MessageLookupByLibrary.simpleMessage(
             "Bitte füllen Sie die folgenden Felder aus:"),
+        "positiveAspectsDescription": MessageLookupByLibrary.simpleMessage(
+            "Was Sie von Ihrem Therapeuten erwarten"),
+        "positiveAspectsTitle":
+            MessageLookupByLibrary.simpleMessage("Positive Aspekte"),
         "requestTextFieldHintText": MessageLookupByLibrary.simpleMessage(
             "Geben Sie hier Ihre Anfrage ein. Geben Sie uns so viele Informationen wie möglich."),
         "sendButton": MessageLookupByLibrary.simpleMessage("Senden"),

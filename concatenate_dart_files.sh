@@ -10,6 +10,7 @@ files=(
     "lib/app_settings/theme_settings.dart"
     "lib/screens/common/home_screen/home_screen.dart"
     "lib/screens/common/login_screen/login_screen.dart"
+    "lib/screens/user_area/user_request_screen/user_request_screen.dart"
     "lib/widgets/AppScaffold/app_scaffold.dart"
 #    "lib/widgets/NotificationSnackbar/notification_snackbar.dart"
 #    "lib/widgets/NotificationModal/notification_modal.dart"
@@ -19,9 +20,7 @@ files=(
     "lib/providers/providers_all.dart"
 #    "lib/providers/theme_provider.dart"
 #    "lib/models/current_user_data.dart"
-    "lib/utils/navigation/navigate.dart"
-    "lib/utils/navigation/navigation.dart"
-    "lib/routes/app_routes.dart"
+    "lib/routes/routes.dart"
     "pubspec.yaml"
 )
 

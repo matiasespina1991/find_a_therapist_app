@@ -119,11 +119,16 @@ class MessageLookup extends MessageLookupByLibrary {
         "loginSuccessfulMessage":
             MessageLookupByLibrary.simpleMessage("Login successful!"),
         "logoutButton": MessageLookupByLibrary.simpleMessage("Logout"),
+        "negativeAspectsDescription": MessageLookupByLibrary.simpleMessage(
+            "What you don\'t want your therapist bring or treat"),
+        "negativeAspectsTitle":
+            MessageLookupByLibrary.simpleMessage("Negative aspects"),
         "no": MessageLookupByLibrary.simpleMessage("No"),
         "noInternetConnection":
             MessageLookupByLibrary.simpleMessage("No Internet Connection"),
         "noInternetMessageOnLoginAttempt": MessageLookupByLibrary.simpleMessage(
             "You tried to login but you don\'t have internet connection. Please connect to the internet and try again."),
+        "notFound": MessageLookupByLibrary.simpleMessage("Not found"),
         "ok": MessageLookupByLibrary.simpleMessage("OK"),
         "outlinedButtonLabel":
             MessageLookupByLibrary.simpleMessage("Outlined Button"),
@@ -132,6 +137,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "passwordLabel": MessageLookupByLibrary.simpleMessage("PASSWORD"),
         "pleaseFillTheFollowingFields": MessageLookupByLibrary.simpleMessage(
             "Please fill the following fields:"),
+        "positiveAspectsDescription": MessageLookupByLibrary.simpleMessage(
+            "What you expect your therapist to treat"),
+        "positiveAspectsTitle":
+            MessageLookupByLibrary.simpleMessage("Positive aspects"),
         "requestTextFieldHintText": MessageLookupByLibrary.simpleMessage(
             "Enter your request here. Give us as much information as possible."),
         "sendButton": MessageLookupByLibrary.simpleMessage("Send"),

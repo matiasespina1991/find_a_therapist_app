@@ -7,6 +7,7 @@ import 'package:findatherapistapp/app_settings/app_general_settings.dart';
 import 'package:findatherapistapp/widgets/AppScaffold/app_scaffold.dart';
 
 import '../../../generated/l10n.dart';
+import '../../../providers/providers_all.dart';
 import '../../../routes/routes.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -64,6 +65,45 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       child: Text(S.of(context).applyAsTherapistButton)),
                 ],
               ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    ref.read(localeProvider).setLocale(const Locale('en'));
+                  },
+                  child: const Text(
+                    '🇺🇸',
+                    style: TextStyle(fontSize: 30),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                const Text('/'),
+                const SizedBox(width: 10),
+                GestureDetector(
+                  onTap: () {
+                    ref.read(localeProvider).setLocale(const Locale('es'));
+                  },
+                  child: const Text(
+                    '🇪🇸',
+                    style: TextStyle(fontSize: 30),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                const Text('/'),
+                const SizedBox(width: 10),
+                GestureDetector(
+                  onTap: () {
+                    ref.read(localeProvider).setLocale(const Locale('de'));
+                  },
+                  child: const Text(
+                    '🇩🇪',
+                    style: TextStyle(fontSize: 30),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

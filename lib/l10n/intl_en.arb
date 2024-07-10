@@ -96,6 +96,14 @@
       "applyAsTherapistButton": "Apply as therapist",
       "welcomeToPrefix": "Welcome to ",
        "tellUsWhatYouAreLookingFor": "Tell us what you are looking for",
-       "requestTextFieldHintText": "Enter your request here. Give us as much information as possible."
+       "requestTextFieldHintText": "Enter your request here. Give us as much information as possible.",
+
+     "negativeAspectsTitle": "Negative aspects",
+
+        "negativeAspectsDescription": "What you don't want your therapist bring or treat",
+         "positiveAspectsTitle": "Positive aspects",
+              "positiveAspectsDescription": "What you expect your therapist to treat",
+              "notFound": "Not found"
+
 
 }

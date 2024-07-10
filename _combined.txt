@@ -7,6 +7,7 @@
 ├── firebase.json
 ├── lib
 │   ├── _bin
+│   │   ├── _demo_widgets_screen.dart
 │   │   └── config.dart
 │   ├── app_settings
 │   │   ├── app_general_settings.dart
@@ -49,21 +50,22 @@
 │   ├── providers
 │   │   ├── auth_provider.dart
 │   │   ├── locale_provider.dart
+│   │   ├── navigation_provider.dart
 │   │   ├── providers_all.dart
 │   │   └── theme_provider.dart
 │   ├── routes
-│   │   └── app_routes.dart
+│   │   └── routes.dart
 │   ├── screens
-│   │   ├── _bin_screens
-│   │   │   └── _demo_widgets_screen.dart
-│   │   ├── home_screen
-│   │   │   └── home_screen.dart
-│   │   ├── loading_screen
-│   │   │   └── loading_screen.dart
-│   │   ├── login_screen
-│   │   │   └── login_screen.dart
-│   │   └── not_found_screen
-│   │       └── not_found_screen.dart
+│   │   ├── common
+│   │   │   ├── home_screen
+│   │   │   ├── loading_screen
+│   │   │   ├── login_screen
+│   │   │   └── not_found_screen
+│   │   ├── therapist_area
+│   │   │   └── therapist_profile_screen.dart
+│   │   └── user_area
+│   │       ├── user_profile_screen
+│   │       └── user_request_screen
 │   ├── services
 │   │   ├── connectivity_service.dart
 │   │   └── error_reporting_service.dart
@@ -77,9 +79,6 @@
 │   │   ├── debug
 │   │   │   ├── log_configurations.dart
 │   │   │   └── notify_that_app_is_runing_in_debug_mode.dart
-│   │   ├── navigation
-│   │   │   ├── navigate.dart
-│   │   │   └── navigation.dart
 │   │   ├── ui
 │   │   │   └── is_dark_mode.dart
 │   │   └── validation
@@ -104,10 +103,11 @@
 ├── rename_imports.sh
 └── template_app.iml
 
-35 directories, 70 files
+38 directories, 66 files
 ///// lib/main.dart /////
-import 'package:findatherapistapp/app_settings/app_general_settings.dart';
-import 'package:findatherapistapp/routes/app_routes.dart';
+import 'package:findatherapistapp/routes/routes.dart';
+import 'package:findatherapistapp/screens/common/home_screen/home_screen.dart';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -119,7 +119,6 @@ import 'globals.dart';
 import 'app_settings/app_info.dart';
 import 'app_settings/language_settings.dart';
 import 'app_settings/theme_settings.dart';
-import 'screens/home_screen/home_screen.dart';
 import 'theme/main_theme/main_theme.dart';
 import 'utils/debug/log_configurations.dart';
 import 'generated/l10n.dart';
@@ -158,7 +157,7 @@ class MyApp extends ConsumerWidget {
           containersColor: ThemeSettings.forceSeedColor
               ? ThemeSettings.seedColor
               : Colors.grey),
-      child: MaterialApp(
+      child: MaterialApp.router(
         scaffoldMessengerKey: snackbarKey,
         title: AppInfo.appName,
         theme: MainTheme.lightTheme,
@@ -187,12 +186,9 @@ class MyApp extends ConsumerWidget {
           }
           return supportedLocales.first;
         },
-        initialRoute:
-            (DebugConfig.debugScreen != null && DebugConfig.forceDebugScreen)
-                ? Routes.getPath(DebugConfig.debugScreen!)
-                : Routes.getPath(Routes.homeScreen),
-        onGenerateRoute: Routes.generateRoute,
-        home: const MainScreen(),
+        routerDelegate: Routes.router.routerDelegate,
+        routeInformationParser: Routes.router.routeInformationParser,
+        routeInformationProvider: Routes.router.routeInformationProvider,
       ),
     );
   }
@@ -208,7 +204,7 @@ class MainScreen extends StatelessWidget {
 }
 
 ///// lib/app_settings/app_general_settings.dart /////
-import '../routes/app_routes.dart';
+import '../routes/routes.dart';
 
 class AppGeneralSettings {
   static const bool useTopAppBar = false;
@@ -221,8 +217,9 @@ class AppGeneralSettings {
 }
 
 class DebugConfig {
-  static const bool debugMode = false; // If true, login screen will be skipped
-  static const String? debugScreen = Routes.notFoundScreen;
+  static const bool bypassLoginScreen =
+      true; // If true, login screen will be skipped
+  static RouteConfig debugScreen = Routes.loadingScreen;
   static const forceDebugScreen =
       false; // If true, the route set in debugScreen will be shown and screen protection will be ignored
 }
@@ -432,15 +429,17 @@ class ThemeSettings {
   );
 }
 
-///// lib/screens/home_screen/home_screen.dart /////
+///// lib/screens/common/home_screen/home_screen.dart /////
+import 'package:findatherapistapp/app_settings/app_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:findatherapistapp/app_settings/app_general_settings.dart';
 import 'package:findatherapistapp/widgets/AppScaffold/app_scaffold.dart';
-import '../../generated/l10n.dart';
-import '../../providers/providers_all.dart';
-import '../../utils/ui/is_dark_mode.dart';
+
+import '../../../generated/l10n.dart';
+import '../../../routes/routes.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -463,6 +462,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
+      isProtected: true,
       appBarTitle: S.of(context).homeScreenTitle,
       body: SingleChildScrollView(
         child: Column(
@@ -473,14 +473,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(S.of(context).exampleTitle,
+                  Text('${S.of(context).welcomeToPrefix}${AppInfo.appName}!',
                       style: Theme.of(context).textTheme.headlineSmall),
                   const SizedBox(height: 10),
                   Text(S.of(context).exampleDescription,
                       style: Theme.of(context).textTheme.bodyMedium),
                   const SizedBox(height: 20),
                   ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        context.go(Routes.userRequestScreen.path);
+                      },
                       style: ElevatedButton.styleFrom(
                         minimumSize: const Size(double.infinity, 47),
                       ),
@@ -502,24 +504,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 }
 
-///// lib/screens/login_screen/login_screen.dart /////
+///// lib/screens/common/login_screen/login_screen.dart /////
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 import 'package:findatherapistapp/app_settings/auth_config.dart';
 import 'package:findatherapistapp/generated/l10n.dart';
-import '../../app_settings/theme_settings.dart';
-import '../../providers/providers_all.dart';
-import '../../routes/app_routes.dart';
-import '../../utils/navigation/navigate.dart';
-import '../../utils/navigation/navigation.dart';
-import '../../utils/ui/is_dark_mode.dart';
-import '../../utils/validation/is_email_valid.dart';
-import '../../widgets/AppScaffold/app_scaffold.dart';
-import '../../widgets/NotificationModal/notification_modal.dart';
-import '../../widgets/NotificationSnackbar/notification_snackbar.dart';
-import '../../widgets/ThemeInputTextField/theme_input_text_field.dart';
+
+import '../../../app_settings/theme_settings.dart';
+import '../../../providers/providers_all.dart';
+import '../../../utils/ui/is_dark_mode.dart';
+import '../../../utils/validation/is_email_valid.dart';
+import '../../../widgets/AppScaffold/app_scaffold.dart';
+import '../../../widgets/NotificationModal/notification_modal.dart';
+import '../../../widgets/NotificationSnackbar/notification_snackbar.dart';
+import '../../../widgets/ThemeInputTextField/theme_input_text_field.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -639,8 +640,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               padding: const EdgeInsets.all(5.5),
                               clipBehavior: Clip.hardEdge,
                               shape: const RoundedRectangleBorder(
-                                borderRadius: ThemeSettings.buttonsBorderRadius,
-                              ),
+                                  borderRadius:
+                                      ThemeSettings.buttonsBorderRadius),
                               text: S.of(context).signInWithGoogleButtonLabel,
                               onPressed: () async {
                             if (AuthConfig.allowGoogleSignIn) {
@@ -848,10 +849,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               variant: SnackbarVariant.success,
               duration: SnackbarDuration.short,
               delay: 1);
-
-          print('Navigating to home screen...');
-          Navigate.to(context, Routes.homeScreen,
-              type: NavigationType.replacement);
+          context.go('/');
         }
 
         if (mounted) {
@@ -899,26 +897,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       variant: SnackbarVariant.info,
       duration: SnackbarDuration.long,
     );
-
     try {
       bool userSignedIn = await ref.read(authProvider).signInWithGoogle();
       if (userSignedIn) {
-        NotificationModal.successfulModal(
-          title: S.of(context).successfulLogin,
-          message: S.of(context).successfulLoginRedirectToHomeMessage,
-          context: context,
-          onTapConfirm: () {
-            NotificationSnackbar.hideCurrentSnackBar();
-            NotificationSnackbar.showSnackBar(
-              message: S.of(context).loginSuccessfulMessage,
-              variant: SnackbarVariant.success,
-              duration: SnackbarDuration.short,
-              delay: 1,
-            );
-            Navigate.to(context, Routes.homeScreen,
-                type: NavigationType.replacement);
-          },
-        );
+        if (mounted) {
+          NotificationModal.successfulModal(
+            title: S.of(context).successfulLogin,
+            message: S.of(context).successfulLoginRedirectToHomeMessage,
+            context: context,
+            onTapConfirm: () {
+              NotificationSnackbar.hideCurrentSnackBar();
+              NotificationSnackbar.showSnackBar(
+                message: S.of(context).loginSuccessfulMessage,
+                variant: SnackbarVariant.success,
+                duration: SnackbarDuration.short,
+                delay: 1,
+              );
+              context.go('/');
+            },
+          );
+        }
       } else {
         if (mounted) {
           NotificationSnackbar.showSnackBar(
@@ -929,22 +927,80 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         }
       }
     } on PlatformException catch (error) {
-      NotificationSnackbar.showSnackBar(
-        message: S.of(context).errorSigningInWithGoogleSnackbarMessage,
-        variant: SnackbarVariant.error,
-        duration: SnackbarDuration.long,
-      );
+      if (mounted) {
+        NotificationSnackbar.showSnackBar(
+          message: S.of(context).errorSigningInWithGoogleSnackbarMessage,
+          variant: SnackbarVariant.error,
+          duration: SnackbarDuration.long,
+        );
+      }
 
       debugPrint('Error signing in with Google: ${error.toString()}');
     } catch (error) {
-      NotificationSnackbar.showSnackBar(
-        message: S.of(context).errorSigningInWithGoogleSnackbarMessage,
-        variant: SnackbarVariant.error,
-        duration: SnackbarDuration.long,
-      );
+      if (mounted) {
+        NotificationSnackbar.showSnackBar(
+          message: S.of(context).errorSigningInWithGoogleSnackbarMessage,
+          variant: SnackbarVariant.error,
+          duration: SnackbarDuration.long,
+        );
+      }
 
       debugPrint('Error: ${error.toString()}');
     }
+  }
+}
+
+///// lib/screens/user_area/user_request_screen/user_request_screen.dart /////
+import 'package:findatherapistapp/widgets/AppScaffold/app_scaffold.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../generated/l10n.dart';
+
+class UserRequestScreen extends ConsumerStatefulWidget {
+  const UserRequestScreen({super.key});
+
+  @override
+  ConsumerState<UserRequestScreen> createState() => _UserRequestScreenState();
+}
+
+class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return AppScaffold(
+      isProtected: true,
+      appBarTitle: 'Request a Therapist',
+      body: SingleChildScrollView(
+          child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text('${S.of(context).tellUsWhatYouAreLookingFor}:',
+              style: Theme.of(context).textTheme.headlineSmall),
+          const SizedBox(height: 20),
+          TextField(
+            decoration: InputDecoration(
+              hintText: S.of(context).requestTextFieldHintText,
+              hintStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.5),
+                  ),
+              border: const OutlineInputBorder(),
+            ),
+            maxLines: 18,
+          ),
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              ElevatedButton(
+                  onPressed: () {}, child: Text(S.of(context).sendButton)),
+            ],
+          ),
+        ],
+      )),
+    );
   }
 }
 
@@ -953,11 +1009,11 @@ import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 import 'package:findatherapistapp/app_settings/app_general_settings.dart';
 import 'package:findatherapistapp/app_settings/auth_config.dart';
 import 'package:findatherapistapp/providers/providers_all.dart';
-import 'package:findatherapistapp/screens/loading_screen/loading_screen.dart';
 import 'package:findatherapistapp/utils/ui/is_dark_mode.dart';
 import 'package:findatherapistapp/widgets/NotificationModal/notification_modal.dart';
 import 'package:findatherapistapp/widgets/NotificationSnackbar/notification_snackbar.dart';
@@ -965,9 +1021,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 import '../../app_settings/theme_settings.dart';
 import '../../generated/l10n.dart';
 import '../../models/general_models.dart';
-import '../../routes/app_routes.dart';
-import '../../utils/navigation/navigate.dart';
-import '../../utils/navigation/navigation.dart';
+import '../../screens/common/loading_screen/loading_screen.dart';
 import '../ThemeAppBar/template_app_bar.dart';
 import '../ThemeFloatingSpeedDialMenu/theme_floating_speed_dial_menu.dart';
 
@@ -985,9 +1039,9 @@ class AppScaffold extends ConsumerStatefulWidget {
     super.key,
     required this.body,
     required this.appBarTitle,
+    required this.isProtected,
     this.useSafeArea,
     this.hideFloatingSpeedDialMenu = false,
-    this.isProtected = true,
     this.scrollPhysics,
     this.backgroundAnimation,
     this.backgroundAnimationDarkMode,
@@ -1012,10 +1066,6 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
   Widget build(BuildContext context) {
     final auth = ref.watch(authProvider);
     final connectivity = ref.watch(connectivityProvider);
-
-    if (auth.isLoading) {
-      return const LoadingScreen();
-    }
 
     _handleProtectedRoutes(auth);
     _checkConnectivity(connectivity);
@@ -1046,23 +1096,35 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
   }
 
   LoadingScreen? _handleProtectedRoutes(auth) {
-    if (DebugConfig.debugScreen != null && DebugConfig.forceDebugScreen) {
+    if (DebugConfig.forceDebugScreen) {
+      final String debugRoutePath = DebugConfig.debugScreen.path;
+      final String debugRouteName =
+          DebugConfig.debugScreen.name ?? debugRoutePath;
+
+      debugPrint(
+          '[DebugConfig.forceDebugScreen is set to true. Locked screen is: $debugRouteName. Navigation suspended.]');
+      if (mounted) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          context.go(debugRoutePath);
+        });
+      }
+
       return null;
     }
 
-    if (!DebugConfig.debugMode &&
+    if (!DebugConfig.bypassLoginScreen &&
         AuthConfig.useProtectedRoutes &&
         widget.isProtected &&
         !auth.isAuthenticated) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigate.to(context, Routes.loginScreen,
-            type: NavigationType.replacement, direction: SlideDirection.left);
+        context.go('/login');
       });
     }
 
     if (!auth.isAuthenticated && widget.isProtected) {
       return const LoadingScreen();
     }
+    return null;
   }
 
   void _checkConnectivity(connectivity) {
@@ -1162,7 +1224,7 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
             enabled: !isAuthenticated &&
                 widget.isProtected &&
                 !DebugConfig.forceDebugScreen &&
-                !DebugConfig.debugMode,
+                !DebugConfig.bypassLoginScreen,
             child: Padding(
               padding: ThemeSettings.scaffoldPadding,
               child: widget.body,
@@ -1221,7 +1283,7 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
             TextButton(
               child: const Text('OK'),
               onPressed: () {
-                Navigator.of(context).pop();
+                context.pop();
               },
             ),
           ],
@@ -1504,9 +1566,9 @@ class AuthorizationProvider extends ChangeNotifier {
   }
 
   Future<void> signOut(BuildContext context) async {
-    if (DebugConfig.debugMode) {
+    if (DebugConfig.bypassLoginScreen) {
       debugPrint(
-          'Error: Debug mode is on. Disable it from AppGeneralSettings.debugMode in order to proceed with sign out.');
+          'Error: Bypass Login Screen is on. Disable it from AppGeneralSettings.bypassLoginScreen in order to proceed with sign out.');
       return;
     }
     await clearAuthToken();
@@ -1521,7 +1583,8 @@ class AuthorizationProvider extends ChangeNotifier {
 
   bool get isAuthenticated =>
       !isLoading &&
-      (DebugConfig.debugMode || (_authToken != null && _authToken!.isNotEmpty));
+      (DebugConfig.bypassLoginScreen ||
+          (_authToken != null && _authToken!.isNotEmpty));
 
   Future<bool> signInWithEmail(String email, String password) async {
     bool success = false;
@@ -1600,6 +1663,7 @@ import 'package:findatherapistapp/providers/locale_provider.dart';
 import 'package:findatherapistapp/providers/theme_provider.dart';
 
 import '../services/connectivity_service.dart';
+import 'navigation_provider.dart';
 
 final authProvider = ChangeNotifierProvider((ref) => AuthorizationProvider());
 final themeProvider = ChangeNotifierProvider((ref) => ThemeProvider());
@@ -1608,170 +1672,102 @@ final connectivityProvider =
     ChangeNotifierProvider((ref) => ConnectivityService());
 
 final navigationStateProvider = StateProvider<bool>((ref) => false);
+final navigationProvider =
+    ChangeNotifierProvider((ref) => NavigationProvider());
 
-///// lib/utils/navigation/navigate.dart /////
-import 'package:findatherapistapp/app_settings/app_general_settings.dart';
+///// lib/routes/routes.dart /////
+import 'package:findatherapistapp/screens/common/loading_screen/loading_screen.dart';
+import 'package:findatherapistapp/screens/common/not_found_screen/not_found_screen.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
-import 'package:findatherapistapp/routes/app_routes.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../providers/providers_all.dart';
-import 'navigation.dart';
 
-class Navigate {
-  static bool _isNavigating = false;
+import '../screens/common/home_screen/home_screen.dart';
+import '../screens/common/login_screen/login_screen.dart';
+import '../screens/therapist_area/therapist_profile_screen.dart';
+import '../screens/user_area/user_profile_screen/user_profile_screen.dart';
+import '../screens/user_area/user_request_screen/user_request_screen.dart';
 
-  static Future<void> to(
-    BuildContext context,
-    String directionRouteName, {
-    SlideDirection direction = SlideDirection.right,
-    NavigationType type = NavigationType.push,
-  }) async {
-    if (DebugConfig.forceDebugScreen) {
-      String? currentRouteName = Routes.getCurrentRouteName(context);
+class Routes {
+  /// COMMON ROUTES
 
-      debugPrint(
-          '[DebugConfig.forceDebugScreen is set to true. Locked screen is: <$currentRouteName>. Navigation to </$directionRouteName> suspended.]');
-      return;
-    }
+  static RouteConfig loginScreen = RouteConfig(
+    path: '/login',
+    name: 'Login Screen',
+    builder: (context) => const LoginScreen(),
+  );
 
-    if (_isNavigating) return;
-    _isNavigating = true;
+  static RouteConfig homeScreen = RouteConfig(
+    path: '/',
+    name: 'Home Screen',
+    builder: (context) => const HomeScreen(),
+  );
 
-    final routeConfig = Routes.routes[directionRouteName];
+  static RouteConfig notFoundScreen = RouteConfig(
+    path: '/404',
+    name: '404 Not Found',
+    builder: (context) => const NotFoundScreen(),
+  );
 
-    if (routeConfig == null) {
-      Navigator.of(context).pushNamed('/404');
-      _isNavigating = false;
-      return;
-    }
+  static RouteConfig loadingScreen = RouteConfig(
+      path: '/loading',
+      name: 'Loading',
+      builder: (context) => const LoadingScreen());
 
-    final route = pushRouteWithAnimation(routeConfig.builder(context),
-        direction: direction);
+  /// USER AREA ROUTES
 
-    try {
-      if (type == NavigationType.replacement) {
-        // debugPrint('Navigating with replacement to: $directionRouteName');
-        Navigator.of(context).pushReplacement(route);
-      } else {
-        // debugPrint('Navigating with push to: $directionRouteName');
-        Navigator.of(context).push(route);
-      }
-      // debugPrint('Navigation to $directionRouteName completed.');
-    } catch (e) {
-      debugPrint('Navigation error: $e');
-    } finally {
-      _isNavigating = false;
-    }
+  static RouteConfig userProfileScreen = RouteConfig(
+    path: '/user-profile',
+    name: 'User Profile Screen',
+    builder: (context) => const UserProfileScreen(),
+  );
+
+  static RouteConfig userRequestScreen = RouteConfig(
+    path: '/user-request',
+    name: 'User Request',
+    builder: (context) => const UserRequestScreen(),
+  );
+
+  /// THERAPIST AREA ROUTES
+
+  static RouteConfig therapistProfileScreen = RouteConfig(
+    path: '/therapist-profile',
+    name: 'Therapist Profile Screen',
+    builder: (context) => const TherapistProfileScreen(),
+  );
+
+  static List<GoRoute> _generateRoutes() {
+    List<RouteConfig> allRoutes = [
+      loginScreen,
+      homeScreen,
+      userProfileScreen,
+      userRequestScreen,
+      therapistProfileScreen,
+      notFoundScreen,
+      loadingScreen,
+    ];
+    return allRoutes
+        .map((routeConfig) => GoRoute(
+              path: routeConfig.path,
+              builder: (context, state) => routeConfig.builder(context),
+            ))
+        .toList();
   }
 
-  static void back(BuildContext context) {
-    Navigator.of(context).pop();
-  }
-
-  static void pop(BuildContext context) {
-    Navigator.of(context).pop();
-  }
-}
-
-///// lib/utils/navigation/navigation.dart /////
-// lib/utils/navigation/navigation.dart
-
-import 'package:flutter/material.dart';
-import 'package:findatherapistapp/routes/app_routes.dart';
-
-enum SlideDirection { left, top, right, bottom }
-
-enum NavigationType { push, replacement }
-
-Route pushRouteWithAnimation(Widget page, {required SlideDirection direction}) {
-  Offset getBeginOffset() {
-    switch (direction) {
-      case SlideDirection.left:
-        return const Offset(-1.0, 0.0);
-      case SlideDirection.top:
-        return const Offset(0.0, -1.0);
-      case SlideDirection.right:
-        return const Offset(1.0, 0.0);
-      case SlideDirection.bottom:
-        return const Offset(0.0, 1.0);
-    }
-  }
-
-  return PageRouteBuilder(
-    transitionDuration: const Duration(milliseconds: 800),
-    pageBuilder: (context, animation, secondaryAnimation) => page,
-    transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      var begin = getBeginOffset();
-      const end = Offset.zero;
-      const curve = Curves.easeInOutCubic;
-
-      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-      var offsetAnimation = animation.drive(tween);
-
-      return SlideTransition(
-        position: offsetAnimation,
-        child: child,
-      );
-    },
+  static final GoRouter router = GoRouter(
+    routes: _generateRoutes(),
   );
 }
-
-///// lib/routes/app_routes.dart /////
-// lib/routes/app_routes.dart
-import 'package:flutter/material.dart';
-import '../screens/home_screen/home_screen.dart';
-import '../screens/login_screen/login_screen.dart';
-import '../screens/not_found_screen/not_found_screen.dart';
 
 class RouteConfig {
   final String path;
   final Widget Function(BuildContext) builder;
+  final String name;
 
-  const RouteConfig({required this.path, required this.builder});
-}
-
-class Routes {
-  static const String homeScreen = 'home';
-  static const String loginScreen = 'login';
-  static const String notFoundScreen = 'notFound';
-
-  static final Map<String, RouteConfig> routes = {
-    homeScreen: RouteConfig(
-      path: '/home',
-      builder: (context) => const HomeScreen(),
-    ),
-    loginScreen: RouteConfig(
-      path: '/login',
-      builder: (context) => const LoginScreen(),
-    ),
-    notFoundScreen: RouteConfig(
-      path: '/404',
-      builder: (context) => const NotFoundScreen(),
-    ),
-  };
-
-  static Route<dynamic> generateRoute(RouteSettings settings) {
-    final route = routes.values.firstWhere(
-      (route) => route.path == settings.name,
-      orElse: () => routes[notFoundScreen]!, // Default to NotFoundScreen
-    );
-    return MaterialPageRoute(
-      builder: route.builder,
-      settings: settings,
-    );
-  }
-
-  static Map<String, WidgetBuilder> getRoutes() {
-    return Map.fromEntries(
-        routes.values.map((route) => MapEntry(route.path, route.builder)));
-  }
-
-  static String getPath(String routeName) => routes[routeName]?.path ?? '/404';
-
-  static String? getCurrentRouteName(BuildContext context) {
-    final route = ModalRoute.of(context);
-    return route?.settings.name;
-  }
+  const RouteConfig({
+    required this.path,
+    required this.builder,
+    required this.name,
+  });
 }
 
 ///// pubspec.yaml /////
@@ -1805,6 +1801,10 @@ dependencies:
   google_sign_in: ^6.2.1
   # Sign In Button is a Flutter plugin for creating sign-in buttons in a Flutter app.
   sign_in_button: ^3.2.0
+  # Go Router is a Flutter plugin for routing in a Flutter app.
+  go_router: ^14.2.0
+  # Google Generative AI is a Flutter plugin for using Google Generative AI in a Flutter app.
+  google_generative_ai: ^0.4.3
 
 
 #  # -----------------  GENERAL PACKAGES  -----------------
@@ -1925,6 +1925,7 @@ dependencies:
 #  firebase_remote_config: ^5.0.1
 
   intl: any
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
