@@ -132,8 +132,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               elevation: ThemeSettings.buttonsElevation,
                               padding: const EdgeInsets.all(5.5),
                               clipBehavior: Clip.hardEdge,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10)),
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: ThemeSettings.buttonsBorderRadius,
+                              ),
                               text: S.of(context).signInWithGoogleButtonLabel,
                               onPressed: () async {
                             if (AuthConfig.allowGoogleSignIn) {

@@ -22,7 +22,7 @@ class ThemeSettings {
   static const bool glassTextInputs = true;
   static const double buttonsElevation = 1.1;
   static const double buttonsHeight = 47;
-  static const double buttonsOpacity = 0.8;
+  static const double buttonsOpacity = 0.9;
   static const String noInternetNotificationType =
       'modal'; // 'snackbar' / 'modal' / 'dialog'
   static const int secondsUntilNoInternetNotification = 5;
@@ -136,7 +136,7 @@ class ThemeSettings {
   static const Color snackBarErrorTextColor = Colors.white;
   static const Color snackBarSuccessBackgroundColor = Colors.green;
   static const Color snackBarSuccessTextColor = Colors.white;
-  static const Color snackBarInfoBackgroundColor = Colors.grey;
+  static const Color snackBarInfoBackgroundColor = Colors.black;
   static const Color snackBarInfoTextColor = Colors.white;
 
   static const FontConfig appBarTextStyle = FontConfig(

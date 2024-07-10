@@ -1,3 +1,3 @@
 class AppInfo {
-  static const String appName = 'Template App';
+  static const String appName = 'Find-A-Therapist';
 }
