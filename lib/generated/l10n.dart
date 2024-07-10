@@ -939,6 +939,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Find your therapist`
+  String get findYourTherapistButton {
+    return Intl.message(
+      'Find your therapist',
+      name: 'findYourTherapistButton',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Apply as therapist`
+  String get applyAsTherapistButton {
+    return Intl.message(
+      'Apply as therapist',
+      name: 'applyAsTherapistButton',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

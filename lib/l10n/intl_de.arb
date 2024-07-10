@@ -87,5 +87,7 @@
         "noInternetMessageOnLoginAttempt": "Du hast versucht, dich anzumelden, aber du hast keine Internetverbindung. Bitte verbinde dich mit dem Internet und versuche es erneut.",
         "noInternetConnection": "Keine Internetverbindung",
         "youAreCurrentlyOfflineMessage": "Sie sind derzeit offline. Bitte überprüfen Sie Ihre Internetverbindung.",
-         "backToInternetConnection": "Sie sind wieder online"
+         "backToInternetConnection": "Sie sind wieder online",
+          "findYourTherapistButton": "Finde deinen Therapeuten",
+         "applyAsTherapistButton": "Als Therapeut bewerben"
 }

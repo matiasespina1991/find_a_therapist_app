@@ -1,3 +1,5 @@
+import 'package:findatherapistapp/app_settings/app_general_settings.dart';
+import 'package:findatherapistapp/routes/app_routes.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -77,6 +79,11 @@ class MyApp extends ConsumerWidget {
           }
           return supportedLocales.first;
         },
+        initialRoute:
+            DebugConfig.debugScreen != null && DebugConfig.forceDebugScreen
+                ? Routes.getPath(DebugConfig.debugScreen!)
+                : Routes.getPath(Routes.notFoundScreen),
+        onGenerateRoute: Routes.generateRoute,
         home: const MainScreen(),
       ),
     );

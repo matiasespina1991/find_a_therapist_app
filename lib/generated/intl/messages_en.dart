@@ -25,6 +25,8 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "_locale": MessageLookupByLibrary.simpleMessage("en"),
+        "applyAsTherapistButton":
+            MessageLookupByLibrary.simpleMessage("Apply as therapist"),
         "back": MessageLookupByLibrary.simpleMessage("Back"),
         "backToInternetConnection":
             MessageLookupByLibrary.simpleMessage("You are back online"),
@@ -85,6 +87,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "There was an error when trying to logout. Please try again."),
         "fillAllFields": MessageLookupByLibrary.simpleMessage(
             "Please fill the following field/s:"),
+        "findYourTherapistButton":
+            MessageLookupByLibrary.simpleMessage("Find your therapist"),
         "gotIt": MessageLookupByLibrary.simpleMessage("Got it"),
         "homeScreenTitle": MessageLookupByLibrary.simpleMessage("Home Screen"),
         "inputsSectionTitle": MessageLookupByLibrary.simpleMessage("Inputs"),

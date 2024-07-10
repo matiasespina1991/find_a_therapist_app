@@ -26,6 +26,8 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "_locale": MessageLookupByLibrary.simpleMessage("es"),
+        "applyAsTherapistButton":
+            MessageLookupByLibrary.simpleMessage("Aplicar como terapeuta"),
         "back": MessageLookupByLibrary.simpleMessage("Atrás"),
         "backToInternetConnection":
             MessageLookupByLibrary.simpleMessage("Estás de vuelta en línea"),
@@ -89,6 +91,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Hubo un error al intentar cerrar sesión. Inténtalo de nuevo."),
         "fillAllFields": MessageLookupByLibrary.simpleMessage(
             "Por favor completa lo/s siguiente/s campo/s:"),
+        "findYourTherapistButton":
+            MessageLookupByLibrary.simpleMessage("Encuentra tu terapeuta"),
         "gotIt": MessageLookupByLibrary.simpleMessage("Entendido"),
         "homeScreenTitle":
             MessageLookupByLibrary.simpleMessage("Pantalla Principal"),

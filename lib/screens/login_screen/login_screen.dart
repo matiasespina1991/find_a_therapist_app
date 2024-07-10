@@ -6,6 +6,7 @@ import 'package:findatherapistapp/app_settings/auth_config.dart';
 import 'package:findatherapistapp/generated/l10n.dart';
 import '../../app_settings/theme_settings.dart';
 import '../../providers/providers_all.dart';
+import '../../routes/app_routes.dart';
 import '../../utils/navigation/push_route_with_animation.dart';
 import '../../utils/ui/is_dark_mode.dart';
 import '../../utils/validation/is_email_valid.dart';
@@ -342,9 +343,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               variant: SnackbarVariant.success,
               duration: SnackbarDuration.short,
               delay: 1);
-          Navigator.of(context).pushReplacement(pushRouteWithAnimation(
-              const HomeScreen(),
-              direction: SlideDirection.right));
+          Navigator.of(context).pushReplacementNamed(Routes.homeScreen);
         }
 
         if (mounted) {

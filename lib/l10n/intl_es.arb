@@ -87,6 +87,7 @@
          "noInternetMessageOnLoginAttempt": "Intentaste iniciar sesión pero no tienes conexión a internet. Conéctate a internet e inténtalo de nuevo.",
           "noInternetConnection": "Sin conexión a Internet",
           "youAreCurrentlyOfflineMessage": "Actualmente estás sin conexión a Internet.",
-          "backToInternetConnection": "Estás de vuelta en línea"
-
+          "backToInternetConnection": "Estás de vuelta en línea",
+          "findYourTherapistButton": "Encuentra tu terapeuta",
+          "applyAsTherapistButton": "Aplicar como terapeuta"
 }

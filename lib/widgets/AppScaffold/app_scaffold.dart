@@ -95,6 +95,11 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
   }
 
   _handleProtectedRoutes(auth) {
+    if (DebugConfig.debugScreen != null && DebugConfig.forceDebugScreen) {
+      debugPrint(
+          'Force debug screen is enabled. Jumping to screen: ${DebugConfig.debugScreen!}');
+      return;
+    }
     if (!DebugConfig.debugMode &&
         AuthConfig.useProtectedRoutes &&
         widget.isProtected &&
@@ -207,7 +212,10 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
       child: Column(
         children: [
           Skeletonizer(
-            enabled: !isAuthenticated && widget.isProtected,
+            enabled: !isAuthenticated &&
+                widget.isProtected &&
+                !DebugConfig.forceDebugScreen &&
+                DebugConfig.debugMode,
             child: Padding(
               padding: ThemeSettings.scaffoldPadding,
               child: widget.body,

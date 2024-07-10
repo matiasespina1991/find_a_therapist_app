@@ -1,3 +1,5 @@
+import '../routes/app_routes.dart';
+
 class AppGeneralSettings {
   static const bool useTopAppBar = false;
   static const bool useFloatingSpeedDialMenu = true;
@@ -10,5 +12,7 @@ class AppGeneralSettings {
 
 class DebugConfig {
   static const bool debugMode = false; // If true, login screen will be skipped
-  static const String debugScreen = '/home'; //TODO
+  static const String? debugScreen = Routes.loginScreen;
+  static const forceDebugScreen =
+      true; // If true, the route set in debugScreen will be shown and screen protection will be ignored
 }
