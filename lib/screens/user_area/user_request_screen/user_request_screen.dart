@@ -57,7 +57,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                   ),
                   onPressed: _sendRequest,
                   child: isSendingRequest
-                      ? Container(
+                      ? SizedBox(
                           height: 20,
                           width: 20,
                           child: LoadingCircle(
