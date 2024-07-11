@@ -14,6 +14,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 import '../../app_settings/theme_settings.dart';
 import '../../generated/l10n.dart';
 import '../../models/general_models.dart';
+import '../../routes/routes.dart';
 import '../../screens/common/loading_screen/loading_screen.dart';
 import '../ThemeAppBar/template_app_bar.dart';
 import '../ThemeFloatingSpeedDialMenu/theme_floating_speed_dial_menu.dart';
@@ -63,6 +64,10 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
   Widget build(BuildContext context) {
     final auth = ref.watch(authProvider);
     final connectivity = ref.watch(connectivityProvider);
+
+    if (auth.isLoading && !auth.isAuthenticated) {
+      return const LoadingScreen();
+    }
 
     _handleProtectedRoutes(auth);
     _checkConnectivity(connectivity);
@@ -114,7 +119,7 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
         widget.isProtected &&
         !auth.isAuthenticated) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        context.go('/login');
+        context.go(Routes.loginScreen.path);
       });
     }
 

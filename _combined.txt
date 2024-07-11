@@ -13,6 +13,7 @@
 │   │   ├── app_general_settings.dart
 │   │   ├── app_info.dart
 │   │   ├── auth_config.dart
+│   │   ├── env_settings.dart
 │   │   ├── language_settings.dart
 │   │   └── theme_settings.dart
 │   ├── assets
@@ -45,6 +46,7 @@
 │   ├── main.dart
 │   ├── models
 │   │   ├── current_user_data.dart
+│   │   ├── gemini_tags_response_model.dart
 │   │   ├── general_models.dart
 │   │   └── theme_models.dart
 │   ├── providers
@@ -68,7 +70,8 @@
 │   │       └── user_request_screen
 │   ├── services
 │   │   ├── connectivity_service.dart
-│   │   └── error_reporting_service.dart
+│   │   ├── error_reporting_service.dart
+│   │   └── gemini_service.dart
 │   ├── theme
 │   │   └── main_theme
 │   │       ├── buttons_theme.dart
@@ -77,6 +80,7 @@
 │   │       └── main_theme.dart
 │   ├── utils
 │   │   ├── debug
+│   │   │   ├── error_code_to_text.dart
 │   │   │   ├── log_configurations.dart
 │   │   │   └── notify_that_app_is_runing_in_debug_mode.dart
 │   │   ├── ui
@@ -103,7 +107,7 @@
 ├── rename_imports.sh
 └── template_app.iml
 
-38 directories, 66 files
+38 directories, 70 files
 ///// lib/main.dart /////
 import 'package:findatherapistapp/routes/routes.dart';
 import 'package:findatherapistapp/screens/common/home_screen/home_screen.dart';
@@ -218,7 +222,7 @@ class AppGeneralSettings {
 
 class DebugConfig {
   static const bool bypassLoginScreen =
-      true; // If true, login screen will be skipped
+      false; // If true, login screen will be skipped
   static RouteConfig debugScreen = Routes.loadingScreen;
   static const forceDebugScreen =
       false; // If true, the route set in debugScreen will be shown and screen protection will be ignored
@@ -260,7 +264,7 @@ class ThemeSettings {
   static const bool useMaterial3 = true;
   static const bool useSafeArea = true;
   static const EdgeInsetsGeometry scaffoldPadding = EdgeInsets.only(
-    top: 30,
+    top: 20,
     bottom: 0,
     left: 20,
     right: 20,
@@ -320,7 +324,12 @@ class ThemeSettings {
 
   static const ThemeColors appBarBackgroundColor = ThemeColors(
     lightModePrimary: Colors.blueGrey,
-    darkModePrimary: Colors.blueGrey,
+    darkModePrimary: Color(0xFF121212),
+  );
+
+  static const ThemeColors floatingSpeedDialBackgroundColor = ThemeColors(
+    lightModePrimary: Colors.blueGrey,
+    darkModePrimary: Colors.white,
   );
 
   static const ThemeColors primaryTextColor = ThemeColors(
@@ -345,6 +354,11 @@ class ThemeSettings {
 
   static const ThemeColors elevatedButtonBackgroundColor = ThemeColors(
     lightModePrimary: Colors.blueGrey,
+    darkModePrimary: Colors.white,
+  );
+
+  static const ThemeColors appbarOnBackgroundColor = ThemeColors(
+    lightModePrimary: Colors.white,
     darkModePrimary: Colors.white,
   );
 
@@ -439,6 +453,7 @@ import 'package:findatherapistapp/app_settings/app_general_settings.dart';
 import 'package:findatherapistapp/widgets/AppScaffold/app_scaffold.dart';
 
 import '../../../generated/l10n.dart';
+import '../../../providers/providers_all.dart';
 import '../../../routes/routes.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -468,6 +483,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
+            const SizedBox(
+              height: 38,
+            ),
             Skeletonizer(
               enabled: isLoading,
               child: Column(
@@ -481,7 +499,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   const SizedBox(height: 20),
                   ElevatedButton(
                       onPressed: () {
-                        context.go(Routes.userRequestScreen.path);
+                        context.push(Routes.userRequestScreen.path);
                       },
                       style: ElevatedButton.styleFrom(
                         minimumSize: const Size(double.infinity, 47),
@@ -496,6 +514,45 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       child: Text(S.of(context).applyAsTherapistButton)),
                 ],
               ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    ref.read(localeProvider).setLocale(const Locale('en'));
+                  },
+                  child: const Text(
+                    '🇺🇸',
+                    style: TextStyle(fontSize: 30),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                const Text('/'),
+                const SizedBox(width: 10),
+                GestureDetector(
+                  onTap: () {
+                    ref.read(localeProvider).setLocale(const Locale('es'));
+                  },
+                  child: const Text(
+                    '🇪🇸',
+                    style: TextStyle(fontSize: 30),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                const Text('/'),
+                const SizedBox(width: 10),
+                GestureDetector(
+                  onTap: () {
+                    ref.read(localeProvider).setLocale(const Locale('de'));
+                  },
+                  child: const Text(
+                    '🇩🇪',
+                    style: TextStyle(fontSize: 30),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -951,10 +1008,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 }
 
 ///// lib/screens/user_area/user_request_screen/user_request_screen.dart /////
-import 'package:findatherapistapp/widgets/AppScaffold/app_scaffold.dart';
+import 'dart:developer';
+import 'package:findatherapistapp/models/gemini_tags_response_model.dart';
+import 'package:findatherapistapp/widgets/LoadingCircle/loading_circle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:findatherapistapp/services/gemini_service.dart';
+import 'package:go_router/go_router.dart';
+import '../../../app_settings/theme_settings.dart';
+import '../../../utils/debug/error_code_to_text.dart';
+import '../../../utils/ui/is_dark_mode.dart';
+import '../../../widgets/AppScaffold/app_scaffold.dart';
 import '../../../generated/l10n.dart';
 
 class UserRequestScreen extends ConsumerStatefulWidget {
@@ -965,10 +1029,17 @@ class UserRequestScreen extends ConsumerStatefulWidget {
 }
 
 class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
+  final TextEditingController _requestController = TextEditingController();
+  final GeminiService _geminiService = GeminiService();
+  GeminiTagsResponse? _tagsResponse;
+  bool isSendingRequest = false;
+
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
+      useTopAppBar: true,
       isProtected: true,
+      showScreenTitleInAppBar: false,
       appBarTitle: 'Request a Therapist',
       body: SingleChildScrollView(
           child: Column(
@@ -978,6 +1049,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
               style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 20),
           TextField(
+            controller: _requestController,
             decoration: InputDecoration(
               hintText: S.of(context).requestTextFieldHintText,
               hintStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -990,17 +1062,196 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
             ),
             maxLines: 18,
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 15),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
               ElevatedButton(
-                  onPressed: () {}, child: Text(S.of(context).sendButton)),
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(130, ThemeSettings.buttonsHeight),
+                  ),
+                  onPressed: _sendRequest,
+                  child: isSendingRequest
+                      ? SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: LoadingCircle(
+                            color: Theme.of(context).colorScheme.onPrimary,
+                          ),
+                        )
+                      : Text(S.of(context).sendButton)),
             ],
           ),
+          if (_tagsResponse != null) ...[
+            if (_tagsResponse!.error != null) ...[
+              const SizedBox(height: 15),
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: ThemeSettings.errorColor.shade50,
+                  border: Border.all(
+                    color: ThemeSettings.errorColor,
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+
+                  /// add warning icon big and centered
+
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 10),
+                      const Icon(Icons.warning, color: Colors.red, size: 40),
+                      const SizedBox(height: 10),
+                      Text(
+                        S.of(context).ohNoSomethingWentWrong,
+                        textAlign: TextAlign.center,
+                        style:
+                            Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                  color: ThemeSettings.errorColor,
+                                ),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        ErrorCodeToText.getGeminiErrorMessage(
+                            _tagsResponse!.error!, context),
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              color: ThemeSettings.errorColor,
+                            ),
+                      ),
+                      const SizedBox(height: 10),
+                    ],
+                  ),
+                ),
+              )
+            ],
+            if (_tagsResponse!.error == null)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 10),
+                  const Divider(),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          S.of(context).positiveAspectsTitle,
+                          style: Theme.of(context).textTheme.headlineMedium,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    '(${S.of(context).positiveAspectsDescription})',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 10.0),
+                  Wrap(
+                    spacing: 8.0,
+                    runSpacing: 4.0,
+                    children: _tagsResponse!.tags.positive.isNotEmpty
+                        ? _tagsResponse!.tags.positive
+                            .map((aspect) => Chip(
+                                  side: const BorderSide(
+                                      color: Colors.green, width: 1.0),
+                                  label: Text(aspect,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge
+                                          ?.copyWith(
+                                            color: isDarkMode(context)
+                                                ? Colors.green
+                                                : Colors.white,
+                                          )),
+                                  backgroundColor: isDarkMode(context)
+                                      ? Colors.transparent
+                                      : Colors.green.shade400,
+                                ))
+                            .toList()
+                        : [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8.0, vertical: 13.0),
+                              child: Text(S.of(context).notFound,
+                                  style: Theme.of(context).textTheme.bodyLarge),
+                            ),
+                          ],
+                  ),
+                  const SizedBox(height: 5),
+                  const Divider(),
+                  const SizedBox(height: 5),
+                  Text(
+                    S.of(context).negativeAspectsTitle,
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    '(${S.of(context).negativeAspectsDescription})',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 10.0),
+                  Wrap(
+                    spacing: 8.0,
+                    runSpacing: 4.0,
+                    children: _tagsResponse!.tags.negative.isNotEmpty
+                        ? _tagsResponse!.tags.negative
+                            .map((aspect) => Chip(
+                                  side: const BorderSide(
+                                      color: Colors.red, width: 1.0),
+                                  label: Text(aspect,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge
+                                          ?.copyWith(
+                                            color: isDarkMode(context)
+                                                ? Colors.red
+                                                : Colors.white,
+                                          )),
+                                  backgroundColor: isDarkMode(context)
+                                      ? Colors.transparent
+                                      : Colors.red.shade400,
+                                ))
+                            .toList()
+                        : [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8.0, vertical: 13.0),
+                              child: Text(S.of(context).notFound,
+                                  style: Theme.of(context).textTheme.bodyLarge),
+                            ),
+                          ],
+                  ),
+                  const SizedBox(height: 5),
+                  const Divider(),
+                ],
+              ),
+          ],
+          const SizedBox(height: 60),
         ],
       )),
     );
+  }
+
+  Future<GeminiTagsResponse?> _sendRequest() async {
+    if (isSendingRequest) return null;
+
+    setState(() {
+      isSendingRequest = true;
+    });
+    final inputText = _requestController.text;
+    final GeminiTagsResponse geminiResponse =
+        await _geminiService.getTherapyTags(inputText);
+    setState(() {
+      isSendingRequest = false;
+      _tagsResponse = geminiResponse;
+    });
+
+    log(geminiResponse.toJson().toString());
+
+    return geminiResponse;
   }
 }
 
@@ -1034,6 +1285,8 @@ class AppScaffold extends ConsumerStatefulWidget {
   final ScrollPhysics? scrollPhysics;
   final LottieAnimationBackground? backgroundAnimation;
   final LottieAnimationBackground? backgroundAnimationDarkMode;
+  final bool useTopAppBar;
+  final bool showScreenTitleInAppBar;
 
   const AppScaffold({
     super.key,
@@ -1045,6 +1298,8 @@ class AppScaffold extends ConsumerStatefulWidget {
     this.scrollPhysics,
     this.backgroundAnimation,
     this.backgroundAnimationDarkMode,
+    this.useTopAppBar = false,
+    this.showScreenTitleInAppBar = true,
   });
 
   @override
@@ -1074,9 +1329,9 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
       bottom: widget.useSafeArea ?? ThemeSettings.useSafeArea,
       top: widget.useSafeArea ?? ThemeSettings.useSafeArea,
       child: Scaffold(
-        appBar: AppGeneralSettings.useTopAppBar
+        appBar: (AppGeneralSettings.useTopAppBar || widget.useTopAppBar)
             ? ThemeAppBar(
-                title: widget.appBarTitle,
+                title: widget.showScreenTitleInAppBar ? widget.appBarTitle : '',
               )
             : null,
         body: Stack(
@@ -1314,6 +1569,169 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
           icon: Icons.wifi,
           variant: 'success',
           duration: 'long');
+    }
+  }
+}
+
+///// lib/services/gemini_service.dart /////
+import 'package:google_generative_ai/google_generative_ai.dart' as google_ai;
+import 'dart:convert';
+import '../app_settings/env_settings.dart';
+import '../models/gemini_tags_response_model.dart';
+import '../services/error_reporting_service.dart';
+import '../models/current_user_data.dart';
+
+class GeminiService {
+  final String apiKey = EnvSettings.googleGenerativeApiKey;
+
+  Future<GeminiTagsResponse> getTherapyTags(String inputText,
+      {CurrentUserData? userData}) async {
+    final model = google_ai.GenerativeModel(
+      model: 'gemini-1.5-flash-latest',
+      apiKey: apiKey,
+    );
+
+    final prompt = '''
+Input Text: $inputText
+
+Instructions for the AI: Your task is to analyze the provided text and extract key information essential for classifying and understanding the individual's therapeutic needs. Generate a structured object named tags that includes two arrays, positive and negative, to encapsulate:
+
+Convert All Terms to English and Lowercase: Regardless of the input text's language, ensure all extracted terms are translated into English and presented in lowercase. This includes types of therapy, personal challenges, and any preferences or characteristics mentioned.
+Use Hyphens for Multi-Word Terms: For concepts consisting of more than one word, connect these words with hyphens instead of spaces. Ensure these hyphen-connected terms are also in lowercase to maintain data uniformity and facilitate easier data processing.
+Types of Therapy Mentioned: Identify any specific therapy types mentioned (e.g., cbt, jungian-analysis, emdr) and list them under the appropriate category based on the individual's explicit preference for or against them.
+Personal Challenges: Extract personal challenges or issues mentioned (such as low-self-esteem, stress-triggered-depressive-episodes) and convert them into atomized, hyphen-connected terms in lowercase. Place them in the 'positive' array if the individual seeks help for these issues.
+Therapy Preferences and Other Relevant Details: If the text includes specific preferences regarding therapy modality or other relevant details (like interest in astrology, seeking personal-growth), add these to the 'positive' array, using hyphens for two-word terms, and ensure all are in lowercase.
+Expected Output: A structured object tags with two arrays, positive and negative, that accurately reflect the key information from the text, correctly formatted in English and entirely in lowercase. This structure aims to facilitate precise matching in a therapy search database.
+    ''';
+
+    try {
+      final Iterable<google_ai.Content> content = [
+        google_ai.Content.text(prompt),
+      ];
+      final google_ai.GenerateContentResponse response =
+          await model.generateContent(content);
+
+      if (response.candidates == null || response.candidates!.isEmpty) {
+        return GeminiTagsResponse(
+            tags: Tags(positive: [], negative: []),
+            error: GeminiErrorResponse(
+                message: 'No candidates found in response',
+                code: 'no-candidates'),
+            candidates: []);
+      }
+
+      String? responseText;
+      for (var candidate in response.candidates!) {
+        if (candidate.text != null && candidate.text!.isNotEmpty) {
+          responseText = candidate.text;
+          break;
+        }
+      }
+
+      if (responseText == null) {
+        return GeminiTagsResponse(
+            tags: Tags(positive: [], negative: []),
+            error: GeminiErrorResponse(
+                message: 'No text found in response candidates',
+                code: 'no-text-found-in-response'),
+            candidates: response.candidates
+                    ?.map((candidate) => Candidate(
+                          text: candidate.text,
+                          safetyRatings: candidate.safetyRatings
+                              ?.map((rating) => SafetyRating(
+                                    category: rating.category.toString(),
+                                    probability: rating.probability.toString(),
+                                  ))
+                              .toList(),
+                        ))
+                    .toList() ??
+                []);
+      }
+
+      // Extract only the JSON part of the response
+      final jsonString = _extractJson(responseText);
+      if (jsonString.isEmpty) {
+        return GeminiTagsResponse(
+            tags: Tags(positive: [], negative: []),
+            error: GeminiErrorResponse(
+                message: 'No JSON found in response text',
+                code: 'no-json-found-in-response-text'),
+            candidates: response.candidates
+                    ?.map((candidate) => Candidate(
+                          text: candidate.text,
+                          safetyRatings: candidate.safetyRatings
+                              ?.map((rating) => SafetyRating(
+                                    category: rating.category.toString(),
+                                    probability: rating.probability.toString(),
+                                  ))
+                              .toList(),
+                        ))
+                    .toList() ??
+                []);
+      }
+
+      final jsonResponse = jsonDecode(jsonString);
+      final geminiTagsResponse = GeminiTagsResponse.fromJson(jsonResponse);
+      geminiTagsResponse.candidates
+          ?.addAll(response.candidates!.map((candidate) => Candidate(
+                text: candidate.text,
+                safetyRatings: candidate.safetyRatings
+                    ?.map((rating) => SafetyRating(
+                          category: rating.category.toString(),
+                          probability: rating.probability.toString(),
+                        ))
+                    .toList(),
+              )));
+      return geminiTagsResponse;
+    } on google_ai.GenerativeAIException catch (e, stackTrace) {
+      await ErrorReportingService.reportError(e, stackTrace, userData,
+          screen: 'GeminiService',
+          errorLocation: 'getTherapyTags',
+          additionalInfo: [
+            'User input text: $inputText',
+          ]);
+
+      if (e.message == 'Candidate was blocked due to safety') {
+        return GeminiTagsResponse(
+            tags: Tags(positive: [], negative: []),
+            error: GeminiErrorResponse(
+              message: e.message,
+              code: 'candidate-blocked-due-to-safety',
+            ),
+            candidates: []);
+      }
+
+      return GeminiTagsResponse(
+          tags: Tags(positive: [], negative: []),
+          error: GeminiErrorResponse(
+            message: e.message,
+            code: 'generative-ai-error',
+          ),
+          candidates: []);
+    } catch (e, stackTrace) {
+      await ErrorReportingService.reportError(e, stackTrace, userData,
+          screen: 'GeminiService',
+          errorLocation: 'getTherapyTags',
+          additionalInfo: [
+            'User input text: $inputText',
+          ]);
+      return GeminiTagsResponse(
+          tags: Tags(positive: [], negative: []),
+          error: GeminiErrorResponse(
+            message: 'Unknown error occurred',
+            code: 'unknown-error',
+          ),
+          candidates: []);
+    }
+  }
+
+  String _extractJson(String responseText) {
+    final regex = RegExp(r'\{.*\}', dotAll: true);
+    final match = regex.firstMatch(responseText);
+    if (match != null) {
+      return match.group(0) ?? '';
+    } else {
+      return '';
     }
   }
 }

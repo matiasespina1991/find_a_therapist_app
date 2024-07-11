@@ -8,6 +8,7 @@ class LoadingCircle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
         child: CircularProgressIndicator(
+      strokeWidth: 5,
       valueColor: AlwaysStoppedAnimation<Color>(
           color ?? Theme.of(context).colorScheme.secondary),
     ));

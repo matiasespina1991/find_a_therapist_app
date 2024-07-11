@@ -8,6 +8,7 @@ import 'package:findatherapistapp/generated/l10n.dart';
 
 import '../../../app_settings/theme_settings.dart';
 import '../../../providers/providers_all.dart';
+import '../../../routes/routes.dart';
 import '../../../utils/ui/is_dark_mode.dart';
 import '../../../utils/validation/is_email_valid.dart';
 import '../../../widgets/AppScaffold/app_scaffold.dart';
@@ -342,7 +343,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               variant: SnackbarVariant.success,
               duration: SnackbarDuration.short,
               delay: 1);
-          context.go('/');
+          context.go(Routes.homeScreen.path);
         }
 
         if (mounted) {
@@ -406,7 +407,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 duration: SnackbarDuration.short,
                 delay: 1,
               );
-              context.go('/');
+              context.go(Routes.homeScreen.path);
             },
           );
         }
