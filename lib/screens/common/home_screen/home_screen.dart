@@ -37,6 +37,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
+            const SizedBox(
+              height: 38,
+            ),
             Skeletonizer(
               enabled: isLoading,
               child: Column(
