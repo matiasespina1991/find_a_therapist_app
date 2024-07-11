@@ -145,6 +145,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "noTextFoundInResponseMessage": MessageLookupByLibrary.simpleMessage(
             "Hubo un error al intentar procesar su solicitud. Hemos reportado el problema. Por favor, inténtelo nuevamente más tarde."),
         "notFound": MessageLookupByLibrary.simpleMessage("No se encontraron."),
+        "ohNoSomethingWentWrong":
+            MessageLookupByLibrary.simpleMessage("Oh no, algo salió mal!"),
         "ok": MessageLookupByLibrary.simpleMessage("OK"),
         "outlinedButtonLabel":
             MessageLookupByLibrary.simpleMessage("Botón Contorneado"),

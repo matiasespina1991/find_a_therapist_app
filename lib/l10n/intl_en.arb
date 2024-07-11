@@ -104,7 +104,7 @@
          "positiveAspectsTitle": "Positive aspects",
               "positiveAspectsDescription": "What you expect your therapist to treat",
               "notFound": "Not found.",
-
+                "ohNoSomethingWentWrong": "Oh no, Something went wrong!",
                 "candidateBlockedDueToSafetyMessage": "Inappropriate language was detected in your request and we couldn't process it. Please try again. If you believe this is a mistake, please contact us.",
                 "noCandidatesMessage": "There was an error trying to process your request. We have reported the issue. Please try again later.",
                 "noTextFoundInResponseMessage": "There was an error trying to process your request. We have reported the issue. Please try again later.",

@@ -50,7 +50,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   const SizedBox(height: 20),
                   ElevatedButton(
                       onPressed: () {
-                        context.go(Routes.userRequestScreen.path);
+                        context.push(Routes.userRequestScreen.path);
                       },
                       style: ElevatedButton.styleFrom(
                         minimumSize: const Size(double.infinity, 47),

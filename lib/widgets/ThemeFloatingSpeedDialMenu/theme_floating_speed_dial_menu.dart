@@ -1,3 +1,4 @@
+import 'package:findatherapistapp/app_settings/theme_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -30,7 +31,9 @@ class _ThemeFloatingSpeedDialMenuState
     bool isDarkMode = theme.themeMode == ThemeMode.dark;
 
     return SpeedDial(
-      backgroundColor: Theme.of(context).colorScheme.primary,
+      backgroundColor: isDarkMode
+          ? ThemeSettings.floatingSpeedDialBackgroundColor.darkModePrimary
+          : ThemeSettings.floatingSpeedDialBackgroundColor.lightModePrimary,
       closeManually:
           false, // If set to true, dont try to add dynamic items or state-dependent items, they wont update
       animationDuration: const Duration(milliseconds: 200),

@@ -4,6 +4,7 @@ import 'package:findatherapistapp/widgets/LoadingCircle/loading_circle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:findatherapistapp/services/gemini_service.dart';
+import 'package:go_router/go_router.dart';
 import '../../../app_settings/theme_settings.dart';
 import '../../../utils/debug/error_utils.dart';
 import '../../../utils/ui/is_dark_mode.dart';
@@ -26,7 +27,9 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
+      useTopAppBar: true,
       isProtected: true,
+      showScreenTitleInAppBar: false,
       appBarTitle: 'Request a Therapist',
       body: SingleChildScrollView(
           child: Column(
@@ -91,7 +94,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                       const Icon(Icons.warning, color: Colors.red, size: 40),
                       const SizedBox(height: 10),
                       Text(
-                        'Oh no, Something went wrong!',
+                        S.of(context).ohNoSomethingWentWrong,
                         textAlign: TextAlign.center,
                         style:
                             Theme.of(context).textTheme.headlineSmall?.copyWith(
@@ -213,10 +216,10 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                   ),
                   const SizedBox(height: 5),
                   const Divider(),
-                  const SizedBox(height: 5),
                 ],
               ),
           ],
+          const SizedBox(height: 60),
         ],
       )),
     );

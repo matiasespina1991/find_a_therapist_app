@@ -8,7 +8,7 @@ class ThemeSettings {
   static const bool useMaterial3 = true;
   static const bool useSafeArea = true;
   static const EdgeInsetsGeometry scaffoldPadding = EdgeInsets.only(
-    top: 30,
+    top: 20,
     bottom: 0,
     left: 20,
     right: 20,
@@ -68,7 +68,12 @@ class ThemeSettings {
 
   static const ThemeColors appBarBackgroundColor = ThemeColors(
     lightModePrimary: Colors.blueGrey,
-    darkModePrimary: Colors.blueGrey,
+    darkModePrimary: Color(0xFF121212),
+  );
+
+  static const ThemeColors floatingSpeedDialBackgroundColor = ThemeColors(
+    lightModePrimary: Colors.blueGrey,
+    darkModePrimary: Colors.white,
   );
 
   static const ThemeColors primaryTextColor = ThemeColors(
@@ -93,6 +98,11 @@ class ThemeSettings {
 
   static const ThemeColors elevatedButtonBackgroundColor = ThemeColors(
     lightModePrimary: Colors.blueGrey,
+    darkModePrimary: Colors.white,
+  );
+
+  static const ThemeColors appbarOnBackgroundColor = ThemeColors(
+    lightModePrimary: Colors.white,
     darkModePrimary: Colors.white,
   );
 

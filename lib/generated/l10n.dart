@@ -1070,6 +1070,16 @@ class S {
     );
   }
 
+  /// `Oh no, Something went wrong!`
+  String get ohNoSomethingWentWrong {
+    return Intl.message(
+      'Oh no, Something went wrong!',
+      name: 'ohNoSomethingWentWrong',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Inappropriate language was detected in your request and we couldn't process it. Please try again. If you believe this is a mistake, please contact us.`
   String get candidateBlockedDueToSafetyMessage {
     return Intl.message(
