@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../app_settings/app_general_settings.dart';
 import '../../../app_settings/theme_settings.dart';
-import '../../../widgets/AppScaffold/app_scaffold.dart';
 import '../../../widgets/LoadingCircle/loading_circle.dart';
-import '../../../widgets/ThemeAppBar/template_app_bar.dart';
 
 class LoadingScreen extends ConsumerStatefulWidget {
   const LoadingScreen({super.key});

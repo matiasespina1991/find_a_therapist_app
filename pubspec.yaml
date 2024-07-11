@@ -32,6 +32,8 @@ dependencies:
   go_router: ^14.2.0
   # Google Generative AI is a Flutter plugin for using Google Generative AI in a Flutter app.
   google_generative_ai: ^0.4.3
+  # Speech to Text is a Flutter plugin for converting speech to text in a Flutter app.
+  speech_to_text: ^6.6.0
 
 
 #  # -----------------  GENERAL PACKAGES  -----------------

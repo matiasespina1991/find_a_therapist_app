@@ -1,11 +1,13 @@
 import 'dart:developer';
-import 'package:findatherapistapp/models/gemini_tags_response_model.dart';
-import 'package:findatherapistapp/widgets/LoadingCircle/loading_circle.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:findatherapistapp/widgets/LoadingCircle/loading_circle.dart';
 import 'package:findatherapistapp/services/gemini_service.dart';
-import 'package:go_router/go_router.dart';
 import '../../../app_settings/theme_settings.dart';
+import '../../../models/gemini_tags_response_model.dart';
+import '../../../providers/providers_all.dart';
 import '../../../utils/debug/error_code_to_text.dart';
 import '../../../utils/ui/is_dark_mode.dart';
 import '../../../widgets/AppScaffold/app_scaffold.dart';
@@ -23,6 +25,66 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
   final GeminiService _geminiService = GeminiService();
   GeminiTagsResponse? _tagsResponse;
   bool isSendingRequest = false;
+  stt.SpeechToText _speech = stt.SpeechToText();
+  bool _isListening = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _speech = stt.SpeechToText();
+  }
+
+  @override
+  void dispose() {
+    _speech.stop();
+    _requestController.dispose();
+    super.dispose();
+  }
+
+  void _startListening() async {
+    bool available = await _speech.initialize();
+    var _localeProvider = ref.watch(localeProvider);
+    if (available) {
+      setState(() => _isListening = true);
+
+      if (_localeProvider.locale.languageCode == 'en') {
+        _speech.listen(
+          onResult: (val) => {
+            setState(() {
+              _requestController.text = val.recognizedWords;
+            })
+          },
+        );
+      } else {
+        _speech.listen(
+          onResult: (val) => {
+            setState(() {
+              _requestController.text = val.recognizedWords;
+            })
+          },
+          localeId: _localeProvider.locale.languageCode,
+        );
+      }
+    }
+  }
+
+  void _stopListening() async {
+    await _speech.stop();
+    setState(() => _isListening = false);
+
+    await _improveTranscription(_requestController.text);
+  }
+
+  Future<void> _improveTranscription(String text) async {
+    setState(() {
+      isSendingRequest = true;
+    });
+    final improvedText = await _geminiService.improveTranscription(text);
+    setState(() {
+      _requestController.text = improvedText;
+      isSendingRequest = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,8 +111,13 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                         .withOpacity(0.5),
                   ),
               border: const OutlineInputBorder(),
+              suffixIcon: IconButton(
+                icon: Icon(_isListening ? Icons.mic : Icons.mic_none),
+                onPressed: _isListening ? _stopListening : _startListening,
+              ),
             ),
             maxLines: 18,
+            enabled: !isSendingRequest,
           ),
           const SizedBox(height: 15),
           Row(
@@ -60,7 +127,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(130, ThemeSettings.buttonsHeight),
                   ),
-                  onPressed: _sendRequest,
+                  onPressed: isSendingRequest ? null : _sendRequest,
                   child: isSendingRequest
                       ? SizedBox(
                           height: 20,

@@ -3,13 +3,11 @@ import 'dart:convert';
 import '../app_settings/env_settings.dart';
 import '../models/gemini_tags_response_model.dart';
 import '../services/error_reporting_service.dart';
-import '../models/current_user_data.dart';
 
 class GeminiService {
   final String apiKey = EnvSettings.googleGenerativeApiKey;
 
-  Future<GeminiTagsResponse> getTherapyTags(String inputText,
-      {CurrentUserData? userData}) async {
+  Future<GeminiTagsResponse> getTherapyTags(String inputText) async {
     final model = google_ai.GenerativeModel(
       model: 'gemini-1.5-flash-latest',
       apiKey: apiKey,
@@ -35,7 +33,7 @@ Expected Output: A structured object tags with two arrays, positive and negative
       final google_ai.GenerateContentResponse response =
           await model.generateContent(content);
 
-      if (response.candidates == null || response.candidates!.isEmpty) {
+      if (response.candidates.isEmpty) {
         return GeminiTagsResponse(
             tags: Tags(positive: [], negative: []),
             error: GeminiErrorResponse(
@@ -45,7 +43,7 @@ Expected Output: A structured object tags with two arrays, positive and negative
       }
 
       String? responseText;
-      for (var candidate in response.candidates!) {
+      for (var candidate in response.candidates) {
         if (candidate.text != null && candidate.text!.isNotEmpty) {
           responseText = candidate.text;
           break;
@@ -59,7 +57,7 @@ Expected Output: A structured object tags with two arrays, positive and negative
                 message: 'No text found in response candidates',
                 code: 'no-text-found-in-response'),
             candidates: response.candidates
-                    ?.map((candidate) => Candidate(
+                    .map((candidate) => Candidate(
                           text: candidate.text,
                           safetyRatings: candidate.safetyRatings
                               ?.map((rating) => SafetyRating(
@@ -81,7 +79,7 @@ Expected Output: A structured object tags with two arrays, positive and negative
                 message: 'No JSON found in response text',
                 code: 'no-json-found-in-response-text'),
             candidates: response.candidates
-                    ?.map((candidate) => Candidate(
+                    .map((candidate) => Candidate(
                           text: candidate.text,
                           safetyRatings: candidate.safetyRatings
                               ?.map((rating) => SafetyRating(
@@ -97,7 +95,7 @@ Expected Output: A structured object tags with two arrays, positive and negative
       final jsonResponse = jsonDecode(jsonString);
       final geminiTagsResponse = GeminiTagsResponse.fromJson(jsonResponse);
       geminiTagsResponse.candidates
-          ?.addAll(response.candidates!.map((candidate) => Candidate(
+          ?.addAll(response.candidates.map((candidate) => Candidate(
                 text: candidate.text,
                 safetyRatings: candidate.safetyRatings
                     ?.map((rating) => SafetyRating(
@@ -108,7 +106,7 @@ Expected Output: A structured object tags with two arrays, positive and negative
               )));
       return geminiTagsResponse;
     } on google_ai.GenerativeAIException catch (e, stackTrace) {
-      await ErrorReportingService.reportError(e, stackTrace, userData,
+      await ErrorReportingService.reportError(e, stackTrace, null,
           screen: 'GeminiService',
           errorLocation: 'getTherapyTags',
           additionalInfo: [
@@ -133,7 +131,7 @@ Expected Output: A structured object tags with two arrays, positive and negative
           ),
           candidates: []);
     } catch (e, stackTrace) {
-      await ErrorReportingService.reportError(e, stackTrace, userData,
+      await ErrorReportingService.reportError(e, stackTrace, null,
           screen: 'GeminiService',
           errorLocation: 'getTherapyTags',
           additionalInfo: [
@@ -156,6 +154,45 @@ Expected Output: A structured object tags with two arrays, positive and negative
       return match.group(0) ?? '';
     } else {
       return '';
+    }
+  }
+
+  Future<String> improveTranscription(String text) async {
+    final model = google_ai.GenerativeModel(
+      model: 'gemini-1.5-flash-latest',
+      apiKey: apiKey,
+    );
+
+    final prompt = '''
+    Input Text: $text
+
+    Instructions for the AI: This text has been transcribed from an audio input and may contain inaccuracies in punctuation and wording. Your task is to improve the text by correcting any errors and making it more coherent and cohesive. Ensure that the improved text is a faithful representation of what the user intended to say, and correct words if necessary to maintain coherence.
+
+    Expected Output: The improved text, well-punctuated and corrected, in a readable format.
+    ''';
+
+    try {
+      final Iterable<google_ai.Content> content = [
+        google_ai.Content.text(prompt),
+      ];
+      final google_ai.GenerateContentResponse response =
+          await model.generateContent(content);
+
+      if (response.candidates.isEmpty) {
+        return text;
+      }
+
+      String? responseText;
+      for (var candidate in response.candidates) {
+        if (candidate.text != null && candidate.text!.isNotEmpty) {
+          responseText = candidate.text;
+          break;
+        }
+      }
+
+      return responseText ?? text;
+    } catch (e) {
+      return text;
     }
   }
 }
