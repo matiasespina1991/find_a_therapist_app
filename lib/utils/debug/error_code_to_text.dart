@@ -3,8 +3,9 @@ import 'package:flutter/cupertino.dart';
 import '../../models/gemini_tags_response_model.dart';
 import '../../../generated/l10n.dart';
 
-class ErrorUtils {
-  static String getGeminiErrorMessage(GeminiError error, BuildContext context) {
+class ErrorCodeToText {
+  static String getGeminiErrorMessage(
+      GeminiErrorResponse error, BuildContext context) {
     switch (error.code) {
       case 'candidate-blocked-due-to-safety':
         return S.of(context).candidateBlockedDueToSafetyMessage;

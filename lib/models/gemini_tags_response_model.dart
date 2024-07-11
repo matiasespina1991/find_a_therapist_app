@@ -1,6 +1,6 @@
 class GeminiTagsResponse {
   final Tags tags;
-  final GeminiError? error;
+  final GeminiErrorResponse? error;
   final List<Candidate>? candidates;
 
   GeminiTagsResponse(
@@ -10,7 +10,7 @@ class GeminiTagsResponse {
     return GeminiTagsResponse(
       tags: Tags.fromJson(json['tags']),
       error: json['error'] != null
-          ? GeminiError(message: json['error'], code: null)
+          ? GeminiErrorResponse(message: json['error'], code: null)
           : null,
       candidates: (json['candidates'] as List<dynamic>?)
               ?.map((candidate) => Candidate.fromJson(candidate))
@@ -72,14 +72,14 @@ class Candidate {
   }
 }
 
-class GeminiError {
+class GeminiErrorResponse {
   final String? message;
   final String? code;
 
-  GeminiError({this.message, this.code});
+  GeminiErrorResponse({this.message, this.code});
 
-  factory GeminiError.fromJson(Map<String, dynamic> json) {
-    return GeminiError(
+  factory GeminiErrorResponse.fromJson(Map<String, dynamic> json) {
+    return GeminiErrorResponse(
       message: json['message'],
       code: json['code'],
     );

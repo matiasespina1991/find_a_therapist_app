@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:findatherapistapp/services/gemini_service.dart';
 import 'package:go_router/go_router.dart';
 import '../../../app_settings/theme_settings.dart';
-import '../../../utils/debug/error_utils.dart';
+import '../../../utils/debug/error_code_to_text.dart';
 import '../../../utils/ui/is_dark_mode.dart';
 import '../../../widgets/AppScaffold/app_scaffold.dart';
 import '../../../generated/l10n.dart';
@@ -103,7 +103,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        ErrorUtils.getGeminiErrorMessage(
+                        ErrorCodeToText.getGeminiErrorMessage(
                             _tagsResponse!.error!, context),
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(

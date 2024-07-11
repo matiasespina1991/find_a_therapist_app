@@ -30,7 +30,7 @@ Expected Output: A structured object tags with two arrays, positive and negative
 
     try {
       final Iterable<google_ai.Content> content = [
-        google_ai.Content.text(prompt)
+        google_ai.Content.text(prompt),
       ];
       final google_ai.GenerateContentResponse response =
           await model.generateContent(content);
@@ -38,7 +38,7 @@ Expected Output: A structured object tags with two arrays, positive and negative
       if (response.candidates == null || response.candidates!.isEmpty) {
         return GeminiTagsResponse(
             tags: Tags(positive: [], negative: []),
-            error: GeminiError(
+            error: GeminiErrorResponse(
                 message: 'No candidates found in response',
                 code: 'no-candidates'),
             candidates: []);
@@ -55,7 +55,7 @@ Expected Output: A structured object tags with two arrays, positive and negative
       if (responseText == null) {
         return GeminiTagsResponse(
             tags: Tags(positive: [], negative: []),
-            error: GeminiError(
+            error: GeminiErrorResponse(
                 message: 'No text found in response candidates',
                 code: 'no-text-found-in-response'),
             candidates: response.candidates
@@ -77,7 +77,7 @@ Expected Output: A structured object tags with two arrays, positive and negative
       if (jsonString.isEmpty) {
         return GeminiTagsResponse(
             tags: Tags(positive: [], negative: []),
-            error: GeminiError(
+            error: GeminiErrorResponse(
                 message: 'No JSON found in response text',
                 code: 'no-json-found-in-response-text'),
             candidates: response.candidates
@@ -118,7 +118,7 @@ Expected Output: A structured object tags with two arrays, positive and negative
       if (e.message == 'Candidate was blocked due to safety') {
         return GeminiTagsResponse(
             tags: Tags(positive: [], negative: []),
-            error: GeminiError(
+            error: GeminiErrorResponse(
               message: e.message,
               code: 'candidate-blocked-due-to-safety',
             ),
@@ -127,7 +127,7 @@ Expected Output: A structured object tags with two arrays, positive and negative
 
       return GeminiTagsResponse(
           tags: Tags(positive: [], negative: []),
-          error: GeminiError(
+          error: GeminiErrorResponse(
             message: e.message,
             code: 'generative-ai-error',
           ),
@@ -141,7 +141,7 @@ Expected Output: A structured object tags with two arrays, positive and negative
           ]);
       return GeminiTagsResponse(
           tags: Tags(positive: [], negative: []),
-          error: GeminiError(
+          error: GeminiErrorResponse(
             message: 'Unknown error occurred',
             code: 'unknown-error',
           ),

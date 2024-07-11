@@ -12,6 +12,7 @@ files=(
     "lib/screens/common/login_screen/login_screen.dart"
     "lib/screens/user_area/user_request_screen/user_request_screen.dart"
     "lib/widgets/AppScaffold/app_scaffold.dart"
+    "lib/services/gemini_service.dart"
 #    "lib/widgets/NotificationSnackbar/notification_snackbar.dart"
 #    "lib/widgets/NotificationModal/notification_modal.dart"
     "lib/theme/main_theme/main_theme.dart"
