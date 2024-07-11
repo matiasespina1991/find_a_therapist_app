@@ -2,9 +2,9 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:findatherapistapp/widgets/LoadingCircle/loading_circle.dart';
 import 'package:findatherapistapp/services/gemini_service.dart';
+import 'package:findatherapistapp/services/speech_to_text_service.dart';
 import '../../../app_settings/theme_settings.dart';
 import '../../../models/gemini_tags_response_model.dart';
 import '../../../providers/providers_all.dart';
@@ -23,56 +23,46 @@ class UserRequestScreen extends ConsumerStatefulWidget {
 class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
   final TextEditingController _requestController = TextEditingController();
   final GeminiService _geminiService = GeminiService();
+  final SpeechToTextService _speechService = SpeechToTextService();
   GeminiTagsResponse? _tagsResponse;
   bool isSendingRequest = false;
-  stt.SpeechToText _speech = stt.SpeechToText();
   bool _isListening = false;
 
   @override
   void initState() {
     super.initState();
-    _speech = stt.SpeechToText();
+    _initializeSpeech();
+  }
+
+  void _initializeSpeech() async {
+    await _speechService.initialize();
   }
 
   @override
   void dispose() {
-    _speech.stop();
+    _speechService.stopListening();
     _requestController.dispose();
     super.dispose();
   }
 
   void _startListening() async {
-    bool available = await _speech.initialize();
     var _localeProvider = ref.watch(localeProvider);
-    if (available) {
-      setState(() => _isListening = true);
+    setState(() => _isListening = true);
 
-      if (_localeProvider.locale.languageCode == 'en') {
-        _speech.listen(
-          onResult: (val) => {
-            setState(() {
-              _requestController.text = val.recognizedWords;
-            })
-          },
-        );
-      } else {
-        _speech.listen(
-          onResult: (val) => {
-            setState(() {
-              _requestController.text = val.recognizedWords;
-            })
-          },
-          localeId: _localeProvider.locale.languageCode,
-        );
-      }
-    }
+    _speechService.startListening((text) {
+      setState(() {
+        _requestController.text = text;
+      });
+    }, localeId: _localeProvider.locale.languageCode);
   }
 
   void _stopListening() async {
-    await _speech.stop();
+    _speechService.stopListening();
     setState(() => _isListening = false);
 
-    await _improveTranscription(_requestController.text);
+    if (_requestController.text.isNotEmpty) {
+      await _improveTranscription(_requestController.text);
+    }
   }
 
   Future<void> _improveTranscription(String text) async {
@@ -100,24 +90,45 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
           Text('${S.of(context).tellUsWhatYouAreLookingFor}:',
               style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 20),
-          TextField(
-            controller: _requestController,
-            decoration: InputDecoration(
-              hintText: S.of(context).requestTextFieldHintText,
-              hintStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withOpacity(0.5),
-                  ),
-              border: const OutlineInputBorder(),
-              suffixIcon: IconButton(
-                icon: Icon(_isListening ? Icons.mic : Icons.mic_none),
-                onPressed: _isListening ? _stopListening : _startListening,
+          Stack(
+            children: [
+              TextField(
+                controller: _requestController,
+                decoration: InputDecoration(
+                  hintText: S.of(context).requestTextFieldHintText,
+                  hintStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.5),
+                      ),
+                  border: const OutlineInputBorder(),
+                ),
+                maxLines: 18,
+                enabled: !isSendingRequest,
               ),
-            ),
-            maxLines: 18,
-            enabled: !isSendingRequest,
+              Positioned(
+                right: 13,
+                bottom: 13,
+                child: InkWell(
+                    borderRadius: BorderRadius.circular(50),
+                    onTap: _isListening ? _stopListening : _startListening,
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: _isListening ? Colors.red : Colors.transparent,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        _isListening ? Icons.mic : Icons.mic_none,
+                        color: _isListening && !isDarkMode(context)
+                            ? Colors.white
+                            : null,
+                        size: 30,
+                      ),
+                    )),
+              ),
+            ],
           ),
           const SizedBox(height: 15),
           Row(

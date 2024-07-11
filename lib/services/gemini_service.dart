@@ -166,7 +166,7 @@ Expected Output: A structured object tags with two arrays, positive and negative
     final prompt = '''
     Input Text: $text
 
-    Instructions for the AI: This text has been transcribed from an audio input and may contain inaccuracies in punctuation and wording. Your task is to improve the text by correcting any errors and making it more coherent and cohesive. Ensure that the improved text is a faithful representation of what the user intended to say, and correct words if necessary to maintain coherence.
+    Instructions for the AI: This text has been transcribed from an audio input and may contain inaccuracies in punctuation and wording. Your task is to improve the text by correcting any errors and making it more coherent and cohesive. Ensure that the improved text is a faithful representation of what the user intended to say, and correct words if necessary to maintain coherence. And ALWAYS return the text in its original language. If the text is empty or contains no errors, return the original text as is. Never reply anything with your own words or opinions.
 
     Expected Output: The improved text, well-punctuated and corrected, in a readable format.
     ''';
