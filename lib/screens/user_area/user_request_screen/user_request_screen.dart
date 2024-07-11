@@ -22,6 +22,7 @@ class UserRequestScreen extends ConsumerStatefulWidget {
 
 class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
   final TextEditingController _requestController = TextEditingController();
+  String _requestLastText = '';
   final GeminiService _geminiService = GeminiService();
   final SpeechToTextService _speechService = SpeechToTextService();
   GeminiTagsResponse? _tagsResponse;
@@ -47,11 +48,15 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
 
   void _startListening() async {
     var _localeProvider = ref.watch(localeProvider);
-    setState(() => _isListening = true);
+
+    setState(() {
+      _isListening = true;
+      _requestLastText = _requestController.text;
+    });
 
     _speechService.startListening((text) {
       setState(() {
-        _requestController.text = text;
+        _requestController.text = '$_requestLastText $text';
       });
     }, localeId: _localeProvider.locale.languageCode);
   }
@@ -73,6 +78,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
     setState(() {
       _requestController.text = improvedText;
       isSendingRequest = false;
+      _requestLastText = improvedText;
     });
   }
 
