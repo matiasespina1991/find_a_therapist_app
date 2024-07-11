@@ -47,7 +47,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
   }
 
   void _startListening() async {
-    var _localeProvider = ref.watch(localeProvider);
+    var localeService = ref.watch(localeProvider);
 
     setState(() {
       _isListening = true;
@@ -58,7 +58,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
       setState(() {
         _requestController.text = '$_requestLastText $text';
       });
-    }, localeId: _localeProvider.locale.languageCode);
+    }, localeId: localeService.locale.languageCode);
   }
 
   void _stopListening() async {
