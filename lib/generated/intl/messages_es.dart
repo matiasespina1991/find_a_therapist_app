@@ -34,6 +34,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "buttonsSectionTitle": MessageLookupByLibrary.simpleMessage("Botones"),
         "cancel": MessageLookupByLibrary.simpleMessage("Cancelar"),
         "cancelButton": MessageLookupByLibrary.simpleMessage("Cancelar"),
+        "candidateBlockedDueToSafetyMessage": MessageLookupByLibrary.simpleMessage(
+            "Se ha detectado lenguaje no apropiado en su solicitud y no hemos podido procesarla. Por favor, inténtelo nuevamente. Si cree que esto se trata de un error, por favor contáctenos."),
         "chipOneLabel": MessageLookupByLibrary.simpleMessage("Chip Uno"),
         "chipThreeLabel": MessageLookupByLibrary.simpleMessage("Chip Tres"),
         "chipTwoLabel": MessageLookupByLibrary.simpleMessage("Chip Dos"),
@@ -96,6 +98,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Encuentra tu terapeuta"),
         "forgotPasswordButton":
             MessageLookupByLibrary.simpleMessage("¿Olvidaste tu contraseña?"),
+        "generativeAiErrorMessage": MessageLookupByLibrary.simpleMessage(
+            "Ocurrió un error al intentar procesar su solicitud. Hemos reportado el problema. Por favor, inténtelo nuevamente más tarde."),
         "gotIt": MessageLookupByLibrary.simpleMessage("Entendido"),
         "homeScreenTitle":
             MessageLookupByLibrary.simpleMessage("Pantalla Principal"),
@@ -130,11 +134,17 @@ class MessageLookup extends MessageLookupByLibrary {
         "negativeAspectsTitle":
             MessageLookupByLibrary.simpleMessage("Aspectos Negativos"),
         "no": MessageLookupByLibrary.simpleMessage("No"),
+        "noCandidatesMessage": MessageLookupByLibrary.simpleMessage(
+            "Hubo un error al intentar procesar su solicitud. Hemos reportado el problema. Por favor, inténtelo nuevamente más tarde."),
         "noInternetConnection":
             MessageLookupByLibrary.simpleMessage("Sin conexión a Internet"),
         "noInternetMessageOnLoginAttempt": MessageLookupByLibrary.simpleMessage(
             "Intentaste iniciar sesión pero no tienes conexión a internet. Conéctate a internet e inténtalo de nuevo."),
-        "notFound": MessageLookupByLibrary.simpleMessage("Nicht gefunden"),
+        "noJsonFoundInResponseTextMessage": MessageLookupByLibrary.simpleMessage(
+            "Hubo un error al intentar procesar su solicitud. Hemos reportado el problema. Por favor, inténtelo nuevamente más tarde."),
+        "noTextFoundInResponseMessage": MessageLookupByLibrary.simpleMessage(
+            "Hubo un error al intentar procesar su solicitud. Hemos reportado el problema. Por favor, inténtelo nuevamente más tarde."),
+        "notFound": MessageLookupByLibrary.simpleMessage("No se encontraron."),
         "ok": MessageLookupByLibrary.simpleMessage("OK"),
         "outlinedButtonLabel":
             MessageLookupByLibrary.simpleMessage("Botón Contorneado"),
@@ -195,6 +205,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "unauthorizedAccess":
             MessageLookupByLibrary.simpleMessage("Acceso no autorizado"),
         "unauthorizedAccessMessage": m0,
+        "unknownErrorMessage": MessageLookupByLibrary.simpleMessage(
+            "Hubo un error al intentar procesar su solicitud. Hemos reportado el problema. Por favor, inténtelo nuevamente más tarde."),
         "welcomeToPrefix":
             MessageLookupByLibrary.simpleMessage("Bienvenido a "),
         "yes": MessageLookupByLibrary.simpleMessage("Sí"),

@@ -11,7 +11,8 @@ class ErrorReportingService {
   static Future<void> reportError(
       dynamic error, dynamic stackTrace, CurrentUserData? userData,
       {String screen = 'Not Specified',
-      errorLocation = 'Not Specified'}) async {
+      errorLocation = 'Not Specified',
+      List<String>? additionalInfo}) async {
     final deviceData = await _getDeviceData();
     final appInfo = await _getAppInfo();
 
@@ -30,6 +31,7 @@ class ErrorReportingService {
       'deviceData': deviceData,
       'appInfo': appInfo,
       'stackTrace': stackTrace.toString(),
+      additionalInfo: additionalInfo,
     };
 
     debugPrint("Error Report: $errorReport");

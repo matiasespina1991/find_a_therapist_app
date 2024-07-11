@@ -33,6 +33,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "buttonsSectionTitle": MessageLookupByLibrary.simpleMessage("Buttons"),
         "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
         "cancelButton": MessageLookupByLibrary.simpleMessage("Cancel"),
+        "candidateBlockedDueToSafetyMessage": MessageLookupByLibrary.simpleMessage(
+            "Inappropriate language was detected in your request and we couldn\'t process it. Please try again. If you believe this is a mistake, please contact us."),
         "chipOneLabel": MessageLookupByLibrary.simpleMessage("Chip One"),
         "chipThreeLabel": MessageLookupByLibrary.simpleMessage("Chip Three"),
         "chipTwoLabel": MessageLookupByLibrary.simpleMessage("Chip Two"),
@@ -92,6 +94,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Find your therapist"),
         "forgotPasswordButton":
             MessageLookupByLibrary.simpleMessage("Forgot your password?"),
+        "generativeAiErrorMessage": MessageLookupByLibrary.simpleMessage(
+            "An error occurred while trying to process your request. We have reported the issue. Please try again later."),
         "gotIt": MessageLookupByLibrary.simpleMessage("Got it"),
         "homeScreenTitle": MessageLookupByLibrary.simpleMessage("Home Screen"),
         "inputsSectionTitle": MessageLookupByLibrary.simpleMessage("Inputs"),
@@ -124,11 +128,17 @@ class MessageLookup extends MessageLookupByLibrary {
         "negativeAspectsTitle":
             MessageLookupByLibrary.simpleMessage("Negative aspects"),
         "no": MessageLookupByLibrary.simpleMessage("No"),
+        "noCandidatesMessage": MessageLookupByLibrary.simpleMessage(
+            "There was an error trying to process your request. We have reported the issue. Please try again later."),
         "noInternetConnection":
             MessageLookupByLibrary.simpleMessage("No Internet Connection"),
         "noInternetMessageOnLoginAttempt": MessageLookupByLibrary.simpleMessage(
             "You tried to login but you don\'t have internet connection. Please connect to the internet and try again."),
-        "notFound": MessageLookupByLibrary.simpleMessage("Not found"),
+        "noJsonFoundInResponseTextMessage": MessageLookupByLibrary.simpleMessage(
+            "There was an error trying to process your request. We have reported the issue. Please try again later."),
+        "noTextFoundInResponseMessage": MessageLookupByLibrary.simpleMessage(
+            "There was an error trying to process your request. We have reported the issue. Please try again later."),
+        "notFound": MessageLookupByLibrary.simpleMessage("Not found."),
         "ok": MessageLookupByLibrary.simpleMessage("OK"),
         "outlinedButtonLabel":
             MessageLookupByLibrary.simpleMessage("Outlined Button"),
@@ -186,6 +196,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "unauthorizedAccess":
             MessageLookupByLibrary.simpleMessage("Unauthorized Access"),
         "unauthorizedAccessMessage": m0,
+        "unknownErrorMessage": MessageLookupByLibrary.simpleMessage(
+            "An error occurred while trying to process your request. We have reported the issue. Please try again later."),
         "welcomeToPrefix": MessageLookupByLibrary.simpleMessage("Welcome to "),
         "yes": MessageLookupByLibrary.simpleMessage("Yes"),
         "youAreCurrentlyOfflineMessage": MessageLookupByLibrary.simpleMessage(

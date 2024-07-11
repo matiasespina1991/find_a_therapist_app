@@ -1060,11 +1060,71 @@ class S {
     );
   }
 
-  /// `Not found`
+  /// `Not found.`
   String get notFound {
     return Intl.message(
-      'Not found',
+      'Not found.',
       name: 'notFound',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Inappropriate language was detected in your request and we couldn't process it. Please try again. If you believe this is a mistake, please contact us.`
+  String get candidateBlockedDueToSafetyMessage {
+    return Intl.message(
+      'Inappropriate language was detected in your request and we couldn\'t process it. Please try again. If you believe this is a mistake, please contact us.',
+      name: 'candidateBlockedDueToSafetyMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `There was an error trying to process your request. We have reported the issue. Please try again later.`
+  String get noCandidatesMessage {
+    return Intl.message(
+      'There was an error trying to process your request. We have reported the issue. Please try again later.',
+      name: 'noCandidatesMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `There was an error trying to process your request. We have reported the issue. Please try again later.`
+  String get noTextFoundInResponseMessage {
+    return Intl.message(
+      'There was an error trying to process your request. We have reported the issue. Please try again later.',
+      name: 'noTextFoundInResponseMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `There was an error trying to process your request. We have reported the issue. Please try again later.`
+  String get noJsonFoundInResponseTextMessage {
+    return Intl.message(
+      'There was an error trying to process your request. We have reported the issue. Please try again later.',
+      name: 'noJsonFoundInResponseTextMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `An error occurred while trying to process your request. We have reported the issue. Please try again later.`
+  String get generativeAiErrorMessage {
+    return Intl.message(
+      'An error occurred while trying to process your request. We have reported the issue. Please try again later.',
+      name: 'generativeAiErrorMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `An error occurred while trying to process your request. We have reported the issue. Please try again later.`
+  String get unknownErrorMessage {
+    return Intl.message(
+      'An error occurred while trying to process your request. We have reported the issue. Please try again later.',
+      name: 'unknownErrorMessage',
       desc: '',
       args: [],
     );

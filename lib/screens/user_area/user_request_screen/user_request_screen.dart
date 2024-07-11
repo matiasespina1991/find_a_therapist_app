@@ -1,9 +1,11 @@
-import 'package:findatherapistapp/models/gemini_tags_response.dart';
+import 'dart:developer';
+import 'package:findatherapistapp/models/gemini_tags_response_model.dart';
 import 'package:findatherapistapp/widgets/LoadingCircle/loading_circle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:findatherapistapp/services/gemini_service.dart';
 import '../../../app_settings/theme_settings.dart';
+import '../../../utils/debug/error_utils.dart';
 import '../../../utils/ui/is_dark_mode.dart';
 import '../../../widgets/AppScaffold/app_scaffold.dart';
 import '../../../generated/l10n.dart';
@@ -47,7 +49,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
             ),
             maxLines: 18,
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 15),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
@@ -68,103 +70,152 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
             ],
           ),
           if (_tagsResponse != null) ...[
-            const SizedBox(height: 10),
-            const Divider(),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                Flexible(
-                  child: Text(
-                    S.of(context).positiveAspectsTitle,
-                    style: Theme.of(context).textTheme.headlineMedium,
+            if (_tagsResponse!.error != null) ...[
+              const SizedBox(height: 15),
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: ThemeSettings.errorColor.shade50,
+                  border: Border.all(
+                    color: ThemeSettings.errorColor,
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 5),
-            Text(
-              '(${S.of(context).positiveAspectsDescription})',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 10.0),
-            Wrap(
-              spacing: 8.0,
-              runSpacing: 4.0,
-              children: _tagsResponse!.tags.positive.isNotEmpty
-                  ? _tagsResponse!.tags.positive
-                      .map((aspect) => Chip(
-                            side: const BorderSide(
-                                color: Colors.green, width: 1.0),
-                            label: Text(aspect,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge
-                                    ?.copyWith(
-                                      color: isDarkMode(context)
-                                          ? Colors.green
-                                          : Colors.white,
-                                    )),
-                            backgroundColor: isDarkMode(context)
-                                ? Colors.transparent
-                                : Colors.green.shade400,
-                          ))
-                      .toList()
-                  : [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8.0, vertical: 13.0),
-                        child: Text(S.of(context).notFound,
-                            style: Theme.of(context).textTheme.bodyLarge),
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+
+                  /// add warning icon big and centered
+
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 10),
+                      const Icon(Icons.warning, color: Colors.red, size: 40),
+                      const SizedBox(height: 10),
+                      Text(
+                        'Oh no, Something went wrong!',
+                        textAlign: TextAlign.center,
+                        style:
+                            Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                  color: ThemeSettings.errorColor,
+                                ),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        ErrorUtils.getGeminiErrorMessage(
+                            _tagsResponse!.error!, context),
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              color: ThemeSettings.errorColor,
+                            ),
+                      ),
+                      const SizedBox(height: 10),
+                    ],
+                  ),
+                ),
+              )
+            ],
+            if (_tagsResponse!.error == null)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 10),
+                  const Divider(),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          S.of(context).positiveAspectsTitle,
+                          style: Theme.of(context).textTheme.headlineMedium,
+                        ),
                       ),
                     ],
-            ),
-            const SizedBox(height: 5),
-            const Divider(),
-            const SizedBox(height: 5),
-            Text(
-              S.of(context).negativeAspectsTitle,
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            const SizedBox(height: 5),
-            Text(
-              '(${S.of(context).negativeAspectsDescription})',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 10.0),
-            Wrap(
-              spacing: 8.0,
-              runSpacing: 4.0,
-              children: _tagsResponse!.tags.negative.isNotEmpty
-                  ? _tagsResponse!.tags.negative
-                      .map((aspect) => Chip(
-                            side:
-                                const BorderSide(color: Colors.red, width: 1.0),
-                            label: Text(aspect,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge
-                                    ?.copyWith(
-                                      color: isDarkMode(context)
-                                          ? Colors.red
-                                          : Colors.white,
-                                    )),
-                            backgroundColor: isDarkMode(context)
-                                ? Colors.transparent
-                                : Colors.red.shade400,
-                          ))
-                      .toList()
-                  : [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8.0, vertical: 13.0),
-                        child: Text(S.of(context).notFound,
-                            style: Theme.of(context).textTheme.bodyLarge),
-                      ),
-                    ],
-            ),
-            const SizedBox(height: 5),
-            const Divider(),
-            const SizedBox(height: 5),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    '(${S.of(context).positiveAspectsDescription})',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 10.0),
+                  Wrap(
+                    spacing: 8.0,
+                    runSpacing: 4.0,
+                    children: _tagsResponse!.tags.positive.isNotEmpty
+                        ? _tagsResponse!.tags.positive
+                            .map((aspect) => Chip(
+                                  side: const BorderSide(
+                                      color: Colors.green, width: 1.0),
+                                  label: Text(aspect,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge
+                                          ?.copyWith(
+                                            color: isDarkMode(context)
+                                                ? Colors.green
+                                                : Colors.white,
+                                          )),
+                                  backgroundColor: isDarkMode(context)
+                                      ? Colors.transparent
+                                      : Colors.green.shade400,
+                                ))
+                            .toList()
+                        : [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8.0, vertical: 13.0),
+                              child: Text(S.of(context).notFound,
+                                  style: Theme.of(context).textTheme.bodyLarge),
+                            ),
+                          ],
+                  ),
+                  const SizedBox(height: 5),
+                  const Divider(),
+                  const SizedBox(height: 5),
+                  Text(
+                    S.of(context).negativeAspectsTitle,
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    '(${S.of(context).negativeAspectsDescription})',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 10.0),
+                  Wrap(
+                    spacing: 8.0,
+                    runSpacing: 4.0,
+                    children: _tagsResponse!.tags.negative.isNotEmpty
+                        ? _tagsResponse!.tags.negative
+                            .map((aspect) => Chip(
+                                  side: const BorderSide(
+                                      color: Colors.red, width: 1.0),
+                                  label: Text(aspect,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge
+                                          ?.copyWith(
+                                            color: isDarkMode(context)
+                                                ? Colors.red
+                                                : Colors.white,
+                                          )),
+                                  backgroundColor: isDarkMode(context)
+                                      ? Colors.transparent
+                                      : Colors.red.shade400,
+                                ))
+                            .toList()
+                        : [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8.0, vertical: 13.0),
+                              child: Text(S.of(context).notFound,
+                                  style: Theme.of(context).textTheme.bodyLarge),
+                            ),
+                          ],
+                  ),
+                  const SizedBox(height: 5),
+                  const Divider(),
+                  const SizedBox(height: 5),
+                ],
+              ),
           ],
         ],
       )),
@@ -185,8 +236,8 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
       _tagsResponse = geminiResponse;
     });
 
-    return geminiResponse;
+    log(geminiResponse.toJson().toString());
 
-    print(geminiResponse.toJson());
+    return geminiResponse;
   }
 }

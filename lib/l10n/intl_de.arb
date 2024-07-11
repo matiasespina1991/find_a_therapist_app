@@ -101,5 +101,13 @@
             "negativeAspectsDescription": "Was Sie nicht möchten, dass Ihr Therapeut mitbringt oder behandelt",
             "positiveAspectsTitle": "Positive Aspekte",
             "positiveAspectsDescription": "Was Sie von Ihrem Therapeuten erwarten",
-            "notFound": "Nicht gefunden"
+            "notFound": "Nicht gefunden.",
+          "candidateBlockedDueToSafetyMessage": "Es wurde unangemessene Sprache in Ihrer Anfrage erkannt und wir konnten sie nicht verarbeiten. Bitte versuchen Sie es erneut. Wenn Sie glauben, dass dies ein Fehler ist, kontaktieren Sie uns bitte.",
+          "noCandidatesMessage": "Es gab einen Fehler beim Versuch, Ihre Anfrage zu verarbeiten. Wir haben das Problem gemeldet. Bitte versuchen Sie es später erneut.",
+          "noTextFoundInResponseMessage": "Es gab einen Fehler beim Versuch, Ihre Anfrage zu verarbeiten. Wir haben das Problem gemeldet. Bitte versuchen Sie es später erneut.",
+          "noJsonFoundInResponseTextMessage": "Es gab einen Fehler beim Versuch, Ihre Anfrage zu verarbeiten. Wir haben das Problem gemeldet. Bitte versuchen Sie es später erneut.",
+          "generativeAiErrorMessage": "Es gab einen Fehler beim Versuch, Ihre Anfrage zu verarbeiten. Wir haben das Problem gemeldet. Bitte versuchen Sie es später erneut.",
+          "unknownErrorMessage": "Es gab einen Fehler beim Versuch, Ihre Anfrage zu verarbeiten. Wir haben das Problem gemeldet. Bitte versuchen Sie es später erneut."
+
+
 }
