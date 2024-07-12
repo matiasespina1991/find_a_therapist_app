@@ -7,9 +7,11 @@ class SpeechToTextService {
     return await _speech.initialize();
   }
 
-  void startListening(Function(String) onResult, {String? localeId}) {
+  void startListening({String? localeId, required Function(String) onResult}) {
     _speech.listen(
-        onResult: (val) => onResult(val.recognizedWords), localeId: localeId);
+      localeId: localeId,
+      onResult: (val) => onResult(val.recognizedWords),
+    );
   }
 
   void stopListening() {

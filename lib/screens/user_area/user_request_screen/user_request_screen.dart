@@ -54,11 +54,14 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
       _requestLastText = _requestController.text;
     });
 
-    _speechService.startListening((text) {
-      setState(() {
-        _requestController.text = '$_requestLastText $text';
-      });
-    }, localeId: localeService.locale.languageCode);
+    _speechService.startListening(
+      localeId: localeService.locale.languageCode,
+      onResult: (text) {
+        setState(() {
+          _requestController.text = _requestLastText + text;
+        });
+      },
+    );
   }
 
   void _stopListening() async {
