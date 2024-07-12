@@ -1,3 +1,4 @@
+import 'package:findatherapistapp/screens/admin/debug_screen/debug_screen.dart';
 import 'package:findatherapistapp/screens/common/loading_screen/loading_screen.dart';
 import 'package:findatherapistapp/screens/common/not_found_screen/not_found_screen.dart';
 import 'package:go_router/go_router.dart';
@@ -57,6 +58,14 @@ class Routes {
     builder: (context) => const TherapistProfileScreen(),
   );
 
+  /// ADMIN AREA ROUTES
+
+  static RouteConfig debugScreen = RouteConfig(
+    path: '/debug-screen',
+    name: 'Debug Screen',
+    builder: (context) => const DebugScreen(),
+  );
+
   static List<GoRoute> _generateRoutes() {
     List<RouteConfig> allRoutes = [
       loginScreen,
@@ -66,6 +75,7 @@ class Routes {
       therapistProfileScreen,
       notFoundScreen,
       loadingScreen,
+      debugScreen,
     ];
     return allRoutes
         .map((routeConfig) => GoRoute(

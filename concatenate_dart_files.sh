@@ -17,6 +17,7 @@ files=(
     "lib/widgets/AppScaffold/app_scaffold.dart"
     "lib/screens/common/home_screen/home_screen.dart"
     "lib/screens/common/login_screen/login_screen.dart"
+    "lib/screens/admin/debug_screen/debug_screen.dart"
     "lib/screens/user_area/user_request_screen/user_request_screen.dart"
     "lib/services/gemini_service.dart"
 #    "lib/widgets/NotificationSnackbar/notification_snackbar.dart"

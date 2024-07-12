@@ -1,6 +1,6 @@
 class AuthConfig {
   static const bool useProtectedRoutes = true;
-  static const bool useFirebase = false;
+  static const bool useFirebase = true;
   static const bool allowGoogleSignIn = true;
   //TODO: Add scope functionality:
   static const List<String> googleSignInScopes = ['email'];

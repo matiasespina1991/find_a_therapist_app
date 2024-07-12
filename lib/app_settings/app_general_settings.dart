@@ -11,9 +11,13 @@ class AppGeneralSettings {
 }
 
 class DebugConfig {
+  static const bool debugMode = true;
+  static const String? debugDatabaseId = 'debug-database';
+  static const bool showDebugPrints = false;
+
   static const bool bypassLoginScreen =
       false; // If true, login screen will be skipped
-  static RouteConfig debugScreen = Routes.loadingScreen;
+  static RouteConfig debugScreen = Routes.debugScreen;
   static const forceDebugScreen =
-      false; // If true, the route set in debugScreen will be shown and screen protection will be ignored
+      true; // If true, the route set in debugScreen will be shown and screen protection will be ignored
 }

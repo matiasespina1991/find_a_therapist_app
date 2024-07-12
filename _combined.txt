@@ -52,12 +52,14 @@
 │   ├── providers
 │   │   ├── auth_provider.dart
 │   │   ├── locale_provider.dart
-│   │   ├── navigation_provider.dart
 │   │   ├── providers_all.dart
 │   │   └── theme_provider.dart
 │   ├── routes
 │   │   └── routes.dart
 │   ├── screens
+│   │   ├── _example_screen.dart
+│   │   ├── admin
+│   │   │   └── debug_screen
 │   │   ├── common
 │   │   │   ├── home_screen
 │   │   │   ├── loading_screen
@@ -71,7 +73,8 @@
 │   ├── services
 │   │   ├── connectivity_service.dart
 │   │   ├── error_reporting_service.dart
-│   │   └── gemini_service.dart
+│   │   ├── gemini_service.dart
+│   │   └── speech_to_text_service.dart
 │   ├── theme
 │   │   └── main_theme
 │   │       ├── buttons_theme.dart
@@ -107,105 +110,199 @@
 ├── rename_imports.sh
 └── template_app.iml
 
-38 directories, 70 files
-///// lib/main.dart /////
-import 'package:findatherapistapp/routes/routes.dart';
-import 'package:findatherapistapp/screens/common/home_screen/home_screen.dart';
+40 directories, 71 files
+///// pubspec.yaml /////
+name: findatherapistapp
+description: "An app to easily find the perfect therapist."
 
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:skeletonizer/skeletonizer.dart';
-import 'package:findatherapistapp/providers/providers_all.dart';
-import 'app_settings/auth_config.dart';
-import 'globals.dart';
-import 'app_settings/app_info.dart';
-import 'app_settings/language_settings.dart';
-import 'app_settings/theme_settings.dart';
-import 'theme/main_theme/main_theme.dart';
-import 'utils/debug/log_configurations.dart';
-import 'generated/l10n.dart';
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await initializeApp();
-  logConfigurations();
-  runApp(const ProviderScope(child: MyApp()));
-}
+version: 1.0.0+1
 
-Future<void> initializeApp() async {
-  if (AuthConfig.useFirebase) {
-    try {
-      await Firebase.initializeApp();
-    } catch (e) {
-      debugPrint('Error: Firebase initialization failed. $e');
+environment:
+  sdk: '>=3.2.6 <4.0.0'
 
-      ///TODO: Show an error screen here or retry the initialization.
-    }
-  }
-}
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
 
-class MyApp extends ConsumerWidget {
-  const MyApp({super.key});
+  # Cupertino Icons is a Flutter plugin for using Cupertino icons in a Flutter app. (Example of use: Icon(CupertinoIcons.share))
+  cupertino_icons: ^1.0.8
+  # Riverpod is a Flutter plugin for managing state in a Flutter app.
+  flutter_riverpod: ^2.5.1
+  # Flutter Secure Storage is a Flutter plugin for storing data securely on the device.
+  flutter_secure_storage: ^9.2.2
+  # Google Fonts is a Flutter plugin for using Google Fonts in a Flutter app.
+  google_fonts: ^6.2.1
+  # Fluttertoast is a Flutter plugin for showing toast messages in a Flutter app.
+  fluttertoast: ^8.2.6
+  # Google Sign In is a Flutter plugin for signing with Google. It is a wrapper around the native Google Sign In libraries.
+  google_sign_in: ^6.2.1
+  # Sign In Button is a Flutter plugin for creating sign-in buttons in a Flutter app.
+  sign_in_button: ^3.2.0
+  # Go Router is a Flutter plugin for routing in a Flutter app.
+  go_router: ^14.2.0
+  # Google Generative AI is a Flutter plugin for using Google Generative AI in a Flutter app.
+  google_generative_ai: ^0.4.3
+  # Speech to Text is a Flutter plugin for converting speech to text in a Flutter app.
+  speech_to_text: ^6.6.0
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final themeNotifier = ref.watch(themeProvider);
-    final localeNotifier = ref.watch(localeProvider);
 
-    return SkeletonizerConfig(
-      data: const SkeletonizerConfigData(
-          effect: ShimmerEffect(),
-          enableSwitchAnimation: true,
-          containersColor: ThemeSettings.forceSeedColor
-              ? ThemeSettings.seedColor
-              : Colors.grey),
-      child: MaterialApp.router(
-        scaffoldMessengerKey: snackbarKey,
-        title: AppInfo.appName,
-        theme: MainTheme.lightTheme,
-        darkTheme: MainTheme.darkTheme,
-        themeMode: themeNotifier.themeMode,
-        locale: localeNotifier.locale,
-        supportedLocales: LanguageSettings.supportedLocales
-            .map((e) => Locale.fromSubtags(languageCode: e))
-            .toList(),
-        localizationsDelegates: const [
-          S.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        localeResolutionCallback: (locale, supportedLocales) {
-          if (LanguageSettings.forceDefaultLanguage) {
-            return const Locale(LanguageSettings.appDefaultLanguage);
-          }
-          if (locale != null) {
-            for (var supportedLocale in supportedLocales) {
-              if (supportedLocale.languageCode == locale.languageCode) {
-                return supportedLocale;
-              }
-            }
-          }
-          return supportedLocales.first;
-        },
-        routerDelegate: Routes.router.routerDelegate,
-        routeInformationParser: Routes.router.routeInformationParser,
-        routeInformationProvider: Routes.router.routeInformationProvider,
-      ),
-    );
-  }
-}
+#  # -----------------  GENERAL PACKAGES  -----------------
+#  # Url Launcher is a Flutter plugin for launching a URL in the mobile platform. Supports iOS and Android.
+#  url_launcher: ^6.3.0
+#  # Cached network image is a Flutter library to show images from the internet and keep them in the cache directory.
+#  cached_network_image: ^3.3.1
+#  # Google Fonts is a Flutter plugin for using Google Fonts in a Flutter app.
+#  google_fonts: ^6.2.1
+#  # Flutter Email Validator is a Flutter plugin for validating email addresses in a Flutter app.
+#  email_validator: ^2.1.17
+#  # Permission Handler is a Flutter plugin for requesting permissions in a Flutter app.
+#  permission_handler: ^11.3.1
+#  # Image Picker is a plugin for selecting images from the Android and iOS image library, and taking new pictures with the camera:
+#  image_picker: ^1.1.2
+  # Skeletonizer is a Flutter plugin for creating skeleton loading animations in a Flutter app.
+  skeletonizer: ^1.3.0
 
-class MainScreen extends StatelessWidget {
-  const MainScreen({super.key});
+  # Device Info Plus is a Flutter plugin for getting information about the device the app is running on.
+  device_info_plus: ^10.1.0
+  # Package Info Plus is a Flutter plugin for getting information about the package the app is running on.
+  package_info_plus: ^8.0.0
+#  # HTTP is a Flutter plugin for performing HTTP requests. It is a wrapper around the Dart http package.
+#  http: ^1.2.1
+#  # Webview is a Flutter plugin for rendering web content in a Flutter widget.
+#  webview_flutter: ^4.8.0
+#  # Share Plus is a Flutter plugin for sharing content (Links to the app, text, emails, files, etc.) from a Flutter app to other apps.
+#  share_plus: ^9.0.0
+#  # Add 2 Calendar is a Flutter plugin for adding events to the calendar in a Flutter app.
+#  add_2_calendar: ^3.0.1
+#  # Geo Locator is a Flutter plugin for getting the location of the device in a Flutter app.
+#  geolocator: ^12.0.0
+#  # Map Launcher is a Flutter plugin for launching maps in a Flutter app.
+#  map_launcher: ^2.0.1
+#  # Google Maps Flutter is a Flutter plugin for embedding Google Maps in a Flutter app.
+#  google_maps_flutter: ^2.7.0
+  # Connectivity Plus is a Flutter plugin for getting information about the network connectivity in a Flutter app.
+  connectivity_plus: ^6.0.3
+#  # Expandable is a Flutter plugin for creating expandable widgets in a Flutter app.
+#  expandable: ^5.0.1
+#  # Photo View is a Flutter plugin for showing photos in a full-screen view with zooming and panning gestures.
+#  photo_view: ^0.15.0
+#  # Percent Indicator is a Flutter plugin for showing percentage indicators in a Flutter app.
+#  percent_indicator: ^3.0.1
 
-  @override
-  Widget build(BuildContext context) {
-    return const HomeScreen();
-  }
-}
+#  # -----------------  WIDGET DESIGN PACKAGES  -----------------
+  # Flutter Speed Dial is a Flutter plugin for creating a speed dial menu widget in a Flutter app.
+  flutter_speed_dial: ^7.0.0
+#  # Badges is a Flutter plugin for creating fancy animated badges in a Flutter app.
+#  badges: ^3.1.2
+#  # Flutter Native Splash is a Flutter plugin for creating a splash screen in a Flutter app.
+#  flutter_native_splash: ^2.4.0
+#  # Another Flushbar is a Flutter plugin for creating custom snackbars in a Flutter app.
+#  another_flushbar: ^1.12.30
+#  # Awesome Dialog is a Flutter plugin for creating awesome dialogs in a Flutter app.
+#  awesome_dialog: ^3.2.1
+#  # Flutter Staggered Grid View is a Flutter plugin for creating staggered grid views in a Flutter app.
+#  flutter_staggered_grid_view: ^0.7.0
+#  # Animated Toggle Switch is a Flutter plugin for creating animated toggle switches in a Flutter app.
+#  animated_toggle_switch: ^1.0.0
+#  #Flutter Typeahead is a Flutter input where you can show suggestions to users as they type.
+#  flutter_typeahead: ^2.0.0
+#  # Mesh Gradient is a Flutter plugin for creating mesh gradients in a Flutter app.
+#  mesh_gradient: ^1.3.6
+
+  # -----------------  ANIMATIONS  -----------------
+  # Lottie is a Flutter plugin for using Lottie animations in a Flutter app.
+  lottie: ^3.1.2
+
+#  # -----------------  FONT PACKAGES  -----------------
+#  # Auto Size Text is a Flutter plugin for creating auto-size text in a Flutter app.
+#  auto_size_text: ^3.0.0
+
+#  # -----------------  ICONS PACKAGES  -----------------
+#  # Material Design Icons is a Flutter plugin for using Material Design icons in a Flutter app. (Example of use: Icon(MdiIcons.add))
+#  material_design_icons_flutter: ^7.0.7296
+#  # Font Awesome Icons is a Flutter plugin for using Font Awesome icons in a Flutter app. (Example of use: Icon(FontAwesomeIcons.addressBook))
+#  font_awesome_flutter: ^10.7.0
+#  # Icofont Icons is a Flutter plugin for using Icofont icons in a Flutter app. (Example of use: Icon(IcoFontIcons.addressBook))
+#  icofont_flutter: ^1.4.0
+
+#  # -----------------  MEDIA PACKAGES  -----------------
+#  # Video Player is a Flutter plugin for playing videos in a Flutter app.
+#  video_player: ^2.8.7
+#  # Audio Player is a Flutter plugin for playing audio in a Flutter app.
+#  audioplayers: ^6.0.0
+
+#  # -----------------  UI THEMES  -----------------
+#  # Macos UI is a Flutter plugin for creating MacOS themes in a Flutter app.
+#  macos_ui: ^2.0.7
+#  # Chicago Theme is a Flutter plugin for creating Chicago themes in a Flutter app.
+#  chicago_theme: ^0.4.3-dev
+#  # Win32 GUI is a Flutter plugin for creating Win32 GUI themes in a Flutter app.
+#  win32_gui 1.1.5
+
+# ----------------- FIREBASE PACKAGES -----------------
+#  # Firebase Core is a Flutter plugin to use the Firebase platform services.
+  firebase_core: ^3.1.1
+#  # Flutter Auth is a Flutter plugin that enables Android and iOS authentication using passwords, phone numbers, and identity providers like Google, Facebook, and Twitter.
+  firebase_auth: ^5.1.1
+#  # Cloud Firestore is a flexible, scalable database for mobile, web, and server development from Firebase and Google Cloud Platform.
+#  cloud_firestore: ^5.0.1
+#  # Firebase Database is a Flutter plugin to use the Firebase Realtime Database API and allow storing and syncing data with a NoSQL cloud database.
+#  firebase_database: ^11.0.1
+#  # Firebase Storage is a Flutter plugin to use the Firebase Cloud Storage API and allow uploading, downloading, and deleting files in the cloud.
+#  firebase_storage: ^12.0.1
+#  # Firebase Messaging is a Flutter plugin to use the Firebase Cloud Messaging (FCM) API and allow sending push notifications to Android and iOS users.
+#  firebase_messaging: ^15.0.1
+#  # Firebase In-App Messaging is a Flutter plugin to use the Firebase In-App Messaging API and allow sending in-app messages to Android and iOS users.
+#  firebase_in_app_messaging: ^0.8.0+1
+#  # Firebase Crashlytics is a Flutter plugin to use the Firebase Crashlytics API and allow sending crash reports to Firebase.
+#  firebase_crashlytics: ^4.0.1
+#  # Firebase Analytics is a Flutter plugin to use the Firebase Analytics API and allow sending events to Google Analytics.
+#  firebase_analytics: ^11.0.1
+#  # Firebase Performance Monitoring is a Flutter plugin to use the Firebase Performance Monitoring API and allow sending performance data to Firebase.
+#  firebase_performance: ^0.10.0+1
+#  # Firebase Remote Config is a Flutter plugin to use the Firebase Remote Config API and allow fetching remote configuration values from Firebase.
+#  firebase_remote_config: ^5.0.1
+
+  intl: any
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  intl_utils: ^2.8.7
+
+flutter:
+
+  uses-material-design: true
+
+  # To add assets to your application, add an assets section, like this:
+  # assets:
+  #   - images/a_dot_burr.jpeg
+  #   - images/a_dot_ham.jpeg
+
+  # To add entire folders of assets to your application, add an assets section, like this:
+  assets:
+    - lib/assets/lottie_animations/
+    - lib/assets/images/
+
+
+  # fonts:
+  #   - family: Schyler
+  #     fonts:
+  #       - asset: fonts/Schyler-Regular.ttf
+  #       - asset: fonts/Schyler-Italic.ttf
+  #         style: italic
+  #   - family: Trajan Pro
+  #     fonts:
+  #       - asset: fonts/TrajanPro.ttf
+  #       - asset: fonts/TrajanPro_Bold.ttf
+  #         weight: 700
+  #
+
 
 ///// lib/app_settings/app_general_settings.dart /////
 import '../routes/routes.dart';
@@ -223,9 +320,9 @@ class AppGeneralSettings {
 class DebugConfig {
   static const bool bypassLoginScreen =
       false; // If true, login screen will be skipped
-  static RouteConfig debugScreen = Routes.loadingScreen;
+  static RouteConfig debugScreen = Routes.debugScreen;
   static const forceDebugScreen =
-      false; // If true, the route set in debugScreen will be shown and screen protection will be ignored
+      true; // If true, the route set in debugScreen will be shown and screen protection will be ignored
 }
 
 ///// lib/app_settings/app_info.dart /////
@@ -443,6 +540,937 @@ class ThemeSettings {
   );
 }
 
+///// lib/theme/main_theme/main_theme.dart /////
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:findatherapistapp/app_settings/theme_settings.dart';
+import 'package:findatherapistapp/theme/main_theme/chip_theme.dart';
+import 'package:findatherapistapp/theme/main_theme/input_theme.dart';
+
+import '../../models/theme_models.dart';
+import 'buttons_theme.dart';
+
+class MainTheme {
+  /// --------------- LIGHT THEME ---------------
+  static ThemeData get lightTheme {
+    final base = ThemeData.light(useMaterial3: ThemeSettings.useMaterial3);
+    return _buildTheme(base, Brightness.light);
+  }
+
+  /// --------------- DARK THEME ---------------
+
+  static ThemeData get darkTheme {
+    final base = ThemeData.dark(useMaterial3: ThemeSettings.useMaterial3);
+    return _buildTheme(base, Brightness.dark);
+  }
+
+  static ThemeData _buildTheme(ThemeData base, Brightness brightness) {
+    ColorScheme colorScheme;
+
+    if (ThemeSettings.forceSeedColor) {
+      colorScheme = ColorScheme.fromSeed(
+        seedColor: ThemeSettings.seedColor,
+        brightness: brightness,
+      );
+    } else {
+      colorScheme = brightness == Brightness.light
+          ? ColorScheme.light(
+              // primary: Config.primaryTextColor.lightModePrimary,
+              primary: ThemeSettings.primaryTextColor.lightModePrimary,
+              // secondary: Config.secondaryTextColor.lightModePrimary,
+              surface: ThemeSettings.scaffoldBackgroundColor.lightModePrimary,
+              secondary: ThemeSettings.secondaryTextColor.lightModePrimary,
+
+              error: ThemeSettings.errorColor,
+              onPrimary: Colors.white,
+              onSecondary: Colors.white,
+              onSurface: ThemeSettings.primaryTextColor.lightModePrimary,
+              onError: Colors.white,
+              brightness: brightness,
+            )
+          : ColorScheme.dark(
+              primary: ThemeSettings.primaryTextColor.darkModePrimary,
+              onPrimary: Colors.black,
+              primaryContainer:
+                  ThemeSettings.primaryContainerBackgroundColor.darkModePrimary,
+              secondary: ThemeSettings.secondaryTextColor.darkModePrimary,
+              error: ThemeSettings.errorColor,
+              surface: ThemeSettings.scaffoldBackgroundColor.darkModePrimary,
+              onSurface: ThemeSettings.primaryTextColor.darkModePrimary,
+              onSecondary: Colors.black,
+              onError: Colors.black,
+              brightness: brightness,
+            );
+    }
+
+    return base.copyWith(
+      colorScheme: colorScheme,
+      scaffoldBackgroundColor: colorScheme.surface,
+      hintColor: colorScheme.onSurface,
+      sliderTheme: base.sliderTheme.copyWith(
+        inactiveTrackColor: colorScheme.onSurface.withOpacity(0.5),
+      ),
+      textTheme:
+          _buildTextTheme(base.textTheme, ThemeSettings.primaryTextStyle),
+      appBarTheme: AppBarTheme(
+        foregroundColor: colorScheme.onPrimary,
+        titleTextStyle: ThemeSettings.appBarTextStyle.isGoogleFont
+            ? GoogleFonts.getFont(ThemeSettings.appBarTextStyle.name,
+                textStyle: TextStyle(
+                    fontSize: ThemeSettings.appBarTitleFontSize,
+                    color: colorScheme.onPrimary))
+            : TextStyle(
+                fontFamily: ThemeSettings.appBarTextStyle.name,
+                fontSize: ThemeSettings.appBarTitleFontSize,
+                color: colorScheme.onPrimary),
+        backgroundColor: ThemeSettings.forceSeedColor
+            ? colorScheme.primary
+            : (brightness == Brightness.light
+                ? ThemeSettings.appBarBackgroundColor.lightModePrimary
+                : ThemeSettings.appBarBackgroundColor.darkModePrimary),
+      ),
+      chipTheme: ChipDecorationTheme.chipTheme(brightness, colorScheme),
+      inputDecorationTheme:
+          InputTheme.inputDecorationTheme(brightness, colorScheme),
+      elevatedButtonTheme:
+          ButtonsTheme.elevatedButtonTheme(brightness, colorScheme),
+      outlinedButtonTheme:
+          ButtonsTheme.outlinedButtonTheme(brightness, colorScheme),
+      textButtonTheme: ButtonsTheme.textButtonTheme(brightness, colorScheme),
+      dividerTheme: base.dividerTheme.copyWith(
+        space: 70,
+        color: colorScheme.onSurface.withOpacity(0.2),
+        thickness: 1,
+        indent: 50,
+        endIndent: 50,
+      ),
+    );
+  }
+
+  static TextTheme _buildTextTheme(TextTheme base, FontConfig font) {
+    return base.copyWith(
+      displayLarge: _applyFont(base.displayLarge, font),
+      displayMedium: _applyFont(base.displayMedium, font),
+      displaySmall: _applyFont(base.displaySmall, font),
+      headlineLarge: _applyFont(base.headlineLarge, font),
+      headlineMedium: _applyFont(base.headlineMedium, font),
+      headlineSmall: _applyFont(base.headlineSmall, font),
+      titleLarge: _applyFont(base.titleLarge, font),
+      titleMedium: _applyFont(base.titleMedium, font),
+      titleSmall: _applyFont(base.titleSmall, font),
+      bodyLarge: _applyFont(
+          base.bodyLarge?.copyWith(
+            fontSize: ThemeSettings.bodyLargeFontSize,
+          ),
+          font),
+      bodyMedium: _applyFont(
+          base.bodyMedium?.copyWith(
+            fontSize: ThemeSettings.bodyMediumFontSize,
+          ),
+          font),
+      bodySmall: _applyFont(
+          base.bodySmall?.copyWith(
+            fontSize: ThemeSettings.bodySmallFontSize,
+          ),
+          font),
+      labelLarge: _applyFont(base.labelLarge, font),
+      labelMedium: _applyFont(base.labelMedium, font),
+      labelSmall: _applyFont(base.labelSmall, font),
+    );
+  }
+
+  static TextStyle? _applyFont(TextStyle? style, FontConfig font) {
+    if (style == null) return null;
+    return font.isGoogleFont
+        ? GoogleFonts.getFont(font.name, textStyle: style)
+        : style.copyWith(fontFamily: font.name, fontSize: style.fontSize);
+  }
+}
+
+///// lib/routes/routes.dart /////
+import 'package:findatherapistapp/screens/admin/debug_screen/debug_screen.dart';
+import 'package:findatherapistapp/screens/common/loading_screen/loading_screen.dart';
+import 'package:findatherapistapp/screens/common/not_found_screen/not_found_screen.dart';
+import 'package:go_router/go_router.dart';
+import 'package:flutter/material.dart';
+
+import '../screens/common/home_screen/home_screen.dart';
+import '../screens/common/login_screen/login_screen.dart';
+import '../screens/therapist_area/therapist_profile_screen.dart';
+import '../screens/user_area/user_profile_screen/user_profile_screen.dart';
+import '../screens/user_area/user_request_screen/user_request_screen.dart';
+
+class Routes {
+  /// COMMON ROUTES
+
+  static RouteConfig loginScreen = RouteConfig(
+    path: '/login',
+    name: 'Login Screen',
+    builder: (context) => const LoginScreen(),
+  );
+
+  static RouteConfig homeScreen = RouteConfig(
+    path: '/',
+    name: 'Home Screen',
+    builder: (context) => const HomeScreen(),
+  );
+
+  static RouteConfig notFoundScreen = RouteConfig(
+    path: '/404',
+    name: '404 Not Found',
+    builder: (context) => const NotFoundScreen(),
+  );
+
+  static RouteConfig loadingScreen = RouteConfig(
+      path: '/loading',
+      name: 'Loading',
+      builder: (context) => const LoadingScreen());
+
+  /// USER AREA ROUTES
+
+  static RouteConfig userProfileScreen = RouteConfig(
+    path: '/user-profile',
+    name: 'User Profile Screen',
+    builder: (context) => const UserProfileScreen(),
+  );
+
+  static RouteConfig userRequestScreen = RouteConfig(
+    path: '/user-request',
+    name: 'User Request',
+    builder: (context) => const UserRequestScreen(),
+  );
+
+  /// THERAPIST AREA ROUTES
+
+  static RouteConfig therapistProfileScreen = RouteConfig(
+    path: '/therapist-profile',
+    name: 'Therapist Profile Screen',
+    builder: (context) => const TherapistProfileScreen(),
+  );
+
+  /// ADMIN AREA ROUTES
+
+  static RouteConfig debugScreen = RouteConfig(
+    path: '/debug-screen',
+    name: 'Debug Screen',
+    builder: (context) => const DebugScreen(),
+  );
+
+  static List<GoRoute> _generateRoutes() {
+    List<RouteConfig> allRoutes = [
+      loginScreen,
+      homeScreen,
+      userProfileScreen,
+      userRequestScreen,
+      therapistProfileScreen,
+      notFoundScreen,
+      loadingScreen,
+      debugScreen,
+    ];
+    return allRoutes
+        .map((routeConfig) => GoRoute(
+              path: routeConfig.path,
+              builder: (context, state) => routeConfig.builder(context),
+            ))
+        .toList();
+  }
+
+  static final GoRouter router = GoRouter(
+    routes: _generateRoutes(),
+  );
+}
+
+class RouteConfig {
+  final String path;
+  final Widget Function(BuildContext) builder;
+  final String name;
+
+  const RouteConfig({
+    required this.path,
+    required this.builder,
+    required this.name,
+  });
+}
+
+///// lib/main.dart /////
+import 'package:findatherapistapp/routes/routes.dart';
+import 'package:findatherapistapp/screens/common/home_screen/home_screen.dart';
+
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:skeletonizer/skeletonizer.dart';
+import 'package:findatherapistapp/providers/providers_all.dart';
+import 'app_settings/auth_config.dart';
+import 'globals.dart';
+import 'app_settings/app_info.dart';
+import 'app_settings/language_settings.dart';
+import 'app_settings/theme_settings.dart';
+import 'theme/main_theme/main_theme.dart';
+import 'utils/debug/log_configurations.dart';
+import 'generated/l10n.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initializeApp();
+  logConfigurations();
+  runApp(const ProviderScope(child: MyApp()));
+}
+
+Future<void> initializeApp() async {
+  if (AuthConfig.useFirebase) {
+    try {
+      await Firebase.initializeApp();
+    } catch (e) {
+      debugPrint('Error: Firebase initialization failed. $e');
+
+      ///TODO: Show an error screen here or retry the initialization.
+    }
+  }
+}
+
+class MyApp extends ConsumerWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeNotifier = ref.watch(themeProvider);
+    final localeNotifier = ref.watch(localeProvider);
+
+    return SkeletonizerConfig(
+      data: const SkeletonizerConfigData(
+          effect: ShimmerEffect(),
+          enableSwitchAnimation: true,
+          containersColor: ThemeSettings.forceSeedColor
+              ? ThemeSettings.seedColor
+              : Colors.grey),
+      child: MaterialApp.router(
+        scaffoldMessengerKey: snackbarKey,
+        title: AppInfo.appName,
+        theme: MainTheme.lightTheme,
+        darkTheme: MainTheme.darkTheme,
+        themeMode: themeNotifier.themeMode,
+        locale: localeNotifier.locale,
+        supportedLocales: LanguageSettings.supportedLocales
+            .map((e) => Locale.fromSubtags(languageCode: e))
+            .toList(),
+        localizationsDelegates: const [
+          S.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        localeResolutionCallback: (locale, supportedLocales) {
+          if (LanguageSettings.forceDefaultLanguage) {
+            return const Locale(LanguageSettings.appDefaultLanguage);
+          }
+          if (locale != null) {
+            for (var supportedLocale in supportedLocales) {
+              if (supportedLocale.languageCode == locale.languageCode) {
+                return supportedLocale;
+              }
+            }
+          }
+          return supportedLocales.first;
+        },
+        routerDelegate: Routes.router.routerDelegate,
+        routeInformationParser: Routes.router.routeInformationParser,
+        routeInformationProvider: Routes.router.routeInformationProvider,
+      ),
+    );
+  }
+}
+
+class MainScreen extends StatelessWidget {
+  const MainScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const HomeScreen();
+  }
+}
+
+///// lib/providers/providers_all.dart /////
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:findatherapistapp/providers/auth_provider.dart';
+import 'package:findatherapistapp/providers/locale_provider.dart';
+import 'package:findatherapistapp/providers/theme_provider.dart';
+
+import '../services/connectivity_service.dart';
+
+final authProvider = ChangeNotifierProvider((ref) => AuthorizationProvider());
+final themeProvider = ChangeNotifierProvider((ref) => ThemeProvider());
+final localeProvider = ChangeNotifierProvider((ref) => LocaleProvider());
+final connectivityProvider =
+    ChangeNotifierProvider((ref) => ConnectivityService());
+
+final navigationStateProvider = StateProvider<bool>((ref) => false);
+
+///// lib/providers/auth_provider.dart /////
+import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:findatherapistapp/app_settings/app_general_settings.dart';
+import 'package:findatherapistapp/app_settings/auth_config.dart';
+
+class AuthorizationProvider extends ChangeNotifier {
+  final FlutterSecureStorage storage = const FlutterSecureStorage();
+  final FirebaseAuth? _firebaseAuth =
+      AuthConfig.useFirebase ? FirebaseAuth.instance : null;
+  final GoogleSignIn _googleSignIn =
+      GoogleSignIn(scopes: AuthConfig.googleSignInScopes);
+  String? _authToken;
+  User? _user;
+  bool _isLoading = true;
+
+  AuthorizationProvider() {
+    _initializeUser();
+  }
+
+  String? get authToken => _authToken;
+  User? get user => _user;
+  bool get isLoading => _isLoading;
+
+  Future<void> _initializeUser() async {
+    if (AuthConfig.useFirebase) {
+      _user = _firebaseAuth?.currentUser;
+      if (_user != null) {
+        _authToken = _user!.uid;
+      }
+    } else {
+      _authToken = await storage.read(key: 'auth_token');
+    }
+
+    _isLoading = false;
+    notifyListeners();
+
+    _googleSignIn.onCurrentUserChanged
+        .listen((GoogleSignInAccount? account) async {
+      if (account != null) {
+        _user = await _handleSignIn(account);
+        if (_user != null) {
+          _authToken = _user?.uid;
+          await setAuthToken(_authToken!);
+        }
+      } else {
+        _user = null;
+        _authToken = null;
+      }
+      notifyListeners();
+    });
+
+    GoogleSignInAccount? currentUser = await _googleSignIn.signInSilently();
+    if (currentUser != null) {
+      _user = await _handleSignIn(currentUser);
+      if (_user != null) {
+        _authToken = _user?.uid;
+        await setAuthToken(_authToken!);
+        notifyListeners();
+      }
+    }
+  }
+
+  Future<User?> _handleSignIn(GoogleSignInAccount account) async {
+    try {
+      final GoogleSignInAuthentication googleAuth =
+          await account.authentication;
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        idToken: googleAuth.idToken,
+        accessToken: googleAuth.accessToken,
+      );
+
+      if (AuthConfig.useFirebase) {
+        final UserCredential authResult =
+            await _firebaseAuth!.signInWithCredential(credential);
+        return authResult.user;
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Error during Google sign-in: $e');
+      return null;
+    }
+  }
+
+  Future<void> setAuthToken(String token) async {
+    await storage.write(key: 'auth_token', value: token);
+    _authToken = token;
+    notifyListeners();
+  }
+
+  Future<void> clearAuthToken() async {
+    await storage.delete(key: 'auth_token');
+    _authToken = null;
+    _user = null;
+    debugPrint('Auth token cleared. User will be logged out.');
+    notifyListeners();
+  }
+
+  Future<void> signOut(BuildContext context) async {
+    if (DebugConfig.bypassLoginScreen) {
+      debugPrint(
+          'Error: Bypass Login Screen is on. Disable it from AppGeneralSettings.bypassLoginScreen in order to proceed with sign out.');
+      return;
+    }
+    await clearAuthToken();
+    if (AuthConfig.useFirebase) {
+      await _firebaseAuth?.signOut();
+    }
+
+    if (AuthConfig.allowGoogleSignIn) {
+      await _googleSignIn.signOut();
+    }
+  }
+
+  bool get isAuthenticated =>
+      !isLoading &&
+      (DebugConfig.bypassLoginScreen ||
+          (_authToken != null && _authToken!.isNotEmpty));
+
+  Future<bool> signInWithEmail(String email, String password) async {
+    bool success = false;
+    try {
+      debugPrint('Signing in with email/password...');
+
+      if (AuthConfig.useFirebase) {
+        final UserCredential authResult = await _firebaseAuth!
+            .signInWithEmailAndPassword(email: email, password: password);
+        _authToken = authResult.user!.uid;
+        _user = authResult.user;
+        await setAuthToken(_authToken!);
+      } else {
+        _authToken = email;
+        await setAuthToken(_authToken!);
+      }
+
+      notifyListeners();
+      success = true;
+      debugPrint('User logged in successfully.✅');
+      return success;
+    } catch (error) {
+      debugPrint('Error during email/password Sign In: ${error.toString()}');
+      success = false;
+      return success;
+    }
+  }
+
+  Future<bool> signInWithGoogle() async {
+    bool success = false;
+    if (AuthConfig.allowGoogleSignIn) {
+      try {
+        debugPrint('Signing in with Google...');
+
+        final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+        if (googleUser != null) {
+          debugPrint('Google Sign In successful.');
+          final GoogleSignInAuthentication googleAuth =
+              await googleUser.authentication;
+          final credential = GoogleAuthProvider.credential(
+            accessToken: googleAuth.accessToken,
+            idToken: googleAuth.idToken,
+          );
+
+          if (AuthConfig.useFirebase) {
+            final UserCredential? authResult =
+                await _firebaseAuth?.signInWithCredential(credential);
+            _authToken = authResult?.user!.uid;
+            _user = authResult?.user;
+            await setAuthToken(_authToken!);
+          } else {
+            _authToken = googleAuth.accessToken;
+            await setAuthToken(_authToken!);
+          }
+
+          notifyListeners();
+          success = true;
+          debugPrint('User logged in successfully.');
+          return success;
+        }
+      } catch (error) {
+        debugPrint(
+            'Error trying to signing in user using Google: ${error.toString()}');
+        success = false;
+        return success;
+      }
+    }
+    return success;
+  }
+}
+
+///// lib/providers/theme_provider.dart /////
+import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:findatherapistapp/app_settings/theme_settings.dart';
+
+class ThemeProvider extends ChangeNotifier {
+  ThemeMode _themeMode = ThemeMode.system;
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+
+  ThemeProvider() {
+    _loadThemeMode();
+  }
+
+  ThemeMode get themeMode => _themeMode;
+
+  void toggleTheme(bool isDarkMode) async {
+    if (ThemeSettings.forceDefaultThemeMode) {
+      debugPrint(
+          'Error: Theme mode change forbidden. Forced theme is on. Disable it from ThemeSettings.forceDefaultThemeMode in order to proceed with theme change.');
+      return;
+    }
+
+    _themeMode = isDarkMode ? ThemeMode.dark : ThemeMode.light;
+    notifyListeners();
+
+    String userDefinedTheme = isDarkMode ? 'dark' : 'light';
+    await _storage.write(
+        key: 'user_defined_theme_mode', value: userDefinedTheme);
+  }
+
+  void _loadThemeMode() async {
+    if (ThemeSettings.forceDefaultThemeMode) {
+      _themeMode = ThemeSettings.defaultThemeMode == 'dark'
+          ? ThemeMode.dark
+          : ThemeMode.light;
+      notifyListeners();
+      return;
+    }
+
+    String? userDefinedTheme =
+        await _storage.read(key: 'user_defined_theme_mode');
+
+    if (userDefinedTheme != null) {
+      bool isDarkMode = userDefinedTheme == 'dark';
+      _themeMode = isDarkMode ? ThemeMode.dark : ThemeMode.light;
+      notifyListeners();
+    }
+  }
+}
+
+///// lib/widgets/AppScaffold/app_scaffold.dart /////
+import 'dart:async';
+import 'dart:ui';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lottie/lottie.dart';
+import 'package:findatherapistapp/app_settings/app_general_settings.dart';
+import 'package:findatherapistapp/app_settings/auth_config.dart';
+import 'package:findatherapistapp/providers/providers_all.dart';
+import 'package:findatherapistapp/utils/ui/is_dark_mode.dart';
+import 'package:findatherapistapp/widgets/NotificationModal/notification_modal.dart';
+import 'package:findatherapistapp/widgets/NotificationSnackbar/notification_snackbar.dart';
+import 'package:skeletonizer/skeletonizer.dart';
+import '../../app_settings/theme_settings.dart';
+import '../../generated/l10n.dart';
+import '../../models/general_models.dart';
+import '../../routes/routes.dart';
+import '../../screens/common/loading_screen/loading_screen.dart';
+import '../ThemeAppBar/template_app_bar.dart';
+import '../ThemeFloatingSpeedDialMenu/theme_floating_speed_dial_menu.dart';
+
+class AppScaffold extends ConsumerStatefulWidget {
+  final Widget body;
+  final bool hideFloatingSpeedDialMenu;
+  final String appBarTitle;
+  final bool isProtected;
+  final bool? useSafeArea;
+  final ScrollPhysics? scrollPhysics;
+  final LottieAnimationBackground? backgroundAnimation;
+  final LottieAnimationBackground? backgroundAnimationDarkMode;
+  final bool useTopAppBar;
+  final bool showScreenTitleInAppBar;
+
+  const AppScaffold({
+    super.key,
+    required this.body,
+    required this.appBarTitle,
+    required this.isProtected,
+    this.useSafeArea,
+    this.hideFloatingSpeedDialMenu = false,
+    this.scrollPhysics,
+    this.backgroundAnimation,
+    this.backgroundAnimationDarkMode,
+    this.useTopAppBar = false,
+    this.showScreenTitleInAppBar = true,
+  });
+
+  @override
+  AppScaffoldState createState() => AppScaffoldState();
+}
+
+class AppScaffoldState extends ConsumerState<AppScaffold> {
+  bool _connectivityChecked = false;
+  bool _userWentOffline = false;
+  Timer? _connectivityTimer;
+
+  @override
+  void dispose() {
+    _connectivityTimer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final auth = ref.watch(authProvider);
+    final connectivity = ref.watch(connectivityProvider);
+
+    if (auth.isLoading && !auth.isAuthenticated) {
+      return const LoadingScreen();
+    }
+
+    _handleProtectedRoutes(auth);
+    _checkConnectivity(connectivity);
+
+    return SafeArea(
+      bottom: widget.useSafeArea ?? ThemeSettings.useSafeArea,
+      top: widget.useSafeArea ?? ThemeSettings.useSafeArea,
+      child: Scaffold(
+        appBar: (AppGeneralSettings.useTopAppBar || widget.useTopAppBar)
+            ? ThemeAppBar(
+                title: widget.showScreenTitleInAppBar ? widget.appBarTitle : '',
+              )
+            : null,
+        body: Stack(
+          fit: StackFit.expand,
+          children: [
+            _buildBackgroundAnimation(),
+            _buildMainContent(auth.isAuthenticated),
+            _buildFloatingMenuBackdrop(),
+          ],
+        ),
+        floatingActionButton: ThemeFloatingSpeedDialMenu(
+          hideFloatingSpeedDialMenu: widget.hideFloatingSpeedDialMenu,
+          isDialOpenNotifier: ValueNotifier(false),
+        ),
+      ),
+    );
+  }
+
+  LoadingScreen? _handleProtectedRoutes(auth) {
+    if (DebugConfig.forceDebugScreen) {
+      final String debugRoutePath = DebugConfig.debugScreen.path;
+      final String debugRouteName =
+          DebugConfig.debugScreen.name ?? debugRoutePath;
+
+      debugPrint(
+          '[DebugConfig.forceDebugScreen is set to true. Locked screen is: $debugRouteName. Navigation suspended.]');
+      if (mounted) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          context.go(debugRoutePath);
+        });
+      }
+
+      return null;
+    }
+
+    if (!DebugConfig.bypassLoginScreen &&
+        AuthConfig.useProtectedRoutes &&
+        widget.isProtected &&
+        !auth.isAuthenticated) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        context.go(Routes.loginScreen.path);
+      });
+    }
+
+    if (!auth.isAuthenticated && widget.isProtected) {
+      return const LoadingScreen();
+    }
+    return null;
+  }
+
+  void _checkConnectivity(connectivity) {
+    if (!connectivity.isConnected && !_connectivityChecked) {
+      _connectivityChecked = true;
+      _connectivityTimer?.cancel();
+      _connectivityTimer = Timer(
+          const Duration(
+              seconds: ThemeSettings.secondsUntilNoInternetNotification), () {
+        if (!connectivity.isConnected) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (ModalRoute.of(context)?.isCurrent == true) {
+              _showNoInternetNotification(context);
+              _userWentOffline = true;
+            }
+          });
+        }
+      });
+    } else if (connectivity.isConnected && _userWentOffline) {
+      _connectivityTimer?.cancel();
+      _connectivityChecked = false;
+      _userWentOffline = false;
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (ModalRoute.of(context)?.isCurrent == true) {
+          _showBackToInternetConnectionNotification(context);
+        }
+      });
+    }
+  }
+
+  ScrollPhysics getScrollPhysics() {
+    switch (ThemeSettings.defaultScrollPhysics) {
+      case 'never':
+        return const NeverScrollableScrollPhysics();
+      case 'always':
+        return const AlwaysScrollableScrollPhysics();
+      case 'clamp':
+        return const ClampingScrollPhysics();
+      default:
+        return const AlwaysScrollableScrollPhysics();
+    }
+  }
+
+  LottieAnimationBackground? getLottieAnimation() {
+    final themeIsDark = isDarkMode(context);
+    if (themeIsDark && widget.backgroundAnimationDarkMode != null) {
+      return widget.backgroundAnimationDarkMode;
+    }
+    return widget.backgroundAnimation;
+  }
+
+  Widget _buildBackgroundAnimation() {
+    final animationConfig = getLottieAnimation();
+    if (animationConfig != null && animationConfig.active) {
+      final screenWidth = MediaQuery.of(context).size.width;
+      final screenHeight = MediaQuery.of(context).size.height;
+      return Stack(
+        children: [
+          Positioned(
+            left: (screenWidth / 2) +
+                animationConfig.x -
+                (screenWidth * (animationConfig.width / 100) / 2),
+            top: (screenHeight / 2) +
+                animationConfig.y -
+                (screenWidth * (animationConfig.width / 100) / 2),
+            width: screenWidth * (animationConfig.width / 100),
+            child: Opacity(
+              opacity: animationConfig.opacity,
+              child: Lottie.asset(
+                animationConfig.animationPath,
+              ),
+            ),
+          ),
+          if (animationConfig.blur > 0)
+            Positioned.fill(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(
+                    sigmaX: animationConfig.blur, sigmaY: animationConfig.blur),
+                child: Container(
+                  color: Colors.transparent,
+                ),
+              ),
+            ),
+        ],
+      );
+    }
+    return const SizedBox.shrink();
+  }
+
+  Widget _buildMainContent(bool isAuthenticated) {
+    return SingleChildScrollView(
+      physics: widget.scrollPhysics ?? getScrollPhysics(),
+      child: Column(
+        children: [
+          Skeletonizer(
+            enabled: !isAuthenticated &&
+                widget.isProtected &&
+                !DebugConfig.forceDebugScreen &&
+                !DebugConfig.bypassLoginScreen,
+            child: Padding(
+              padding: ThemeSettings.scaffoldPadding,
+              child: widget.body,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFloatingMenuBackdrop() {
+    if (!widget.hideFloatingSpeedDialMenu &&
+        AppGeneralSettings.useFloatingSpeedDialMenu) {
+      return Positioned.fill(
+        child: ValueListenableBuilder(
+          valueListenable: ValueNotifier(false),
+          builder: (context, value, child) {
+            return value
+                ? BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
+                    child: Container(
+                      color: Colors.black.withOpacity(0.1),
+                    ),
+                  )
+                : const SizedBox.shrink();
+          },
+        ),
+      );
+    }
+    return const SizedBox.shrink();
+  }
+
+  void _showNoInternetNotification(BuildContext context) {
+    if (ThemeSettings.noInternetNotificationType == 'snackbar') {
+      NotificationSnackbar.showSnackBar(
+          message: S.of(context).noInternetConnection,
+          icon: Icons.wifi_off,
+          variant: 'info',
+          duration: 'infinite');
+    } else if (ThemeSettings.noInternetNotificationType == 'modal') {
+      NotificationModal.noInternetConnection(
+        context: context,
+        onTapConfirm: () {
+          setState(() {
+            _connectivityChecked = true;
+          });
+        },
+      );
+    } else if (ThemeSettings.noInternetNotificationType == 'dialog') {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(S.of(context).noInternetConnection),
+          content: Text(S.of(context).youAreCurrentlyOfflineMessage),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                context.pop();
+              },
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+  void _showBackToInternetConnectionNotification(BuildContext context) {
+    if (ThemeSettings.noInternetNotificationType == 'snackbar') {
+      NotificationSnackbar.showSnackBar(
+          message: S.of(context).backToInternetConnection,
+          icon: Icons.wifi,
+          variant: 'success',
+          duration: 'long');
+    } else if (ThemeSettings.noInternetNotificationType == 'modal') {
+      NotificationModal.backToInternetConnection(
+        context: context,
+        onTapConfirm: () {
+          setState(() {
+            _connectivityChecked = false; // Allow for future offline checks
+          });
+        },
+      );
+    } else if (ThemeSettings.noInternetNotificationType == 'dialog') {
+      NotificationSnackbar.showSnackBar(
+          message: S.of(context).backToInternetConnection,
+          icon: Icons.wifi,
+          variant: 'success',
+          duration: 'long');
+    }
+  }
+}
+
 ///// lib/screens/common/home_screen/home_screen.dart /////
 import 'package:findatherapistapp/app_settings/app_info.dart';
 import 'package:flutter/material.dart';
@@ -572,6 +1600,7 @@ import 'package:findatherapistapp/generated/l10n.dart';
 
 import '../../../app_settings/theme_settings.dart';
 import '../../../providers/providers_all.dart';
+import '../../../routes/routes.dart';
 import '../../../utils/ui/is_dark_mode.dart';
 import '../../../utils/validation/is_email_valid.dart';
 import '../../../widgets/AppScaffold/app_scaffold.dart';
@@ -906,7 +1935,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               variant: SnackbarVariant.success,
               duration: SnackbarDuration.short,
               delay: 1);
-          context.go('/');
+          context.go(Routes.homeScreen.path);
         }
 
         if (mounted) {
@@ -970,7 +1999,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 duration: SnackbarDuration.short,
                 delay: 1,
               );
-              context.go('/');
+              context.go(Routes.homeScreen.path);
             },
           );
         }
@@ -1007,15 +2036,43 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 }
 
-///// lib/screens/user_area/user_request_screen/user_request_screen.dart /////
-import 'dart:developer';
-import 'package:findatherapistapp/models/gemini_tags_response_model.dart';
-import 'package:findatherapistapp/widgets/LoadingCircle/loading_circle.dart';
+///// lib/screens/admin/debug_screen/debug_screen.dart /////
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../routes/routes.dart';
+import '../../../widgets/AppScaffold/app_scaffold.dart';
+
+class DebugScreen extends ConsumerStatefulWidget {
+  const DebugScreen({super.key});
+
+  @override
+  ConsumerState<DebugScreen> createState() => _DebugScreenState();
+}
+
+class _DebugScreenState extends ConsumerState<DebugScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return AppScaffold(
+      appBarTitle: Routes.debugScreen.name,
+      isProtected: false,
+      body: const Center(
+        child: Text('Debug screen', style: TextStyle(fontSize: 24)),
+      ),
+    );
+  }
+}
+
+///// lib/screens/user_area/user_request_screen/user_request_screen.dart /////
+import 'dart:developer';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:findatherapistapp/widgets/LoadingCircle/loading_circle.dart';
 import 'package:findatherapistapp/services/gemini_service.dart';
-import 'package:go_router/go_router.dart';
+import 'package:findatherapistapp/services/speech_to_text_service.dart';
 import '../../../app_settings/theme_settings.dart';
+import '../../../models/gemini_tags_response_model.dart';
+import '../../../providers/providers_all.dart';
 import '../../../utils/debug/error_code_to_text.dart';
 import '../../../utils/ui/is_dark_mode.dart';
 import '../../../widgets/AppScaffold/app_scaffold.dart';
@@ -1030,9 +2087,68 @@ class UserRequestScreen extends ConsumerStatefulWidget {
 
 class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
   final TextEditingController _requestController = TextEditingController();
+  String _requestLastText = '';
   final GeminiService _geminiService = GeminiService();
+  final SpeechToTextService _speechService = SpeechToTextService();
   GeminiTagsResponse? _tagsResponse;
   bool isSendingRequest = false;
+  bool _isListening = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeSpeech();
+  }
+
+  void _initializeSpeech() async {
+    await _speechService.initialize();
+  }
+
+  @override
+  void dispose() {
+    _speechService.stopListening();
+    _requestController.dispose();
+    super.dispose();
+  }
+
+  void _startListening() async {
+    var localeService = ref.watch(localeProvider);
+
+    setState(() {
+      _isListening = true;
+      _requestLastText = _requestController.text;
+    });
+
+    _speechService.startListening(
+      localeId: localeService.locale.languageCode,
+      onResult: (text) {
+        setState(() {
+          _requestController.text = _requestLastText + text;
+        });
+      },
+    );
+  }
+
+  void _stopListening() async {
+    _speechService.stopListening();
+    setState(() => _isListening = false);
+
+    if (_requestController.text.isNotEmpty) {
+      await _improveTranscription(_requestController.text);
+    }
+  }
+
+  Future<void> _improveTranscription(String text) async {
+    setState(() {
+      isSendingRequest = true;
+    });
+    final improvedText = await _geminiService.improveTranscription(text);
+    setState(() {
+      _requestController.text = improvedText;
+      isSendingRequest = false;
+      _requestLastText = improvedText;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1048,19 +2164,45 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
           Text('${S.of(context).tellUsWhatYouAreLookingFor}:',
               style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 20),
-          TextField(
-            controller: _requestController,
-            decoration: InputDecoration(
-              hintText: S.of(context).requestTextFieldHintText,
-              hintStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withOpacity(0.5),
-                  ),
-              border: const OutlineInputBorder(),
-            ),
-            maxLines: 18,
+          Stack(
+            children: [
+              TextField(
+                controller: _requestController,
+                decoration: InputDecoration(
+                  hintText: S.of(context).requestTextFieldHintText,
+                  hintStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.5),
+                      ),
+                  border: const OutlineInputBorder(),
+                ),
+                maxLines: 18,
+                enabled: !isSendingRequest,
+              ),
+              Positioned(
+                right: 13,
+                bottom: 13,
+                child: InkWell(
+                    borderRadius: BorderRadius.circular(50),
+                    onTap: _isListening ? _stopListening : _startListening,
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: _isListening ? Colors.red : Colors.transparent,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        _isListening ? Icons.mic : Icons.mic_none,
+                        color: _isListening && !isDarkMode(context)
+                            ? Colors.white
+                            : null,
+                        size: 30,
+                      ),
+                    )),
+              ),
+            ],
           ),
           const SizedBox(height: 15),
           Row(
@@ -1070,7 +2212,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(130, ThemeSettings.buttonsHeight),
                   ),
-                  onPressed: _sendRequest,
+                  onPressed: isSendingRequest ? null : _sendRequest,
                   child: isSendingRequest
                       ? SizedBox(
                           height: 20,
@@ -1255,337 +2397,17 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
   }
 }
 
-///// lib/widgets/AppScaffold/app_scaffold.dart /////
-import 'dart:async';
-import 'dart:ui';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'package:lottie/lottie.dart';
-import 'package:findatherapistapp/app_settings/app_general_settings.dart';
-import 'package:findatherapistapp/app_settings/auth_config.dart';
-import 'package:findatherapistapp/providers/providers_all.dart';
-import 'package:findatherapistapp/utils/ui/is_dark_mode.dart';
-import 'package:findatherapistapp/widgets/NotificationModal/notification_modal.dart';
-import 'package:findatherapistapp/widgets/NotificationSnackbar/notification_snackbar.dart';
-import 'package:skeletonizer/skeletonizer.dart';
-import '../../app_settings/theme_settings.dart';
-import '../../generated/l10n.dart';
-import '../../models/general_models.dart';
-import '../../screens/common/loading_screen/loading_screen.dart';
-import '../ThemeAppBar/template_app_bar.dart';
-import '../ThemeFloatingSpeedDialMenu/theme_floating_speed_dial_menu.dart';
-
-class AppScaffold extends ConsumerStatefulWidget {
-  final Widget body;
-  final bool hideFloatingSpeedDialMenu;
-  final String appBarTitle;
-  final bool isProtected;
-  final bool? useSafeArea;
-  final ScrollPhysics? scrollPhysics;
-  final LottieAnimationBackground? backgroundAnimation;
-  final LottieAnimationBackground? backgroundAnimationDarkMode;
-  final bool useTopAppBar;
-  final bool showScreenTitleInAppBar;
-
-  const AppScaffold({
-    super.key,
-    required this.body,
-    required this.appBarTitle,
-    required this.isProtected,
-    this.useSafeArea,
-    this.hideFloatingSpeedDialMenu = false,
-    this.scrollPhysics,
-    this.backgroundAnimation,
-    this.backgroundAnimationDarkMode,
-    this.useTopAppBar = false,
-    this.showScreenTitleInAppBar = true,
-  });
-
-  @override
-  AppScaffoldState createState() => AppScaffoldState();
-}
-
-class AppScaffoldState extends ConsumerState<AppScaffold> {
-  bool _connectivityChecked = false;
-  bool _userWentOffline = false;
-  Timer? _connectivityTimer;
-
-  @override
-  void dispose() {
-    _connectivityTimer?.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final auth = ref.watch(authProvider);
-    final connectivity = ref.watch(connectivityProvider);
-
-    _handleProtectedRoutes(auth);
-    _checkConnectivity(connectivity);
-
-    return SafeArea(
-      bottom: widget.useSafeArea ?? ThemeSettings.useSafeArea,
-      top: widget.useSafeArea ?? ThemeSettings.useSafeArea,
-      child: Scaffold(
-        appBar: (AppGeneralSettings.useTopAppBar || widget.useTopAppBar)
-            ? ThemeAppBar(
-                title: widget.showScreenTitleInAppBar ? widget.appBarTitle : '',
-              )
-            : null,
-        body: Stack(
-          fit: StackFit.expand,
-          children: [
-            _buildBackgroundAnimation(),
-            _buildMainContent(auth.isAuthenticated),
-            _buildFloatingMenuBackdrop(),
-          ],
-        ),
-        floatingActionButton: ThemeFloatingSpeedDialMenu(
-          hideFloatingSpeedDialMenu: widget.hideFloatingSpeedDialMenu,
-          isDialOpenNotifier: ValueNotifier(false),
-        ),
-      ),
-    );
-  }
-
-  LoadingScreen? _handleProtectedRoutes(auth) {
-    if (DebugConfig.forceDebugScreen) {
-      final String debugRoutePath = DebugConfig.debugScreen.path;
-      final String debugRouteName =
-          DebugConfig.debugScreen.name ?? debugRoutePath;
-
-      debugPrint(
-          '[DebugConfig.forceDebugScreen is set to true. Locked screen is: $debugRouteName. Navigation suspended.]');
-      if (mounted) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          context.go(debugRoutePath);
-        });
-      }
-
-      return null;
-    }
-
-    if (!DebugConfig.bypassLoginScreen &&
-        AuthConfig.useProtectedRoutes &&
-        widget.isProtected &&
-        !auth.isAuthenticated) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        context.go('/login');
-      });
-    }
-
-    if (!auth.isAuthenticated && widget.isProtected) {
-      return const LoadingScreen();
-    }
-    return null;
-  }
-
-  void _checkConnectivity(connectivity) {
-    if (!connectivity.isConnected && !_connectivityChecked) {
-      _connectivityChecked = true;
-      _connectivityTimer?.cancel();
-      _connectivityTimer = Timer(
-          const Duration(
-              seconds: ThemeSettings.secondsUntilNoInternetNotification), () {
-        if (!connectivity.isConnected) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (ModalRoute.of(context)?.isCurrent == true) {
-              _showNoInternetNotification(context);
-              _userWentOffline = true;
-            }
-          });
-        }
-      });
-    } else if (connectivity.isConnected && _userWentOffline) {
-      _connectivityTimer?.cancel();
-      _connectivityChecked = false;
-      _userWentOffline = false;
-
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (ModalRoute.of(context)?.isCurrent == true) {
-          _showBackToInternetConnectionNotification(context);
-        }
-      });
-    }
-  }
-
-  ScrollPhysics getScrollPhysics() {
-    switch (ThemeSettings.defaultScrollPhysics) {
-      case 'never':
-        return const NeverScrollableScrollPhysics();
-      case 'always':
-        return const AlwaysScrollableScrollPhysics();
-      case 'clamp':
-        return const ClampingScrollPhysics();
-      default:
-        return const AlwaysScrollableScrollPhysics();
-    }
-  }
-
-  LottieAnimationBackground? getLottieAnimation() {
-    final themeIsDark = isDarkMode(context);
-    if (themeIsDark && widget.backgroundAnimationDarkMode != null) {
-      return widget.backgroundAnimationDarkMode;
-    }
-    return widget.backgroundAnimation;
-  }
-
-  Widget _buildBackgroundAnimation() {
-    final animationConfig = getLottieAnimation();
-    if (animationConfig != null && animationConfig.active) {
-      final screenWidth = MediaQuery.of(context).size.width;
-      final screenHeight = MediaQuery.of(context).size.height;
-      return Stack(
-        children: [
-          Positioned(
-            left: (screenWidth / 2) +
-                animationConfig.x -
-                (screenWidth * (animationConfig.width / 100) / 2),
-            top: (screenHeight / 2) +
-                animationConfig.y -
-                (screenWidth * (animationConfig.width / 100) / 2),
-            width: screenWidth * (animationConfig.width / 100),
-            child: Opacity(
-              opacity: animationConfig.opacity,
-              child: Lottie.asset(
-                animationConfig.animationPath,
-              ),
-            ),
-          ),
-          if (animationConfig.blur > 0)
-            Positioned.fill(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(
-                    sigmaX: animationConfig.blur, sigmaY: animationConfig.blur),
-                child: Container(
-                  color: Colors.transparent,
-                ),
-              ),
-            ),
-        ],
-      );
-    }
-    return const SizedBox.shrink();
-  }
-
-  Widget _buildMainContent(bool isAuthenticated) {
-    return SingleChildScrollView(
-      physics: widget.scrollPhysics ?? getScrollPhysics(),
-      child: Column(
-        children: [
-          Skeletonizer(
-            enabled: !isAuthenticated &&
-                widget.isProtected &&
-                !DebugConfig.forceDebugScreen &&
-                !DebugConfig.bypassLoginScreen,
-            child: Padding(
-              padding: ThemeSettings.scaffoldPadding,
-              child: widget.body,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFloatingMenuBackdrop() {
-    if (!widget.hideFloatingSpeedDialMenu &&
-        AppGeneralSettings.useFloatingSpeedDialMenu) {
-      return Positioned.fill(
-        child: ValueListenableBuilder(
-          valueListenable: ValueNotifier(false),
-          builder: (context, value, child) {
-            return value
-                ? BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
-                    child: Container(
-                      color: Colors.black.withOpacity(0.1),
-                    ),
-                  )
-                : const SizedBox.shrink();
-          },
-        ),
-      );
-    }
-    return const SizedBox.shrink();
-  }
-
-  void _showNoInternetNotification(BuildContext context) {
-    if (ThemeSettings.noInternetNotificationType == 'snackbar') {
-      NotificationSnackbar.showSnackBar(
-          message: S.of(context).noInternetConnection,
-          icon: Icons.wifi_off,
-          variant: 'info',
-          duration: 'infinite');
-    } else if (ThemeSettings.noInternetNotificationType == 'modal') {
-      NotificationModal.noInternetConnection(
-        context: context,
-        onTapConfirm: () {
-          setState(() {
-            _connectivityChecked = true;
-          });
-        },
-      );
-    } else if (ThemeSettings.noInternetNotificationType == 'dialog') {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text(S.of(context).noInternetConnection),
-          content: Text(S.of(context).youAreCurrentlyOfflineMessage),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () {
-                context.pop();
-              },
-            ),
-          ],
-        ),
-      );
-    }
-  }
-
-  void _showBackToInternetConnectionNotification(BuildContext context) {
-    if (ThemeSettings.noInternetNotificationType == 'snackbar') {
-      NotificationSnackbar.showSnackBar(
-          message: S.of(context).backToInternetConnection,
-          icon: Icons.wifi,
-          variant: 'success',
-          duration: 'long');
-    } else if (ThemeSettings.noInternetNotificationType == 'modal') {
-      NotificationModal.backToInternetConnection(
-        context: context,
-        onTapConfirm: () {
-          setState(() {
-            _connectivityChecked = false; // Allow for future offline checks
-          });
-        },
-      );
-    } else if (ThemeSettings.noInternetNotificationType == 'dialog') {
-      NotificationSnackbar.showSnackBar(
-          message: S.of(context).backToInternetConnection,
-          icon: Icons.wifi,
-          variant: 'success',
-          duration: 'long');
-    }
-  }
-}
-
 ///// lib/services/gemini_service.dart /////
 import 'package:google_generative_ai/google_generative_ai.dart' as google_ai;
 import 'dart:convert';
 import '../app_settings/env_settings.dart';
 import '../models/gemini_tags_response_model.dart';
 import '../services/error_reporting_service.dart';
-import '../models/current_user_data.dart';
 
 class GeminiService {
   final String apiKey = EnvSettings.googleGenerativeApiKey;
 
-  Future<GeminiTagsResponse> getTherapyTags(String inputText,
-      {CurrentUserData? userData}) async {
+  Future<GeminiTagsResponse> getTherapyTags(String inputText) async {
     final model = google_ai.GenerativeModel(
       model: 'gemini-1.5-flash-latest',
       apiKey: apiKey,
@@ -1611,7 +2433,7 @@ Expected Output: A structured object tags with two arrays, positive and negative
       final google_ai.GenerateContentResponse response =
           await model.generateContent(content);
 
-      if (response.candidates == null || response.candidates!.isEmpty) {
+      if (response.candidates.isEmpty) {
         return GeminiTagsResponse(
             tags: Tags(positive: [], negative: []),
             error: GeminiErrorResponse(
@@ -1621,7 +2443,7 @@ Expected Output: A structured object tags with two arrays, positive and negative
       }
 
       String? responseText;
-      for (var candidate in response.candidates!) {
+      for (var candidate in response.candidates) {
         if (candidate.text != null && candidate.text!.isNotEmpty) {
           responseText = candidate.text;
           break;
@@ -1635,7 +2457,7 @@ Expected Output: A structured object tags with two arrays, positive and negative
                 message: 'No text found in response candidates',
                 code: 'no-text-found-in-response'),
             candidates: response.candidates
-                    ?.map((candidate) => Candidate(
+                    .map((candidate) => Candidate(
                           text: candidate.text,
                           safetyRatings: candidate.safetyRatings
                               ?.map((rating) => SafetyRating(
@@ -1657,7 +2479,7 @@ Expected Output: A structured object tags with two arrays, positive and negative
                 message: 'No JSON found in response text',
                 code: 'no-json-found-in-response-text'),
             candidates: response.candidates
-                    ?.map((candidate) => Candidate(
+                    .map((candidate) => Candidate(
                           text: candidate.text,
                           safetyRatings: candidate.safetyRatings
                               ?.map((rating) => SafetyRating(
@@ -1673,7 +2495,7 @@ Expected Output: A structured object tags with two arrays, positive and negative
       final jsonResponse = jsonDecode(jsonString);
       final geminiTagsResponse = GeminiTagsResponse.fromJson(jsonResponse);
       geminiTagsResponse.candidates
-          ?.addAll(response.candidates!.map((candidate) => Candidate(
+          ?.addAll(response.candidates.map((candidate) => Candidate(
                 text: candidate.text,
                 safetyRatings: candidate.safetyRatings
                     ?.map((rating) => SafetyRating(
@@ -1684,7 +2506,7 @@ Expected Output: A structured object tags with two arrays, positive and negative
               )));
       return geminiTagsResponse;
     } on google_ai.GenerativeAIException catch (e, stackTrace) {
-      await ErrorReportingService.reportError(e, stackTrace, userData,
+      await ErrorReportingService.reportError(e, stackTrace, null,
           screen: 'GeminiService',
           errorLocation: 'getTherapyTags',
           additionalInfo: [
@@ -1709,7 +2531,7 @@ Expected Output: A structured object tags with two arrays, positive and negative
           ),
           candidates: []);
     } catch (e, stackTrace) {
-      await ErrorReportingService.reportError(e, stackTrace, userData,
+      await ErrorReportingService.reportError(e, stackTrace, null,
           screen: 'GeminiService',
           errorLocation: 'getTherapyTags',
           additionalInfo: [
@@ -1734,458 +2556,177 @@ Expected Output: A structured object tags with two arrays, positive and negative
       return '';
     }
   }
-}
 
-///// lib/theme/main_theme/main_theme.dart /////
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:findatherapistapp/app_settings/theme_settings.dart';
-import 'package:findatherapistapp/theme/main_theme/chip_theme.dart';
-import 'package:findatherapistapp/theme/main_theme/input_theme.dart';
-
-import '../../models/theme_models.dart';
-import 'buttons_theme.dart';
-
-class MainTheme {
-  /// --------------- LIGHT THEME ---------------
-  static ThemeData get lightTheme {
-    final base = ThemeData.light(useMaterial3: ThemeSettings.useMaterial3);
-    return _buildTheme(base, Brightness.light);
-  }
-
-  /// --------------- DARK THEME ---------------
-
-  static ThemeData get darkTheme {
-    final base = ThemeData.dark(useMaterial3: ThemeSettings.useMaterial3);
-    return _buildTheme(base, Brightness.dark);
-  }
-
-  static ThemeData _buildTheme(ThemeData base, Brightness brightness) {
-    ColorScheme colorScheme;
-
-    if (ThemeSettings.forceSeedColor) {
-      colorScheme = ColorScheme.fromSeed(
-        seedColor: ThemeSettings.seedColor,
-        brightness: brightness,
-      );
-    } else {
-      colorScheme = brightness == Brightness.light
-          ? ColorScheme.light(
-              // primary: Config.primaryTextColor.lightModePrimary,
-              primary: ThemeSettings.primaryTextColor.lightModePrimary,
-              // secondary: Config.secondaryTextColor.lightModePrimary,
-              surface: ThemeSettings.scaffoldBackgroundColor.lightModePrimary,
-              secondary: ThemeSettings.secondaryTextColor.lightModePrimary,
-
-              error: ThemeSettings.errorColor,
-              onPrimary: Colors.white,
-              onSecondary: Colors.white,
-              onSurface: ThemeSettings.primaryTextColor.lightModePrimary,
-              onError: Colors.white,
-              brightness: brightness,
-            )
-          : ColorScheme.dark(
-              primary: ThemeSettings.primaryTextColor.darkModePrimary,
-              onPrimary: Colors.black,
-              primaryContainer:
-                  ThemeSettings.primaryContainerBackgroundColor.darkModePrimary,
-              secondary: ThemeSettings.secondaryTextColor.darkModePrimary,
-              error: ThemeSettings.errorColor,
-              surface: ThemeSettings.scaffoldBackgroundColor.darkModePrimary,
-              onSurface: ThemeSettings.primaryTextColor.darkModePrimary,
-              onSecondary: Colors.black,
-              onError: Colors.black,
-              brightness: brightness,
-            );
-    }
-
-    return base.copyWith(
-      colorScheme: colorScheme,
-      scaffoldBackgroundColor: colorScheme.surface,
-      hintColor: colorScheme.onSurface,
-      sliderTheme: base.sliderTheme.copyWith(
-        inactiveTrackColor: colorScheme.onSurface.withOpacity(0.5),
-      ),
-      textTheme:
-          _buildTextTheme(base.textTheme, ThemeSettings.primaryTextStyle),
-      appBarTheme: AppBarTheme(
-        foregroundColor: colorScheme.onPrimary,
-        titleTextStyle: ThemeSettings.appBarTextStyle.isGoogleFont
-            ? GoogleFonts.getFont(ThemeSettings.appBarTextStyle.name,
-                textStyle: TextStyle(
-                    fontSize: ThemeSettings.appBarTitleFontSize,
-                    color: colorScheme.onPrimary))
-            : TextStyle(
-                fontFamily: ThemeSettings.appBarTextStyle.name,
-                fontSize: ThemeSettings.appBarTitleFontSize,
-                color: colorScheme.onPrimary),
-        backgroundColor: ThemeSettings.forceSeedColor
-            ? colorScheme.primary
-            : (brightness == Brightness.light
-                ? ThemeSettings.appBarBackgroundColor.lightModePrimary
-                : ThemeSettings.appBarBackgroundColor.darkModePrimary),
-      ),
-      chipTheme: ChipDecorationTheme.chipTheme(brightness, colorScheme),
-      inputDecorationTheme:
-          InputTheme.inputDecorationTheme(brightness, colorScheme),
-      elevatedButtonTheme:
-          ButtonsTheme.elevatedButtonTheme(brightness, colorScheme),
-      outlinedButtonTheme:
-          ButtonsTheme.outlinedButtonTheme(brightness, colorScheme),
-      textButtonTheme: ButtonsTheme.textButtonTheme(brightness, colorScheme),
-      dividerTheme: base.dividerTheme.copyWith(
-        space: 70,
-        color: colorScheme.onSurface.withOpacity(0.2),
-        thickness: 1,
-        indent: 50,
-        endIndent: 50,
-      ),
+  Future<String> improveTranscription(String text) async {
+    final model = google_ai.GenerativeModel(
+      model: 'gemini-1.5-flash-latest',
+      apiKey: apiKey,
     );
-  }
 
-  static TextTheme _buildTextTheme(TextTheme base, FontConfig font) {
-    return base.copyWith(
-      displayLarge: _applyFont(base.displayLarge, font),
-      displayMedium: _applyFont(base.displayMedium, font),
-      displaySmall: _applyFont(base.displaySmall, font),
-      headlineLarge: _applyFont(base.headlineLarge, font),
-      headlineMedium: _applyFont(base.headlineMedium, font),
-      headlineSmall: _applyFont(base.headlineSmall, font),
-      titleLarge: _applyFont(base.titleLarge, font),
-      titleMedium: _applyFont(base.titleMedium, font),
-      titleSmall: _applyFont(base.titleSmall, font),
-      bodyLarge: _applyFont(
-          base.bodyLarge?.copyWith(
-            fontSize: ThemeSettings.bodyLargeFontSize,
-          ),
-          font),
-      bodyMedium: _applyFont(
-          base.bodyMedium?.copyWith(
-            fontSize: ThemeSettings.bodyMediumFontSize,
-          ),
-          font),
-      bodySmall: _applyFont(
-          base.bodySmall?.copyWith(
-            fontSize: ThemeSettings.bodySmallFontSize,
-          ),
-          font),
-      labelLarge: _applyFont(base.labelLarge, font),
-      labelMedium: _applyFont(base.labelMedium, font),
-      labelSmall: _applyFont(base.labelSmall, font),
-    );
-  }
+    final prompt = '''
+    Input Text: $text
 
-  static TextStyle? _applyFont(TextStyle? style, FontConfig font) {
-    if (style == null) return null;
-    return font.isGoogleFont
-        ? GoogleFonts.getFont(font.name, textStyle: style)
-        : style.copyWith(fontFamily: font.name, fontSize: style.fontSize);
-  }
-}
+    Instructions for the AI: This text has been transcribed from an audio input and may contain inaccuracies in punctuation and wording. Your task is to improve the text by correcting any errors and making it more coherent and cohesive. Ensure that the improved text is a faithful representation of what the user intended to say, and correct words if necessary to maintain coherence. And ALWAYS return the text in its original language. If the text is empty or contains no errors, return the original text as is. Never reply anything with your own words or opinions.
 
-///// lib/providers/auth_provider.dart /////
-import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:findatherapistapp/app_settings/app_general_settings.dart';
-import 'package:findatherapistapp/app_settings/auth_config.dart';
+    Expected Output: The improved text, well-punctuated and corrected, in a readable format.
+    ''';
 
-class AuthorizationProvider extends ChangeNotifier {
-  final FlutterSecureStorage storage = const FlutterSecureStorage();
-  final FirebaseAuth? _firebaseAuth =
-      AuthConfig.useFirebase ? FirebaseAuth.instance : null;
-  final GoogleSignIn _googleSignIn =
-      GoogleSignIn(scopes: AuthConfig.googleSignInScopes);
-  String? _authToken;
-  User? _user;
-  bool _isLoading = true;
-
-  AuthorizationProvider() {
-    _initializeUser();
-  }
-
-  String? get authToken => _authToken;
-  User? get user => _user;
-  bool get isLoading => _isLoading;
-
-  Future<void> _initializeUser() async {
-    if (AuthConfig.useFirebase) {
-      _user = _firebaseAuth?.currentUser;
-      if (_user != null) {
-        _authToken = _user!.uid;
-      }
-    } else {
-      _authToken = await storage.read(key: 'auth_token');
-    }
-
-    _isLoading = false;
-    notifyListeners();
-
-    _googleSignIn.onCurrentUserChanged
-        .listen((GoogleSignInAccount? account) async {
-      if (account != null) {
-        _user = await _handleSignIn(account);
-        if (_user != null) {
-          _authToken = _user?.uid;
-          await setAuthToken(_authToken!);
-        }
-      } else {
-        _user = null;
-        _authToken = null;
-      }
-      notifyListeners();
-    });
-
-    GoogleSignInAccount? currentUser = await _googleSignIn.signInSilently();
-    if (currentUser != null) {
-      _user = await _handleSignIn(currentUser);
-      if (_user != null) {
-        _authToken = _user?.uid;
-        await setAuthToken(_authToken!);
-        notifyListeners();
-      }
-    }
-  }
-
-  Future<User?> _handleSignIn(GoogleSignInAccount account) async {
     try {
-      final GoogleSignInAuthentication googleAuth =
-          await account.authentication;
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        idToken: googleAuth.idToken,
-        accessToken: googleAuth.accessToken,
-      );
+      final Iterable<google_ai.Content> content = [
+        google_ai.Content.text(prompt),
+      ];
+      final google_ai.GenerateContentResponse response =
+          await model.generateContent(content);
 
-      if (AuthConfig.useFirebase) {
-        final UserCredential authResult =
-            await _firebaseAuth!.signInWithCredential(credential);
-        return authResult.user;
+      if (response.candidates.isEmpty) {
+        return text;
       }
-      return null;
+
+      String? responseText;
+      for (var candidate in response.candidates) {
+        if (candidate.text != null && candidate.text!.isNotEmpty) {
+          responseText = candidate.text;
+          break;
+        }
+      }
+
+      return responseText ?? text;
     } catch (e) {
-      debugPrint('Error during Google sign-in: $e');
-      return null;
+      return text;
     }
-  }
-
-  Future<void> setAuthToken(String token) async {
-    await storage.write(key: 'auth_token', value: token);
-    _authToken = token;
-    notifyListeners();
-  }
-
-  Future<void> clearAuthToken() async {
-    await storage.delete(key: 'auth_token');
-    _authToken = null;
-    _user = null;
-    debugPrint('Auth token cleared. User will be logged out.');
-    notifyListeners();
-  }
-
-  Future<void> signOut(BuildContext context) async {
-    if (DebugConfig.bypassLoginScreen) {
-      debugPrint(
-          'Error: Bypass Login Screen is on. Disable it from AppGeneralSettings.bypassLoginScreen in order to proceed with sign out.');
-      return;
-    }
-    await clearAuthToken();
-    if (AuthConfig.useFirebase) {
-      await _firebaseAuth?.signOut();
-    }
-
-    if (AuthConfig.allowGoogleSignIn) {
-      await _googleSignIn.signOut();
-    }
-  }
-
-  bool get isAuthenticated =>
-      !isLoading &&
-      (DebugConfig.bypassLoginScreen ||
-          (_authToken != null && _authToken!.isNotEmpty));
-
-  Future<bool> signInWithEmail(String email, String password) async {
-    bool success = false;
-    try {
-      debugPrint('Signing in with email/password...');
-
-      if (AuthConfig.useFirebase) {
-        final UserCredential authResult = await _firebaseAuth!
-            .signInWithEmailAndPassword(email: email, password: password);
-        _authToken = authResult.user!.uid;
-        _user = authResult.user;
-        await setAuthToken(_authToken!);
-      } else {
-        _authToken = email;
-        await setAuthToken(_authToken!);
-      }
-
-      notifyListeners();
-      success = true;
-      debugPrint('User logged in successfully.✅');
-      return success;
-    } catch (error) {
-      debugPrint('Error during email/password Sign In: ${error.toString()}');
-      success = false;
-      return success;
-    }
-  }
-
-  Future<bool> signInWithGoogle() async {
-    bool success = false;
-    if (AuthConfig.allowGoogleSignIn) {
-      try {
-        debugPrint('Signing in with Google...');
-
-        final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-        if (googleUser != null) {
-          debugPrint('Google Sign In successful.');
-          final GoogleSignInAuthentication googleAuth =
-              await googleUser.authentication;
-          final credential = GoogleAuthProvider.credential(
-            accessToken: googleAuth.accessToken,
-            idToken: googleAuth.idToken,
-          );
-
-          if (AuthConfig.useFirebase) {
-            final UserCredential? authResult =
-                await _firebaseAuth?.signInWithCredential(credential);
-            _authToken = authResult?.user!.uid;
-            _user = authResult?.user;
-            await setAuthToken(_authToken!);
-          } else {
-            _authToken = googleAuth.accessToken;
-            await setAuthToken(_authToken!);
-          }
-
-          notifyListeners();
-          success = true;
-          debugPrint('User logged in successfully.');
-          return success;
-        }
-      } catch (error) {
-        debugPrint(
-            'Error trying to signing in user using Google: ${error.toString()}');
-        success = false;
-        return success;
-      }
-    }
-    return success;
   }
 }
 
-///// lib/providers/providers_all.dart /////
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:findatherapistapp/providers/auth_provider.dart';
-import 'package:findatherapistapp/providers/locale_provider.dart';
-import 'package:findatherapistapp/providers/theme_provider.dart';
+///// lib/models/current_user_data.dart /////
+class CurrentUserData {
+  final String userId;
+  final String? email;
+  final bool isAnonymous;
 
-import '../services/connectivity_service.dart';
-import 'navigation_provider.dart';
-
-final authProvider = ChangeNotifierProvider((ref) => AuthorizationProvider());
-final themeProvider = ChangeNotifierProvider((ref) => ThemeProvider());
-final localeProvider = ChangeNotifierProvider((ref) => LocaleProvider());
-final connectivityProvider =
-    ChangeNotifierProvider((ref) => ConnectivityService());
-
-final navigationStateProvider = StateProvider<bool>((ref) => false);
-final navigationProvider =
-    ChangeNotifierProvider((ref) => NavigationProvider());
-
-///// lib/routes/routes.dart /////
-import 'package:findatherapistapp/screens/common/loading_screen/loading_screen.dart';
-import 'package:findatherapistapp/screens/common/not_found_screen/not_found_screen.dart';
-import 'package:go_router/go_router.dart';
-import 'package:flutter/material.dart';
-
-import '../screens/common/home_screen/home_screen.dart';
-import '../screens/common/login_screen/login_screen.dart';
-import '../screens/therapist_area/therapist_profile_screen.dart';
-import '../screens/user_area/user_profile_screen/user_profile_screen.dart';
-import '../screens/user_area/user_request_screen/user_request_screen.dart';
-
-class Routes {
-  /// COMMON ROUTES
-
-  static RouteConfig loginScreen = RouteConfig(
-    path: '/login',
-    name: 'Login Screen',
-    builder: (context) => const LoginScreen(),
-  );
-
-  static RouteConfig homeScreen = RouteConfig(
-    path: '/',
-    name: 'Home Screen',
-    builder: (context) => const HomeScreen(),
-  );
-
-  static RouteConfig notFoundScreen = RouteConfig(
-    path: '/404',
-    name: '404 Not Found',
-    builder: (context) => const NotFoundScreen(),
-  );
-
-  static RouteConfig loadingScreen = RouteConfig(
-      path: '/loading',
-      name: 'Loading',
-      builder: (context) => const LoadingScreen());
-
-  /// USER AREA ROUTES
-
-  static RouteConfig userProfileScreen = RouteConfig(
-    path: '/user-profile',
-    name: 'User Profile Screen',
-    builder: (context) => const UserProfileScreen(),
-  );
-
-  static RouteConfig userRequestScreen = RouteConfig(
-    path: '/user-request',
-    name: 'User Request',
-    builder: (context) => const UserRequestScreen(),
-  );
-
-  /// THERAPIST AREA ROUTES
-
-  static RouteConfig therapistProfileScreen = RouteConfig(
-    path: '/therapist-profile',
-    name: 'Therapist Profile Screen',
-    builder: (context) => const TherapistProfileScreen(),
-  );
-
-  static List<GoRoute> _generateRoutes() {
-    List<RouteConfig> allRoutes = [
-      loginScreen,
-      homeScreen,
-      userProfileScreen,
-      userRequestScreen,
-      therapistProfileScreen,
-      notFoundScreen,
-      loadingScreen,
-    ];
-    return allRoutes
-        .map((routeConfig) => GoRoute(
-              path: routeConfig.path,
-              builder: (context, state) => routeConfig.builder(context),
-            ))
-        .toList();
-  }
-
-  static final GoRouter router = GoRouter(
-    routes: _generateRoutes(),
-  );
+  CurrentUserData(
+      {required this.userId, this.email, required this.isAnonymous});
 }
 
-class RouteConfig {
-  final String path;
-  final Widget Function(BuildContext) builder;
-  final String name;
+///// lib/models/gemini_tags_response_model.dart /////
+class GeminiTagsResponse {
+  final Tags tags;
+  final GeminiErrorResponse? error;
+  final List<Candidate>? candidates;
 
-  const RouteConfig({
-    required this.path,
-    required this.builder,
-    required this.name,
-  });
+  GeminiTagsResponse(
+      {this.error, required this.tags, this.candidates = const []});
+
+  factory GeminiTagsResponse.fromJson(Map<String, dynamic> json) {
+    return GeminiTagsResponse(
+      tags: Tags.fromJson(json['tags']),
+      error: json['error'] != null
+          ? GeminiErrorResponse(message: json['error'], code: null)
+          : null,
+      candidates: (json['candidates'] as List<dynamic>?)
+              ?.map((candidate) => Candidate.fromJson(candidate))
+              .toList() ??
+          [],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'tags': tags.toJson(),
+      'error': error?.toJson(),
+      'candidates': candidates?.map((candidate) => candidate.toJson()).toList(),
+    };
+  }
+}
+
+class Tags {
+  final List<String> positive;
+  final List<String> negative;
+
+  Tags({required this.positive, required this.negative});
+
+  factory Tags.fromJson(Map<String, dynamic> json) {
+    return Tags(
+      positive: List<String>.from(json['positive']),
+      negative: List<String>.from(json['negative']),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'positive': positive,
+      'negative': negative,
+    };
+  }
+}
+
+class Candidate {
+  final String? text;
+  final List<SafetyRating>? safetyRatings;
+
+  Candidate({this.text, this.safetyRatings});
+
+  factory Candidate.fromJson(Map<String, dynamic> json) {
+    return Candidate(
+      text: json['text'],
+      safetyRatings: (json['safetyRatings'] as List<dynamic>?)
+          ?.map((rating) => SafetyRating.fromJson(rating))
+          .toList(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'text': text,
+      'safetyRatings': safetyRatings?.map((rating) => rating.toJson()).toList(),
+    };
+  }
+}
+
+class GeminiErrorResponse {
+  final String? message;
+  final String? code;
+
+  GeminiErrorResponse({this.message, this.code});
+
+  factory GeminiErrorResponse.fromJson(Map<String, dynamic> json) {
+    return GeminiErrorResponse(
+      message: json['message'],
+      code: json['code'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'message': message,
+      'code': code,
+    };
+  }
+
+  @override
+  String toString() {
+    return 'GeminiError{message: $message, code: $code}';
+  }
+}
+
+class SafetyRating {
+  final String category;
+  final String probability;
+
+  SafetyRating({required this.category, required this.probability});
+
+  factory SafetyRating.fromJson(Map<String, dynamic> json) {
+    return SafetyRating(
+      category: json['category'],
+      probability: json['probability'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'category': category,
+      'probability': probability,
+    };
+  }
 }
 
 ///// pubspec.yaml /////
@@ -2223,6 +2764,8 @@ dependencies:
   go_router: ^14.2.0
   # Google Generative AI is a Flutter plugin for using Google Generative AI in a Flutter app.
   google_generative_ai: ^0.4.3
+  # Speech to Text is a Flutter plugin for converting speech to text in a Flutter app.
+  speech_to_text: ^6.6.0
 
 
 #  # -----------------  GENERAL PACKAGES  -----------------
