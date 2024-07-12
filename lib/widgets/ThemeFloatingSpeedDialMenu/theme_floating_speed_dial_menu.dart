@@ -31,6 +31,7 @@ class _ThemeFloatingSpeedDialMenuState
     bool isDarkMode = theme.themeMode == ThemeMode.dark;
 
     return SpeedDial(
+      buttonSize: const Size(53, 53),
       backgroundColor: isDarkMode
           ? ThemeSettings.floatingSpeedDialBackgroundColor.darkModePrimary
           : ThemeSettings.floatingSpeedDialBackgroundColor.lightModePrimary,

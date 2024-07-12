@@ -67,7 +67,7 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
             "address": "123 Therapy Lane",
             "city": "Buenos Aires",
             "country": "AR",
-            "geolocation": GeoPoint(-34.603722, -58.381592),
+            "geolocation": const GeoPoint(-34.603722, -58.381592),
             "stateProvince": "Buenos Aires",
             "zip": "1000"
           },

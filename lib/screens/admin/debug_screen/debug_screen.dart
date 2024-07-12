@@ -1,4 +1,3 @@
-import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -6,7 +5,6 @@ import 'package:findatherapistapp/app_settings/theme_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../models/therapist_model.dart';
-import '../../../utils/ui/is_dark_mode.dart';
 import '../../../widgets/AppScaffold/app_scaffold.dart';
 import '../../../services/firestore_service.dart';
 
@@ -113,7 +111,10 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
       body: FutureBuilder<List<TherapistModel>>(
         future: _fetchTherapists(),
         builder: (context, snapshot) {
-          if (snapshot.hasError) {
+          print('snapshot: ${snapshot.data}');
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
             return const Center(child: Text('Failed to load therapists'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(child: Text('No therapists found'));
@@ -251,7 +252,7 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
                           child: Row(
                             children: [
                               Text('${therapist.score.rating}'),
-                              SizedBox(width: 3),
+                              const SizedBox(width: 3),
                               const Icon(
                                 Icons.star,
                                 color: Colors.amber,
