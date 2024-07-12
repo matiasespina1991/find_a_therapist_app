@@ -12,7 +12,7 @@ class AppGeneralSettings {
 
 class DebugConfig {
   static const bool debugMode = true;
-  static const String? debugDatabaseId = 'debug-database';
+  static const String debugDatabaseId = 'debug-database';
   static const bool showDebugPrints = false;
 
   static const bool bypassLoginScreen =

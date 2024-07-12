@@ -87,6 +87,13 @@ class MainTheme {
                 : ThemeSettings.appBarBackgroundColor.darkModePrimary),
       ),
       chipTheme: ChipDecorationTheme.chipTheme(brightness, colorScheme),
+      cardTheme: base.cardTheme.copyWith(
+          shape: const RoundedRectangleBorder(
+            borderRadius: ThemeSettings.cardBorderRadius,
+          ),
+          surfaceTintColor: brightness == Brightness.light
+              ? ThemeSettings.cardBackgroundColor.lightModePrimary
+              : ThemeSettings.cardBackgroundColor.darkModePrimary),
       inputDecorationTheme:
           InputTheme.inputDecorationTheme(brightness, colorScheme),
       elevatedButtonTheme:

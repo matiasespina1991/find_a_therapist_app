@@ -10,8 +10,8 @@ class ThemeSettings {
   static const EdgeInsetsGeometry scaffoldPadding = EdgeInsets.only(
     top: 20,
     bottom: 0,
-    left: 20,
-    right: 20,
+    left: 8,
+    right: 8,
   );
   static const Color seedColor = Colors.blueGrey;
   static const bool forceSeedColor = false;
@@ -91,6 +91,11 @@ class ThemeSettings {
     darkModePrimary: Colors.grey,
   );
 
+  static const ThemeColors cardBackgroundColor = ThemeColors(
+    lightModePrimary: Colors.blueGrey,
+    darkModePrimary: Colors.white,
+  );
+
   static const ThemeColors primaryContainerBackgroundColor = ThemeColors(
     lightModePrimary: Colors.blueGrey,
     darkModePrimary: Colors.blueGrey,
@@ -135,8 +140,10 @@ class ThemeSettings {
   );
 
   static const BorderRadius cardBorderRadius = BorderRadius.all(
-    Radius.circular(5),
+    Radius.circular(8),
   );
+
+  static const double cardVerticalSpacing = 4;
 
   static const BorderRadius chipBorderRadius = BorderRadius.all(
     Radius.circular(5),
