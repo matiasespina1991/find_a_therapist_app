@@ -9,6 +9,8 @@
 │   ├── _bin
 │   │   ├── _demo_widgets_screen.dart
 │   │   └── config.dart
+│   ├── _mock_data
+│   │   └── _mock_therapists.dart
 │   ├── app_settings
 │   │   ├── app_general_settings.dart
 │   │   ├── app_info.dart
@@ -17,6 +19,9 @@
 │   │   ├── language_settings.dart
 │   │   └── theme_settings.dart
 │   ├── assets
+│   │   ├── icons
+│   │   │   ├── gold-plan-badge.png
+│   │   │   └── verified-badge.png
 │   │   ├── images
 │   │   └── lottie_animations
 │   │       ├── animation.json
@@ -48,7 +53,9 @@
 │   │   ├── current_user_data.dart
 │   │   ├── gemini_tags_response_model.dart
 │   │   ├── general_models.dart
-│   │   └── theme_models.dart
+│   │   ├── term_index_model.dart
+│   │   ├── theme_models.dart
+│   │   └── therapist_model.dart
 │   ├── providers
 │   │   ├── auth_provider.dart
 │   │   ├── locale_provider.dart
@@ -73,6 +80,7 @@
 │   ├── services
 │   │   ├── connectivity_service.dart
 │   │   ├── error_reporting_service.dart
+│   │   ├── firestore_service.dart
 │   │   ├── gemini_service.dart
 │   │   └── speech_to_text_service.dart
 │   ├── theme
@@ -110,7 +118,7 @@
 ├── rename_imports.sh
 └── template_app.iml
 
-40 directories, 71 files
+42 directories, 77 files
 ///// pubspec.yaml /////
 name: findatherapistapp
 description: "An app to easily find the perfect therapist."
@@ -154,7 +162,7 @@ dependencies:
 #  # Url Launcher is a Flutter plugin for launching a URL in the mobile platform. Supports iOS and Android.
 #  url_launcher: ^6.3.0
 #  # Cached network image is a Flutter library to show images from the internet and keep them in the cache directory.
-#  cached_network_image: ^3.3.1
+  cached_network_image: ^3.3.1
 #  # Google Fonts is a Flutter plugin for using Google Fonts in a Flutter app.
 #  google_fonts: ^6.2.1
 #  # Flutter Email Validator is a Flutter plugin for validating email addresses in a Flutter app.
@@ -197,7 +205,7 @@ dependencies:
   # Flutter Speed Dial is a Flutter plugin for creating a speed dial menu widget in a Flutter app.
   flutter_speed_dial: ^7.0.0
 #  # Badges is a Flutter plugin for creating fancy animated badges in a Flutter app.
-#  badges: ^3.1.2
+  badges: ^3.1.2
 #  # Flutter Native Splash is a Flutter plugin for creating a splash screen in a Flutter app.
 #  flutter_native_splash: ^2.4.0
 #  # Another Flushbar is a Flutter plugin for creating custom snackbars in a Flutter app.
@@ -249,8 +257,8 @@ dependencies:
 #  # Flutter Auth is a Flutter plugin that enables Android and iOS authentication using passwords, phone numbers, and identity providers like Google, Facebook, and Twitter.
   firebase_auth: ^5.1.1
 #  # Cloud Firestore is a flexible, scalable database for mobile, web, and server development from Firebase and Google Cloud Platform.
-#  cloud_firestore: ^5.0.1
-#  # Firebase Database is a Flutter plugin to use the Firebase Realtime Database API and allow storing and syncing data with a NoSQL cloud database.
+  cloud_firestore: ^5.1.0
+  #  # Firebase Database is a Flutter plugin to use the Firebase Realtime Database API and allow storing and syncing data with a NoSQL cloud database.
 #  firebase_database: ^11.0.1
 #  # Firebase Storage is a Flutter plugin to use the Firebase Cloud Storage API and allow uploading, downloading, and deleting files in the cloud.
 #  firebase_storage: ^12.0.1
@@ -288,6 +296,7 @@ flutter:
   assets:
     - lib/assets/lottie_animations/
     - lib/assets/images/
+    - lib/assets/icons/
 
 
   # fonts:
@@ -318,11 +327,14 @@ class AppGeneralSettings {
 }
 
 class DebugConfig {
-  static const bool bypassLoginScreen =
-      false; // If true, login screen will be skipped
+  static const bool debugMode = true;
+  static const String debugDatabaseId = 'debug-database';
+  static const bool showDebugPrints = false;
   static RouteConfig debugScreen = Routes.debugScreen;
   static const forceDebugScreen =
       true; // If true, the route set in debugScreen will be shown and screen protection will be ignored
+  static const bool bypassLoginScreen =
+      false; // If true, login screen will be skipped
 }
 
 ///// lib/app_settings/app_info.dart /////
@@ -333,7 +345,7 @@ class AppInfo {
 ///// lib/app_settings/auth_config.dart /////
 class AuthConfig {
   static const bool useProtectedRoutes = true;
-  static const bool useFirebase = false;
+  static const bool useFirebase = true;
   static const bool allowGoogleSignIn = true;
   //TODO: Add scope functionality:
   static const List<String> googleSignInScopes = ['email'];
@@ -363,8 +375,8 @@ class ThemeSettings {
   static const EdgeInsetsGeometry scaffoldPadding = EdgeInsets.only(
     top: 20,
     bottom: 0,
-    left: 20,
-    right: 20,
+    left: 8,
+    right: 8,
   );
   static const Color seedColor = Colors.blueGrey;
   static const bool forceSeedColor = false;
@@ -444,6 +456,11 @@ class ThemeSettings {
     darkModePrimary: Colors.grey,
   );
 
+  static const ThemeColors cardBackgroundColor = ThemeColors(
+    lightModePrimary: Colors.blueGrey,
+    darkModePrimary: Colors.white,
+  );
+
   static const ThemeColors primaryContainerBackgroundColor = ThemeColors(
     lightModePrimary: Colors.blueGrey,
     darkModePrimary: Colors.blueGrey,
@@ -488,8 +505,10 @@ class ThemeSettings {
   );
 
   static const BorderRadius cardBorderRadius = BorderRadius.all(
-    Radius.circular(5),
+    Radius.circular(8),
   );
+
+  static const double cardVerticalSpacing = 4;
 
   static const BorderRadius chipBorderRadius = BorderRadius.all(
     Radius.circular(5),
@@ -630,6 +649,13 @@ class MainTheme {
                 : ThemeSettings.appBarBackgroundColor.darkModePrimary),
       ),
       chipTheme: ChipDecorationTheme.chipTheme(brightness, colorScheme),
+      cardTheme: base.cardTheme.copyWith(
+          shape: const RoundedRectangleBorder(
+            borderRadius: ThemeSettings.cardBorderRadius,
+          ),
+          surfaceTintColor: brightness == Brightness.light
+              ? ThemeSettings.cardBackgroundColor.lightModePrimary
+              : ThemeSettings.cardBackgroundColor.darkModePrimary),
       inputDecorationTheme:
           InputTheme.inputDecorationTheme(brightness, colorScheme),
       elevatedButtonTheme:
@@ -1589,458 +1615,310 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 }
 
-///// lib/screens/common/login_screen/login_screen.dart /////
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'package:sign_in_button/sign_in_button.dart';
-import 'package:findatherapistapp/app_settings/auth_config.dart';
-import 'package:findatherapistapp/generated/l10n.dart';
+///// lib/models/therapist_model.dart /////
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../../../app_settings/theme_settings.dart';
-import '../../../providers/providers_all.dart';
-import '../../../routes/routes.dart';
-import '../../../utils/ui/is_dark_mode.dart';
-import '../../../utils/validation/is_email_valid.dart';
-import '../../../widgets/AppScaffold/app_scaffold.dart';
-import '../../../widgets/NotificationModal/notification_modal.dart';
-import '../../../widgets/NotificationSnackbar/notification_snackbar.dart';
-import '../../../widgets/ThemeInputTextField/theme_input_text_field.dart';
+class TherapistModel {
+  String id;
+  Timestamp createdAt;
+  Timestamp updatedAt;
+  Aspects aspects;
+  Subscription subscription;
+  Score score;
+  TherapistInfo therapistInfo;
+  bool isOnline;
 
-class LoginScreen extends ConsumerStatefulWidget {
-  const LoginScreen({super.key});
+  TherapistModel({
+    required this.id,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.aspects,
+    required this.subscription,
+    required this.score,
+    required this.therapistInfo,
+    required this.isOnline,
+  });
 
-  @override
-  ConsumerState<LoginScreen> createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends ConsumerState<LoginScreen> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final FocusNode _emailFocusNode = FocusNode();
-  final FocusNode _passwordFocusNode = FocusNode();
-  bool _isEmailValid = true;
-  bool _isPasswordValid = true;
-  final int minPasswordLength = 6;
-  bool _attemptingLogin = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return AppScaffold(
-      appBarTitle: S.of(context).loginScreenTitle,
-      isProtected: false,
-      useSafeArea: false,
-      hideFloatingSpeedDialMenu: true,
-      backgroundAnimation: ThemeSettings.primaryLottieBackgroundAnimation,
-      backgroundAnimationDarkMode:
-          ThemeSettings.secondaryLottieBackgroundAnimation,
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Center(
-              child: SizedBox(
-                width: 300,
-                child: Column(
-                  children: <Widget>[
-                    const SizedBox(height: 120),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          const Icon(Icons.email_outlined),
-                          const SizedBox(width: 5),
-                          Text(
-                            S.of(context).emailLabel,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                    ),
-                    ThemeInputTextField(
-                      controller: _emailController,
-                      focusNode: _emailFocusNode,
-                      hintText: S.of(context).emailHintText,
-                      isEmailInput: true,
-                      isValid: _isEmailValid,
-                      errorText: S.of(context).invalidEmailMessage,
-                      onChanged: (value) {
-                        if (isEmailValid(value)) {
-                          setState(() {
-                            _isEmailValid = true;
-                          });
-                        }
-                      },
-                    ),
-                    const SizedBox(height: 20),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          const Icon(Icons.lock_outline),
-                          const SizedBox(width: 5),
-                          Text(
-                            S.of(context).passwordLabel,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                    ),
-                    ThemeInputTextField(
-                      controller: _passwordController,
-                      focusNode: _passwordFocusNode,
-                      hintText: S.of(context).passwordHintText,
-                      isPasswordInput: true,
-                      hidePasswordVisibilityIcon: false,
-                      isValid: _isPasswordValid,
-                      errorText: S.of(context).invalidPasswordMessage,
-                      onChanged: (value) {
-                        if (value.isNotEmpty &&
-                            value.length >= minPasswordLength) {
-                          setState(() {
-                            _isPasswordValid = true;
-                          });
-                        }
-                      },
-                    ),
-                    const SizedBox(height: 32.0),
-                    SizedBox(
-                      width: 233,
-                      child: ElevatedButton(
-                        onPressed: _attemptingLogin
-                            ? null
-                            : () => attemptLoginWithEmailAndPassword(ref),
-                        child: Text(S.of(context).loginButton),
-                      ),
-                    ),
-                    Visibility(
-                      visible: AuthConfig.allowGoogleSignIn,
-                      child: Column(
-                        children: [
-                          const SizedBox(height: 22.0),
-                          SignInButton(Buttons.google,
-                              elevation: ThemeSettings.buttonsElevation,
-                              padding: const EdgeInsets.all(5.5),
-                              clipBehavior: Clip.hardEdge,
-                              shape: const RoundedRectangleBorder(
-                                  borderRadius:
-                                      ThemeSettings.buttonsBorderRadius),
-                              text: S.of(context).signInWithGoogleButtonLabel,
-                              onPressed: () async {
-                            if (AuthConfig.allowGoogleSignIn) {
-                              attemptLoginWithGoogle(ref);
-                            }
-                          }),
-                        ],
-                      ),
-                    ),
-                    const Divider(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          S.of(context).lightMode,
-                          style: TextStyle(
-                            fontWeight: isDarkMode(context)
-                                ? FontWeight.normal
-                                : FontWeight.bold,
-                          ),
-                        ),
-                        const Text(
-                          ' / ',
-                        ),
-                        Text(
-                          S.of(context).darkMode,
-                          style: TextStyle(
-                            fontWeight: isDarkMode(context)
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 5),
-                    Switch(
-                      thumbIcon: WidgetStateProperty.all(Icon(
-                        isDarkMode(context)
-                            ? Icons.dark_mode
-                            : Icons.light_mode,
-                        color: Colors.white,
-                      )),
-                      value: isDarkMode(context),
-                      onChanged: (value) {
-                        ref.read(themeProvider).toggleTheme(value);
-                      },
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            ref
-                                .read(localeProvider)
-                                .setLocale(const Locale('en'));
-                          },
-                          child: const Text(
-                            '🇺🇸',
-                            style: TextStyle(fontSize: 30),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        const Text('/'),
-                        const SizedBox(width: 10),
-                        GestureDetector(
-                          onTap: () {
-                            ref
-                                .read(localeProvider)
-                                .setLocale(const Locale('es'));
-                          },
-                          child: const Text(
-                            '🇪🇸',
-                            style: TextStyle(fontSize: 30),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        const Text('/'),
-                        const SizedBox(width: 10),
-                        GestureDetector(
-                          onTap: () {
-                            ref
-                                .read(localeProvider)
-                                .setLocale(const Locale('de'));
-                          },
-                          child: const Text(
-                            '🇩🇪',
-                            style: TextStyle(fontSize: 30),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+  factory TherapistModel.fromJson(Map<String, dynamic> json, String id) {
+    return TherapistModel(
+      id: id,
+      createdAt: json['createdAt'] as Timestamp,
+      updatedAt: json['updatedAt'] as Timestamp,
+      aspects: Aspects.fromJson(json['aspects']),
+      subscription: Subscription.fromJson(json['subscription']),
+      score: Score.fromJson(json['score']),
+      therapistInfo: TherapistInfo.fromJson(json['therapistInfo']),
+      isOnline: json['isOnline'],
     );
   }
 
-  void attemptLoginWithEmailAndPassword(WidgetRef ref) async {
-    debugPrint('Attempting login...');
-    var error = false;
-    setState(() {
-      _isEmailValid = true;
-      _isPasswordValid = true;
-    });
-
-    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
-      List<String> emptyFields = [];
-      if (_emailController.text.isEmpty) {
-        debugPrint('Please insert a valid email');
-        emptyFields.add(S.of(context).email);
-        setState(() {
-          _isEmailValid = false;
-        });
-        NotificationSnackbar.showSnackBar(
-          message: S.of(context).invalidEmailSnackbarMessage,
-          variant: SnackbarVariant.error,
-          duration: SnackbarDuration.short,
-        );
-      }
-      if (_passwordController.text.isEmpty) {
-        debugPrint('Please insert a valid password');
-        emptyFields.add(S.of(context).password);
-        setState(() {
-          _isPasswordValid = false;
-        });
-        NotificationSnackbar.showSnackBar(
-          message: S.of(context).invalidPasswordSnackbarMessage,
-          variant: SnackbarVariant.error,
-          duration: SnackbarDuration.short,
-        );
-        error = true;
-      }
-
-      debugPrint('Error: The following fields are empty: $emptyFields');
-
-      NotificationSnackbar.showSnackBar(
-        message:
-            '${S.of(context).pleaseFillTheFollowingFields} ${emptyFields.join(', ')}.',
-        variant: SnackbarVariant.error,
-        duration: SnackbarDuration.short,
-      );
-      error = true;
-
-      NotificationModal.loginFieldsAreEmpty(
-          context: context, onTapConfirm: () {}, emptyFields: emptyFields);
-    }
-
-    if (_emailController.text.isNotEmpty &&
-        !isEmailValid(_emailController.text)) {
-      debugPrint('Email is not valid');
-      setState(() {
-        _isEmailValid = false;
-      });
-      NotificationSnackbar.showSnackBar(
-        message: S.of(context).invalidEmailMessage,
-        variant: SnackbarVariant.error,
-        duration: SnackbarDuration.short,
-      );
-      error = true;
-    }
-
-    if (_passwordController.text.isNotEmpty &&
-        _passwordController.text.length < minPasswordLength) {
-      debugPrint('Password is too short. Minimum length: $minPasswordLength');
-      setState(() {
-        _isPasswordValid = false;
-      });
-      NotificationSnackbar.showSnackBar(
-        message: S.of(context).invalidPasswordTooShortMessage,
-        variant: SnackbarVariant.error,
-        duration: SnackbarDuration.short,
-      );
-      error = true;
-    }
-
-    if (error) {
-      debugPrint('Login aborted.');
-      return;
-    }
-
-    setState(() {
-      _attemptingLogin = true;
-    });
-
-    NotificationSnackbar.showSnackBar(
-      message: S.of(context).signingInMessage,
-      variant: SnackbarVariant.info,
-      duration: SnackbarDuration.long,
-    );
-    try {
-      bool userSignedIn = await ref
-          .read(authProvider)
-          .signInWithEmail(_emailController.text, _passwordController.text);
-
-      if (userSignedIn) {
-        void userTappedConfirm() {
-          NotificationSnackbar.hideCurrentSnackBar();
-          NotificationSnackbar.showSnackBar(
-              message: S.of(context).loginSuccessfulMessage,
-              variant: SnackbarVariant.success,
-              duration: SnackbarDuration.short,
-              delay: 1);
-          context.go(Routes.homeScreen.path);
-        }
-
-        if (mounted) {
-          NotificationModal.successfulModal(
-              title: S.of(context).successfulLogin,
-              message: S.of(context).successfulLoginRedirectToHomeMessage,
-              context: context,
-              onTapConfirm: () => userTappedConfirm());
-        }
-      } else {
-        if (mounted) {
-          NotificationSnackbar.showSnackBar(
-            message: S.of(context).loginErrorMessage,
-            variant: SnackbarVariant.error,
-            duration: SnackbarDuration.long,
-          );
-        }
-      }
-    } catch (error) {
-      if (mounted) {
-        NotificationSnackbar.showSnackBar(
-          message: S.of(context).loginErrorMessage,
-          variant: SnackbarVariant.error,
-          duration: SnackbarDuration.long,
-        );
-      }
-      if (mounted) {
-        NotificationModal.failedLogin(
-            context: context,
-            onTapConfirm: () {},
-            errorMessage: S.of(context).loginErrorMessage);
-        debugPrint('Error logging in: ${error.toString()}');
-      }
-    } finally {
-      setState(() {
-        _attemptingLogin = false;
-      });
-      NotificationSnackbar.hideCurrentSnackBar();
-    }
-  }
-
-  void attemptLoginWithGoogle(WidgetRef ref) async {
-    NotificationSnackbar.showSnackBar(
-      message: S.of(context).signingInWithGoogleSnackbarMessage,
-      variant: SnackbarVariant.info,
-      duration: SnackbarDuration.long,
-    );
-    try {
-      bool userSignedIn = await ref.read(authProvider).signInWithGoogle();
-      if (userSignedIn) {
-        if (mounted) {
-          NotificationModal.successfulModal(
-            title: S.of(context).successfulLogin,
-            message: S.of(context).successfulLoginRedirectToHomeMessage,
-            context: context,
-            onTapConfirm: () {
-              NotificationSnackbar.hideCurrentSnackBar();
-              NotificationSnackbar.showSnackBar(
-                message: S.of(context).loginSuccessfulMessage,
-                variant: SnackbarVariant.success,
-                duration: SnackbarDuration.short,
-                delay: 1,
-              );
-              context.go(Routes.homeScreen.path);
-            },
-          );
-        }
-      } else {
-        if (mounted) {
-          NotificationSnackbar.showSnackBar(
-            message: S.of(context).loginErrorMessage,
-            variant: SnackbarVariant.error,
-            duration: SnackbarDuration.long,
-          );
-        }
-      }
-    } on PlatformException catch (error) {
-      if (mounted) {
-        NotificationSnackbar.showSnackBar(
-          message: S.of(context).errorSigningInWithGoogleSnackbarMessage,
-          variant: SnackbarVariant.error,
-          duration: SnackbarDuration.long,
-        );
-      }
-
-      debugPrint('Error signing in with Google: ${error.toString()}');
-    } catch (error) {
-      if (mounted) {
-        NotificationSnackbar.showSnackBar(
-          message: S.of(context).errorSigningInWithGoogleSnackbarMessage,
-          variant: SnackbarVariant.error,
-          duration: SnackbarDuration.long,
-        );
-      }
-
-      debugPrint('Error: ${error.toString()}');
-    }
+  Map<String, dynamic> toJson() {
+    return {
+      'createdAt': createdAt,
+      'updatedAt': updatedAt,
+      'aspects': aspects.toJson(),
+      'subscription': subscription.toJson(),
+      'score': score.toJson(),
+      'therapistInfo': therapistInfo.toJson(),
+      'isOnline': isOnline,
+    };
   }
 }
+
+class Aspects {
+  List<String> positive;
+  List<String> negative;
+
+  Aspects({
+    required this.positive,
+    required this.negative,
+  });
+
+  factory Aspects.fromJson(Map<String, dynamic> json) {
+    return Aspects(
+      positive: List<String>.from(json['positive']),
+      negative: List<String>.from(json['negative']),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'positive': positive,
+      'negative': negative,
+    };
+  }
+}
+
+class Subscription {
+  Timestamp endsAt;
+  String plan;
+  Timestamp startedAt;
+  bool autoRenewal;
+
+  Subscription({
+    required this.endsAt,
+    required this.plan,
+    required this.startedAt,
+    required this.autoRenewal,
+  });
+
+  factory Subscription.fromJson(Map<String, dynamic> json) {
+    return Subscription(
+      endsAt: json['endsAt'] as Timestamp,
+      plan: json['plan'],
+      startedAt: json['startedAt'] as Timestamp,
+      autoRenewal: json['autoRenewal'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'endsAt': endsAt,
+      'plan': plan,
+      'startedAt': startedAt,
+      'autoRenewal': autoRenewal,
+    };
+  }
+}
+
+class Score {
+  double rating;
+  int amountRatings;
+
+  Score({
+    required this.rating,
+    required this.amountRatings,
+  });
+
+  factory Score.fromJson(Map<String, dynamic> json) {
+    return Score(
+      rating: (json['rating'] as num).toDouble(),
+      amountRatings: json['amountRatings'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'rating': rating,
+      'amountRatings': amountRatings,
+    };
+  }
+}
+
+class TherapistInfo {
+  String bio;
+  Location location;
+  String firstName;
+  bool userInfoIsVerified;
+  String lastName;
+  List<String> specializations;
+  List<String> spokenLanguages;
+  List<ProfessionalCertificate> professionalCertificates;
+  ProfilePictureUrl profilePictureUrl;
+
+  TherapistInfo({
+    required this.bio,
+    required this.location,
+    required this.firstName,
+    required this.userInfoIsVerified,
+    required this.lastName,
+    required this.specializations,
+    required this.spokenLanguages,
+    required this.professionalCertificates,
+    required this.profilePictureUrl,
+  });
+
+  factory TherapistInfo.fromJson(Map<String, dynamic> json) {
+    return TherapistInfo(
+      bio: json['bio'],
+      location: Location.fromJson(json['location']),
+      firstName: json['firstName'],
+      userInfoIsVerified: json['userInfoIsVerified'],
+      lastName: json['lastName'],
+      specializations: List<String>.from(json['specializations']),
+      spokenLanguages: List<String>.from(json['spokenLanguages']),
+      professionalCertificates: (json['professionalCertificates'] as List)
+          .map((i) => ProfessionalCertificate.fromJson(i))
+          .toList(),
+      profilePictureUrl: ProfilePictureUrl.fromJson(json['profilePictureUrl']),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'bio': bio,
+      'location': location.toJson(),
+      'firstName': firstName,
+      'userInfoIsVerified': userInfoIsVerified,
+      'lastName': lastName,
+      'specializations': specializations,
+      'spokenLanguages': spokenLanguages,
+      'professionalCertificates':
+          professionalCertificates.map((i) => i.toJson()).toList(),
+      'profilePictureUrl': profilePictureUrl.toJson(),
+    };
+  }
+}
+
+class Location {
+  String address;
+  String city;
+  String country;
+  GeoPoint geolocation;
+  String stateProvince;
+  String zip;
+
+  Location({
+    required this.address,
+    required this.city,
+    required this.country,
+    required this.geolocation,
+    required this.stateProvince,
+    required this.zip,
+  });
+
+  factory Location.fromJson(Map<String, dynamic> json) {
+    return Location(
+      address: json['address'],
+      city: json['city'],
+      country: json['country'],
+      geolocation: json['geolocation'] as GeoPoint,
+      stateProvince: json['stateProvince'],
+      zip: json['zip'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'address': address,
+      'city': city,
+      'country': country,
+      'geolocation': geolocation,
+      'stateProvince': stateProvince,
+      'zip': zip,
+    };
+  }
+}
+
+class ProfessionalCertificate {
+  String institution;
+  String photoUrl;
+  String title;
+  String type;
+  bool verified;
+  int yearObtained;
+
+  ProfessionalCertificate({
+    required this.institution,
+    required this.photoUrl,
+    required this.title,
+    required this.type,
+    required this.verified,
+    required this.yearObtained,
+  });
+
+  factory ProfessionalCertificate.fromJson(Map<String, dynamic> json) {
+    return ProfessionalCertificate(
+      institution: json['institution'],
+      photoUrl: json['photoUrl'],
+      title: json['title'],
+      type: json['type'],
+      verified: json['verified'],
+      yearObtained: json['yearObtained'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'institution': institution,
+      'photoUrl': photoUrl,
+      'title': title,
+      'type': type,
+      'verified': verified,
+      'yearObtained': yearObtained,
+    };
+  }
+}
+
+class ProfilePictureUrl {
+  String large;
+  String small;
+  String thumb;
+
+  ProfilePictureUrl({
+    required this.large,
+    required this.small,
+    required this.thumb,
+  });
+
+  factory ProfilePictureUrl.fromJson(Map<String, dynamic> json) {
+    return ProfilePictureUrl(
+      large: json['large'],
+      small: json['small'],
+      thumb: json['thumb'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'large': large,
+      'small': small,
+      'thumb': thumb,
+    };
+  }
+}
+
+///// lib/models/term_index.dart /////
 
 ///// lib/screens/admin/debug_screen/debug_screen.dart /////
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:findatherapistapp/app_settings/theme_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../routes/routes.dart';
+import '../../../models/therapist_model.dart';
 import '../../../widgets/AppScaffold/app_scaffold.dart';
+import '../../../services/firestore_service.dart';
 
 class DebugScreen extends ConsumerStatefulWidget {
   const DebugScreen({super.key});
@@ -2050,13 +1928,262 @@ class DebugScreen extends ConsumerStatefulWidget {
 }
 
 class _DebugScreenState extends ConsumerState<DebugScreen> {
+  Future<List<TherapistModel>> _fetchTherapists() async {
+    try {
+      FirebaseFirestore firestore = FirestoreService.instance;
+      QuerySnapshot snapshot = await firestore.collection('therapists').get();
+      return snapshot.docs.map((doc) {
+        return TherapistModel.fromJson(
+          doc.data() as Map<String, dynamic>,
+          doc.id,
+        );
+      }).toList();
+    } catch (e) {
+      debugPrint('Failed to get therapists: $e');
+      return [];
+    }
+  }
+
+  // Future<void> addMockTherapists() async {
+  //   List<Map<String, dynamic>> mockTherapistsList = [
+  //     {
+  //       "createdAt": Timestamp.fromDate(DateTime(2023, 5, 12)),
+  //       "updatedAt": Timestamp.fromDate(DateTime(2024, 1, 10)),
+  //       "aspects": {
+  //         "positive": ["stress", "relationships"],
+  //         "negative": ["addiction"]
+  //       },
+  //       "subscription": {
+  //         "endsAt": Timestamp.fromDate(DateTime(2024, 5, 12)),
+  //         "plan": "gold",
+  //         "startedAt": Timestamp.fromDate(DateTime(2023, 5, 12)),
+  //         "autoRenewal": true
+  //       },
+  //       "score": {"rating": 4.9, "amountRatings": 200},
+  //       "isOnline": true,
+  //       "therapistInfo": {
+  //         "bio":
+  //             "Therapist with extensive experience in stress and relationship counseling.",
+  //         "location": {
+  //           "address": "123 Therapy Lane",
+  //           "city": "Buenos Aires",
+  //           "country": "AR",
+  //           "geolocation": GeoPoint(-34.603722, -58.381592),
+  //           "stateProvince": "Buenos Aires",
+  //           "zip": "1000"
+  //         },
+  //         "firstName": "Sofia",
+  //         "userInfoIsVerified": true,
+  //         "lastName": "Rodriguez Vaccaro",
+  //         "specializations": ["therapist", "counselor"],
+  //         "spokenLanguages": ["es", "en"],
+  //         "professionalCertificates": [
+  //           {
+  //             "yearObtained": 2015,
+  //             "photoUrl": "https://example.com/certificate.jpg",
+  //             "title": "Masters in Clinical Psychology",
+  //             "type": "master",
+  //             "institution": "University of Buenos Aires",
+  //             "verified": true
+  //           }
+  //         ],
+  //         "profilePictureUrl": {
+  //           "large": "https://randomuser.me/api/portraits/women/12.jpg",
+  //           "small": "https://randomuser.me/api/portraits/women/12.jpg",
+  //           "thumb": "https://randomuser.me/api/portraits/women/12.jpg"
+  //         }
+  //       }
+  //     }
+  //   ];
+  //
+  //   FirebaseFirestore firestore = FirestoreService.instance;
+  //
+  //   try {
+  //     WriteBatch batch = firestore.batch();
+  //     for (var therapistData in mockTherapistsList) {
+  //       DocumentReference docRef = firestore.collection('therapists').doc();
+  //       String id = docRef.id;
+  //
+  //       TherapistModel therapist = TherapistModel.fromJson(therapistData, id);
+  //
+  //       batch.set(docRef, therapist.toJson());
+  //     }
+  //     await batch.commit();
+  //     debugPrint('Mock therapists added successfully.');
+  //   } catch (e) {
+  //     debugPrint('Failed to add mock therapists: $e');
+  //   }
+  // }
+
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      appBarTitle: Routes.debugScreen.name,
+      appBarTitle: 'Debug Screen',
       isProtected: false,
-      body: const Center(
-        child: Text('Debug screen', style: TextStyle(fontSize: 24)),
+      body: FutureBuilder<List<TherapistModel>>(
+        future: _fetchTherapists(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return const Center(child: Text('Failed to load therapists'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('No therapists found'));
+          }
+
+          // return ElevatedButton(
+          //     onPressed: () {
+          //       addMockTherapists();
+          //     },
+          //     child: Text('Add isOnline field'));
+
+          return ListView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: snapshot.data?.length,
+            itemBuilder: (context, index) {
+              final therapist = snapshot.data![index];
+
+              return Card(
+                clipBehavior: Clip.antiAliasWithSaveLayer,
+                margin: const EdgeInsets.symmetric(
+                  vertical: ThemeSettings.cardVerticalSpacing,
+                  horizontal: 0,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                elevation: 2.5,
+                child: InkWell(
+                  onTap: () {},
+                  child: Stack(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(15),
+                        child: Row(
+                          children: [
+                            Stack(
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Colors.white,
+                                      width: 2,
+                                    ),
+                                  ),
+                                  padding: const EdgeInsets.all(2),
+                                  child: CircleAvatar(
+                                    radius: 40,
+                                    backgroundImage: CachedNetworkImageProvider(
+                                      therapist.therapistInfo.profilePictureUrl
+                                          .small,
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  bottom: 1.5,
+                                  right: 2,
+                                  child: Card(
+                                    elevation: 0.5,
+                                    child: Container(
+                                      width: 17,
+                                      height: 17,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: therapist.isOnline
+                                            ? Colors.green
+                                            : Colors.red,
+                                        border: Border.all(
+                                          color: Colors.white,
+                                          width: 3,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(width: 20),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Flexible(
+                                        child: Text(
+                                          '${therapist.therapistInfo.firstName} ${therapist.therapistInfo.lastName}',
+                                          style: const TextStyle(
+                                            fontSize: 17,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                      if (therapist
+                                          .therapistInfo.userInfoIsVerified)
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 4),
+                                          child: therapist.subscription.plan ==
+                                                  'gold'
+                                              ? Image.asset(
+                                                  'lib/assets/icons/gold-plan-badge.png',
+                                                  width: 15,
+                                                )
+                                              : Image.asset(
+                                                  'lib/assets/icons/verified-badge.png',
+                                                  width: 15,
+                                                ),
+                                        ),
+                                    ],
+                                  ),
+                                  Text(
+                                    '${therapist.therapistInfo.location.city}, ${therapist.therapistInfo.location.country}',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.grey[500],
+                                    ),
+                                  ),
+                                  Text(
+                                    therapist.therapistInfo.bio,
+                                    style: TextStyle(
+                                      fontSize: 15.5,
+                                      color: Colors.grey[700],
+                                    ),
+                                    maxLines: 3,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Positioned(
+                          bottom: 7,
+                          right: 15,
+                          child: Row(
+                            children: [
+                              Text('${therapist.score.rating}',
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                  )),
+                              const SizedBox(width: 3),
+                              const Icon(
+                                Icons.star,
+                                color: Colors.amber,
+                                size: 18,
+                              ),
+                            ],
+                          )),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }
@@ -2597,16 +2724,6 @@ Expected Output: A structured object tags with two arrays, positive and negative
   }
 }
 
-///// lib/models/current_user_data.dart /////
-class CurrentUserData {
-  final String userId;
-  final String? email;
-  final bool isAnonymous;
-
-  CurrentUserData(
-      {required this.userId, this.email, required this.isAnonymous});
-}
-
 ///// lib/models/gemini_tags_response_model.dart /////
 class GeminiTagsResponse {
   final Tags tags;
@@ -2728,197 +2845,4 @@ class SafetyRating {
     };
   }
 }
-
-///// pubspec.yaml /////
-name: findatherapistapp
-description: "An app to easily find the perfect therapist."
-
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
-
-version: 1.0.0+1
-
-environment:
-  sdk: '>=3.2.6 <4.0.0'
-
-dependencies:
-  flutter:
-    sdk: flutter
-  flutter_localizations:
-    sdk: flutter
-
-  # Cupertino Icons is a Flutter plugin for using Cupertino icons in a Flutter app. (Example of use: Icon(CupertinoIcons.share))
-  cupertino_icons: ^1.0.8
-  # Riverpod is a Flutter plugin for managing state in a Flutter app.
-  flutter_riverpod: ^2.5.1
-  # Flutter Secure Storage is a Flutter plugin for storing data securely on the device.
-  flutter_secure_storage: ^9.2.2
-  # Google Fonts is a Flutter plugin for using Google Fonts in a Flutter app.
-  google_fonts: ^6.2.1
-  # Fluttertoast is a Flutter plugin for showing toast messages in a Flutter app.
-  fluttertoast: ^8.2.6
-  # Google Sign In is a Flutter plugin for signing with Google. It is a wrapper around the native Google Sign In libraries.
-  google_sign_in: ^6.2.1
-  # Sign In Button is a Flutter plugin for creating sign-in buttons in a Flutter app.
-  sign_in_button: ^3.2.0
-  # Go Router is a Flutter plugin for routing in a Flutter app.
-  go_router: ^14.2.0
-  # Google Generative AI is a Flutter plugin for using Google Generative AI in a Flutter app.
-  google_generative_ai: ^0.4.3
-  # Speech to Text is a Flutter plugin for converting speech to text in a Flutter app.
-  speech_to_text: ^6.6.0
-
-
-#  # -----------------  GENERAL PACKAGES  -----------------
-#  # Url Launcher is a Flutter plugin for launching a URL in the mobile platform. Supports iOS and Android.
-#  url_launcher: ^6.3.0
-#  # Cached network image is a Flutter library to show images from the internet and keep them in the cache directory.
-#  cached_network_image: ^3.3.1
-#  # Google Fonts is a Flutter plugin for using Google Fonts in a Flutter app.
-#  google_fonts: ^6.2.1
-#  # Flutter Email Validator is a Flutter plugin for validating email addresses in a Flutter app.
-#  email_validator: ^2.1.17
-#  # Permission Handler is a Flutter plugin for requesting permissions in a Flutter app.
-#  permission_handler: ^11.3.1
-#  # Image Picker is a plugin for selecting images from the Android and iOS image library, and taking new pictures with the camera:
-#  image_picker: ^1.1.2
-  # Skeletonizer is a Flutter plugin for creating skeleton loading animations in a Flutter app.
-  skeletonizer: ^1.3.0
-
-  # Device Info Plus is a Flutter plugin for getting information about the device the app is running on.
-  device_info_plus: ^10.1.0
-  # Package Info Plus is a Flutter plugin for getting information about the package the app is running on.
-  package_info_plus: ^8.0.0
-#  # HTTP is a Flutter plugin for performing HTTP requests. It is a wrapper around the Dart http package.
-#  http: ^1.2.1
-#  # Webview is a Flutter plugin for rendering web content in a Flutter widget.
-#  webview_flutter: ^4.8.0
-#  # Share Plus is a Flutter plugin for sharing content (Links to the app, text, emails, files, etc.) from a Flutter app to other apps.
-#  share_plus: ^9.0.0
-#  # Add 2 Calendar is a Flutter plugin for adding events to the calendar in a Flutter app.
-#  add_2_calendar: ^3.0.1
-#  # Geo Locator is a Flutter plugin for getting the location of the device in a Flutter app.
-#  geolocator: ^12.0.0
-#  # Map Launcher is a Flutter plugin for launching maps in a Flutter app.
-#  map_launcher: ^2.0.1
-#  # Google Maps Flutter is a Flutter plugin for embedding Google Maps in a Flutter app.
-#  google_maps_flutter: ^2.7.0
-  # Connectivity Plus is a Flutter plugin for getting information about the network connectivity in a Flutter app.
-  connectivity_plus: ^6.0.3
-#  # Expandable is a Flutter plugin for creating expandable widgets in a Flutter app.
-#  expandable: ^5.0.1
-#  # Photo View is a Flutter plugin for showing photos in a full-screen view with zooming and panning gestures.
-#  photo_view: ^0.15.0
-#  # Percent Indicator is a Flutter plugin for showing percentage indicators in a Flutter app.
-#  percent_indicator: ^3.0.1
-
-#  # -----------------  WIDGET DESIGN PACKAGES  -----------------
-  # Flutter Speed Dial is a Flutter plugin for creating a speed dial menu widget in a Flutter app.
-  flutter_speed_dial: ^7.0.0
-#  # Badges is a Flutter plugin for creating fancy animated badges in a Flutter app.
-#  badges: ^3.1.2
-#  # Flutter Native Splash is a Flutter plugin for creating a splash screen in a Flutter app.
-#  flutter_native_splash: ^2.4.0
-#  # Another Flushbar is a Flutter plugin for creating custom snackbars in a Flutter app.
-#  another_flushbar: ^1.12.30
-#  # Awesome Dialog is a Flutter plugin for creating awesome dialogs in a Flutter app.
-#  awesome_dialog: ^3.2.1
-#  # Flutter Staggered Grid View is a Flutter plugin for creating staggered grid views in a Flutter app.
-#  flutter_staggered_grid_view: ^0.7.0
-#  # Animated Toggle Switch is a Flutter plugin for creating animated toggle switches in a Flutter app.
-#  animated_toggle_switch: ^1.0.0
-#  #Flutter Typeahead is a Flutter input where you can show suggestions to users as they type.
-#  flutter_typeahead: ^2.0.0
-#  # Mesh Gradient is a Flutter plugin for creating mesh gradients in a Flutter app.
-#  mesh_gradient: ^1.3.6
-
-  # -----------------  ANIMATIONS  -----------------
-  # Lottie is a Flutter plugin for using Lottie animations in a Flutter app.
-  lottie: ^3.1.2
-
-#  # -----------------  FONT PACKAGES  -----------------
-#  # Auto Size Text is a Flutter plugin for creating auto-size text in a Flutter app.
-#  auto_size_text: ^3.0.0
-
-#  # -----------------  ICONS PACKAGES  -----------------
-#  # Material Design Icons is a Flutter plugin for using Material Design icons in a Flutter app. (Example of use: Icon(MdiIcons.add))
-#  material_design_icons_flutter: ^7.0.7296
-#  # Font Awesome Icons is a Flutter plugin for using Font Awesome icons in a Flutter app. (Example of use: Icon(FontAwesomeIcons.addressBook))
-#  font_awesome_flutter: ^10.7.0
-#  # Icofont Icons is a Flutter plugin for using Icofont icons in a Flutter app. (Example of use: Icon(IcoFontIcons.addressBook))
-#  icofont_flutter: ^1.4.0
-
-#  # -----------------  MEDIA PACKAGES  -----------------
-#  # Video Player is a Flutter plugin for playing videos in a Flutter app.
-#  video_player: ^2.8.7
-#  # Audio Player is a Flutter plugin for playing audio in a Flutter app.
-#  audioplayers: ^6.0.0
-
-#  # -----------------  UI THEMES  -----------------
-#  # Macos UI is a Flutter plugin for creating MacOS themes in a Flutter app.
-#  macos_ui: ^2.0.7
-#  # Chicago Theme is a Flutter plugin for creating Chicago themes in a Flutter app.
-#  chicago_theme: ^0.4.3-dev
-#  # Win32 GUI is a Flutter plugin for creating Win32 GUI themes in a Flutter app.
-#  win32_gui 1.1.5
-
-# ----------------- FIREBASE PACKAGES -----------------
-#  # Firebase Core is a Flutter plugin to use the Firebase platform services.
-  firebase_core: ^3.1.1
-#  # Flutter Auth is a Flutter plugin that enables Android and iOS authentication using passwords, phone numbers, and identity providers like Google, Facebook, and Twitter.
-  firebase_auth: ^5.1.1
-#  # Cloud Firestore is a flexible, scalable database for mobile, web, and server development from Firebase and Google Cloud Platform.
-#  cloud_firestore: ^5.0.1
-#  # Firebase Database is a Flutter plugin to use the Firebase Realtime Database API and allow storing and syncing data with a NoSQL cloud database.
-#  firebase_database: ^11.0.1
-#  # Firebase Storage is a Flutter plugin to use the Firebase Cloud Storage API and allow uploading, downloading, and deleting files in the cloud.
-#  firebase_storage: ^12.0.1
-#  # Firebase Messaging is a Flutter plugin to use the Firebase Cloud Messaging (FCM) API and allow sending push notifications to Android and iOS users.
-#  firebase_messaging: ^15.0.1
-#  # Firebase In-App Messaging is a Flutter plugin to use the Firebase In-App Messaging API and allow sending in-app messages to Android and iOS users.
-#  firebase_in_app_messaging: ^0.8.0+1
-#  # Firebase Crashlytics is a Flutter plugin to use the Firebase Crashlytics API and allow sending crash reports to Firebase.
-#  firebase_crashlytics: ^4.0.1
-#  # Firebase Analytics is a Flutter plugin to use the Firebase Analytics API and allow sending events to Google Analytics.
-#  firebase_analytics: ^11.0.1
-#  # Firebase Performance Monitoring is a Flutter plugin to use the Firebase Performance Monitoring API and allow sending performance data to Firebase.
-#  firebase_performance: ^0.10.0+1
-#  # Firebase Remote Config is a Flutter plugin to use the Firebase Remote Config API and allow fetching remote configuration values from Firebase.
-#  firebase_remote_config: ^5.0.1
-
-  intl: any
-
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
-  flutter_lints: ^4.0.0
-  intl_utils: ^2.8.7
-
-flutter:
-
-  uses-material-design: true
-
-  # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
-
-  # To add entire folders of assets to your application, add an assets section, like this:
-  assets:
-    - lib/assets/lottie_animations/
-    - lib/assets/images/
-
-
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
-  #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
-  #         weight: 700
-  #
-
 

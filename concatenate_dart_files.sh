@@ -2,7 +2,7 @@
 
 # Nombres de los archivos Dart que querés concatenar
 files=(
-     "pubspec.yaml"
+    "pubspec.yaml"
     "lib/app_settings/app_general_settings.dart"
     "lib/app_settings/app_info.dart"
     "lib/app_settings/auth_config.dart"
@@ -16,16 +16,18 @@ files=(
     "lib/providers/theme_provider.dart"
     "lib/widgets/AppScaffold/app_scaffold.dart"
     "lib/screens/common/home_screen/home_screen.dart"
-    "lib/screens/common/login_screen/login_screen.dart"
+#    "lib/screens/common/login_screen/login_screen.dart"
+     "lib/models/therapist_model.dart"
+        "lib/models/term_index.dart"
     "lib/screens/admin/debug_screen/debug_screen.dart"
     "lib/screens/user_area/user_request_screen/user_request_screen.dart"
     "lib/services/gemini_service.dart"
-#    "lib/widgets/NotificationSnackbar/notification_snackbar.dart"
-#    "lib/widgets/NotificationModal/notification_modal.dart"
-#    "lib/providers/locale_provider.dart"
-    "lib/models/current_user_data.dart"
     "lib/models/gemini_tags_response_model.dart"
-    "pubspec.yaml"
+
+    #    "lib/models/current_user_data.dart"
+    #    "lib/widgets/NotificationSnackbar/notification_snackbar.dart"
+    #    "lib/widgets/NotificationModal/notification_modal.dart"
+    #    "lib/providers/locale_provider.dart"
 )
 
 # Archivo de salida

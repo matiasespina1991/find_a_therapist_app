@@ -1,4 +1,3 @@
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:findatherapistapp/app_settings/theme_settings.dart';
@@ -111,7 +110,6 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
       body: FutureBuilder<List<TherapistModel>>(
         future: _fetchTherapists(),
         builder: (context, snapshot) {
-          print('snapshot: ${snapshot.data}');
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
@@ -142,7 +140,7 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15),
                 ),
-                elevation: 5,
+                elevation: 2.5,
                 child: InkWell(
                   onTap: () {},
                   child: Stack(
@@ -171,19 +169,22 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
                                   ),
                                 ),
                                 Positioned(
-                                  bottom: 6,
-                                  right: 5,
-                                  child: Container(
-                                    width: 17,
-                                    height: 17,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: therapist.isOnline
-                                          ? Colors.green
-                                          : Colors.red,
-                                      border: Border.all(
-                                        color: Colors.white,
-                                        width: 3,
+                                  bottom: 1.5,
+                                  right: 2,
+                                  child: Card(
+                                    elevation: 0.5,
+                                    child: Container(
+                                      width: 17,
+                                      height: 17,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: therapist.isOnline
+                                            ? Colors.green
+                                            : Colors.red,
+                                        border: Border.all(
+                                          color: Colors.white,
+                                          width: 3,
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -210,7 +211,7 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
                                           .therapistInfo.userInfoIsVerified)
                                         Padding(
                                           padding: const EdgeInsets.symmetric(
-                                              horizontal: 3),
+                                              horizontal: 4),
                                           child: therapist.subscription.plan ==
                                                   'gold'
                                               ? Image.asset(
@@ -234,7 +235,7 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
                                   Text(
                                     therapist.therapistInfo.bio,
                                     style: TextStyle(
-                                      fontSize: 14,
+                                      fontSize: 15.5,
                                       color: Colors.grey[700],
                                     ),
                                     maxLines: 3,
@@ -251,12 +252,15 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
                           right: 15,
                           child: Row(
                             children: [
-                              Text('${therapist.score.rating}'),
+                              Text('${therapist.score.rating}',
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                  )),
                               const SizedBox(width: 3),
                               const Icon(
                                 Icons.star,
                                 color: Colors.amber,
-                                size: 16,
+                                size: 18,
                               ),
                             ],
                           )),
