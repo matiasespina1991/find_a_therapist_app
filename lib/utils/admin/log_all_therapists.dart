@@ -6,7 +6,7 @@ import 'package:flutter/cupertino.dart';
 import '../../models/therapist_model.dart';
 import '../../services/firestore_service.dart';
 
-Future<void> printAllTherapists() async {
+Future<void> logAllTherapists() async {
   try {
     FirebaseFirestore firestore = FirestoreService.instance;
     QuerySnapshot snapshot = await firestore.collection('therapists').get();

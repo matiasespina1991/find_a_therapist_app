@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class TermIndex {
   String id;
   String term;
-  List<String> associatedTerms;
+  Map<String, List<String>> associatedTerms;
   List<TherapistIndex> negative;
   List<TherapistIndex> positive;
 
@@ -16,11 +16,11 @@ class TermIndex {
   });
 
   factory TermIndex.fromJson(Map<String, dynamic> json, String id) {
-    List<String> associatedTerms = [
-      ...List<String>.from(json['equivalents'] ?? []),
-      ...List<String>.from(json['related'] ?? []),
-      ...List<String>.from(json['subcategories'] ?? []),
-    ];
+    Map<String, List<String>> associatedTerms = {
+      'equivalents': List<String>.from(json['equivalents'] ?? []),
+      'related': List<String>.from(json['related'] ?? []),
+      'subcategories': List<String>.from(json['subcategories'] ?? []),
+    };
 
     List<TherapistIndex> negative = (json['negative'] as List)
         .map((item) => TherapistIndex.fromJson(item))
@@ -42,7 +42,11 @@ class TermIndex {
   Map<String, dynamic> toJson() {
     return {
       'term': term,
-      'associatedTerms': associatedTerms,
+      'associatedTerms': {
+        'equivalents': associatedTerms['equivalents'],
+        'related': associatedTerms['related'],
+        'subcategories': associatedTerms['subcategories'],
+      },
       'negative': negative.map((item) => item.toJson()).toList(),
       'positive': positive.map((item) => item.toJson()).toList(),
     };

@@ -36,6 +36,7 @@ class TherapistModel {
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
       'aspects': aspects.toJson(),
@@ -129,6 +130,8 @@ class Score {
 
 class TherapistInfo {
   String bio;
+  String? publicPresentation;
+  String? privateNotes;
   Location location;
   String firstName;
   bool userInfoIsVerified;
@@ -140,6 +143,8 @@ class TherapistInfo {
 
   TherapistInfo({
     required this.bio,
+    required this.publicPresentation,
+    required this.privateNotes,
     required this.location,
     required this.firstName,
     required this.userInfoIsVerified,
@@ -153,6 +158,8 @@ class TherapistInfo {
   factory TherapistInfo.fromJson(Map<String, dynamic> json) {
     return TherapistInfo(
       bio: json['bio'],
+      publicPresentation: json['publicPresentation'],
+      privateNotes: json['privateNotes'],
       location: Location.fromJson(json['location']),
       firstName: json['firstName'],
       userInfoIsVerified: json['userInfoIsVerified'],
@@ -169,6 +176,8 @@ class TherapistInfo {
   Map<String, dynamic> toJson() {
     return {
       'bio': bio,
+      'publicPresentation': publicPresentation,
+      'privateNotes': privateNotes,
       'location': location.toJson(),
       'firstName': firstName,
       'userInfoIsVerified': userInfoIsVerified,
