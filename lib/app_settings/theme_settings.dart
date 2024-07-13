@@ -132,11 +132,11 @@ class ThemeSettings {
   );
 
   static const BorderRadius buttonsBorderRadius = BorderRadius.all(
-    Radius.circular(5),
+    Radius.circular(8),
   );
 
   static const BorderRadius inputsBorderRadius = BorderRadius.all(
-    Radius.circular(5),
+    Radius.circular(8),
   );
 
   static const BorderRadius cardBorderRadius = BorderRadius.all(
@@ -146,7 +146,7 @@ class ThemeSettings {
   static const double cardVerticalSpacing = 4;
 
   static const BorderRadius chipBorderRadius = BorderRadius.all(
-    Radius.circular(5),
+    Radius.circular(8),
   );
 
   static const Color snackBarErrorBackgroundColor = errorColor;
