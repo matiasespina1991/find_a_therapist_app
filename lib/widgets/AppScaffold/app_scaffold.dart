@@ -30,7 +30,7 @@ class AppScaffold extends ConsumerStatefulWidget {
   final LottieAnimationBackground? backgroundAnimationDarkMode;
   final bool useTopAppBar;
   final bool showScreenTitleInAppBar;
-
+  final EdgeInsetsGeometry? scaffoldPadding;
   const AppScaffold({
     super.key,
     required this.body,
@@ -43,6 +43,7 @@ class AppScaffold extends ConsumerStatefulWidget {
     this.backgroundAnimationDarkMode,
     this.useTopAppBar = false,
     this.showScreenTitleInAppBar = true,
+    this.scaffoldPadding,
   });
 
   @override
@@ -225,7 +226,7 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
             !DebugConfig.forceDebugScreen &&
             !DebugConfig.bypassLoginScreen,
         child: Padding(
-          padding: ThemeSettings.scaffoldPadding,
+          padding: widget.scaffoldPadding ?? ThemeSettings.scaffoldPadding,
           child: widget.body,
         ),
       );

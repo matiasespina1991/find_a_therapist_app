@@ -52,6 +52,9 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
   Widget build(BuildContext context) {
     return AppScaffold(
       scrollPhysics: NeverScrollableScrollPhysics(),
+      scaffoldPadding: ThemeSettings.scaffoldPadding.subtract(
+        const EdgeInsets.only(top: 20),
+      ),
       appBarTitle: 'Debug Screen',
       isProtected: false,
       body: FutureBuilder<List<TherapistModel>>(
