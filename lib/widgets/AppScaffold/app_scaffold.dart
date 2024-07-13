@@ -218,6 +218,19 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
   }
 
   Widget _buildMainContent(bool isAuthenticated) {
+    if (widget.scrollPhysics is NeverScrollableScrollPhysics) {
+      return Skeletonizer(
+        enabled: !isAuthenticated &&
+            widget.isProtected &&
+            !DebugConfig.forceDebugScreen &&
+            !DebugConfig.bypassLoginScreen,
+        child: Padding(
+          padding: ThemeSettings.scaffoldPadding,
+          child: widget.body,
+        ),
+      );
+    }
+
     return SingleChildScrollView(
       physics: widget.scrollPhysics ?? getScrollPhysics(),
       child: Column(
