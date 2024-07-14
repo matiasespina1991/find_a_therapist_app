@@ -33,6 +33,28 @@ class AuthorizationProvider extends ChangeNotifier {
       _authToken = await storage.read(key: 'auth_token');
     }
 
+    if (DebugConfig.debugMode || DebugConfig.forceDebugScreen) {
+      if (_authToken == null && _user == null) {
+        debugPrint('[User is not authenticated.]');
+      } else {
+        debugPrint('[User is authenticated.]');
+      }
+    }
+
+    if ((DebugConfig.bypassLoginScreen || DebugConfig.forceDebugScreen) &&
+        (_authToken == null && _user == null)) {
+      debugPrint('Signing user automatically...');
+      GoogleSignInAccount? currentUser = await _googleSignIn.signIn();
+      if (currentUser != null) {
+        _user = await _handleSignIn(currentUser);
+        if (_user != null) {
+          _authToken = _user?.uid;
+          await setAuthToken(_authToken!);
+          notifyListeners();
+        }
+      }
+    }
+
     _isLoading = false;
     notifyListeners();
 

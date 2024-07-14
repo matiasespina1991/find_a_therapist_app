@@ -11,6 +11,7 @@ class SkeletonTherapistCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Skeletonizer(
+      ignoreContainers: true,
       child: Container(
         height: 145,
         margin: const EdgeInsets.symmetric(

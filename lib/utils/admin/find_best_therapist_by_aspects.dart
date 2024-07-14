@@ -21,7 +21,6 @@ Future<void> findBestTherapist(Aspects userAspects) async {
       int positiveMatches = 0;
       int negativeMatches = 0;
 
-      // Count positive matches
       for (var positive in userAspects.positive) {
         if (therapist.aspects.positive.contains(positive)) {
           positiveMatches++;
@@ -31,17 +30,15 @@ Future<void> findBestTherapist(Aspects userAspects) async {
         }
       }
 
-      // Count negative matches
-      for (var negative in userAspects.negative) {
-        if (therapist.aspects.positive.contains(negative)) {
+      for (var userNegativeAspect in userAspects.negative) {
+        if (therapist.aspects.positive.contains(userNegativeAspect)) {
           negativeMatches++;
         }
-        if (therapist.aspects.negative.contains(negative)) {
+        if (therapist.aspects.negative.contains(userNegativeAspect)) {
           negativeMatches++;
         }
       }
 
-      // Calculate match score
       int totalAspects =
           userAspects.positive.length + userAspects.negative.length;
       double matchScore = totalAspects > 0
@@ -56,10 +53,8 @@ Future<void> findBestTherapist(Aspects userAspects) async {
       });
     }
 
-    // Sort therapists by match score in descending order
     matchScores.sort((a, b) => b['matchScore'].compareTo(a['matchScore']));
 
-    // Log the sorted list of therapists
     for (var match in matchScores) {
       debugPrint(
           'Therapist: ${match['therapistName']}, Match Score: ${match['matchScore']}%');
