@@ -316,20 +316,6 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
   }
 
   Future<GeminiTagsResponse?> _sendRequest() async {
-    final matchedTherapists = await findBestTherapist(Aspects(
-      positive: ['astrology'],
-      negative: ['psychology'],
-    ));
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) =>
-            TherapistResultsScreen(matchedTherapists: matchedTherapists),
-      ),
-    );
-
-    return null;
     if (isSendingRequest) return null;
 
     setState(() {
