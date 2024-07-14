@@ -31,6 +31,7 @@ class AppScaffold extends ConsumerStatefulWidget {
   final bool useTopAppBar;
   final bool showScreenTitleInAppBar;
   final EdgeInsetsGeometry? scaffoldPadding;
+  final bool ignoreGlobalPadding;
   const AppScaffold({
     super.key,
     required this.body,
@@ -44,6 +45,7 @@ class AppScaffold extends ConsumerStatefulWidget {
     this.useTopAppBar = false,
     this.showScreenTitleInAppBar = true,
     this.scaffoldPadding,
+    this.ignoreGlobalPadding = false,
   });
 
   @override
@@ -54,6 +56,18 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
   bool _connectivityChecked = false;
   bool _userWentOffline = false;
   Timer? _connectivityTimer;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final String debugRouteName = DebugConfig.debugScreen.name;
+
+    if (DebugConfig.forceDebugScreen && debugRouteName.isNotEmpty) {
+      debugPrint(
+          '[DebugConfig.forceDebugScreen is set to true. Locked screen is: $debugRouteName. Navigation suspended.]');
+    }
+  }
 
   @override
   void dispose() {
@@ -101,11 +115,7 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
   LoadingScreen? _handleProtectedRoutes(auth) {
     if (DebugConfig.forceDebugScreen) {
       final String debugRoutePath = DebugConfig.debugScreen.path;
-      final String debugRouteName =
-          DebugConfig.debugScreen.name ?? debugRoutePath;
 
-      debugPrint(
-          '[DebugConfig.forceDebugScreen is set to true. Locked screen is: $debugRouteName. Navigation suspended.]');
       if (mounted) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           context.go(debugRoutePath);
@@ -226,7 +236,9 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
             !DebugConfig.forceDebugScreen &&
             !DebugConfig.bypassLoginScreen,
         child: Padding(
-          padding: widget.scaffoldPadding ?? ThemeSettings.scaffoldPadding,
+          padding: widget.ignoreGlobalPadding
+              ? EdgeInsets.zero
+              : (widget.scaffoldPadding ?? ThemeSettings.scaffoldPadding),
           child: widget.body,
         ),
       );

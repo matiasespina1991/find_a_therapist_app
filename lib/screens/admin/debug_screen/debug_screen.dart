@@ -58,9 +58,7 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
   Widget build(BuildContext context) {
     return AppScaffold(
       scrollPhysics: NeverScrollableScrollPhysics(),
-      scaffoldPadding: ThemeSettings.scaffoldPadding.subtract(
-        const EdgeInsets.only(top: 20),
-      ),
+      ignoreGlobalPadding: true,
       appBarTitle: 'Debug Screen',
       isProtected: false,
       body: FutureBuilder<List<TherapistModel>>(
@@ -121,7 +119,7 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
                 return Container(
                   margin: const EdgeInsets.symmetric(
                     vertical: ThemeSettings.cardVerticalSpacing,
-                    horizontal: 4,
+                    horizontal: 6,
                   ),
                   decoration: BoxDecoration(
                     color: theme.themeMode == ThemeMode.dark
@@ -130,7 +128,7 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
                     boxShadow: [
                       if (theme.themeMode == ThemeMode.light)
                         BoxShadow(
-                          color: Colors.grey.withOpacity(1),
+                          color: Colors.grey.withOpacity(0.8),
                           blurRadius: 5,
                           offset: const Offset(1, 2),
                         ),
