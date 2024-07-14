@@ -109,6 +109,7 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
           return RefreshIndicator(
             onRefresh: _refreshTherapists,
             child: ListView.builder(
+              clipBehavior: Clip.antiAliasWithSaveLayer,
               physics: const AlwaysScrollableScrollPhysics(),
               shrinkWrap: true,
               itemCount: snapshot.data?.length,
@@ -120,6 +121,7 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
                 return Container(
                   margin: const EdgeInsets.symmetric(
                     vertical: ThemeSettings.cardVerticalSpacing,
+                    horizontal: 4,
                   ),
                   decoration: BoxDecoration(
                     color: theme.themeMode == ThemeMode.dark
@@ -128,9 +130,9 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
                     boxShadow: [
                       if (theme.themeMode == ThemeMode.light)
                         BoxShadow(
-                          color: Colors.grey.withOpacity(0.6),
-                          blurRadius: 1,
-                          offset: const Offset(0, 1),
+                          color: Colors.grey.withOpacity(1),
+                          blurRadius: 5,
+                          offset: const Offset(1, 2),
                         ),
                     ],
                     borderRadius: ThemeSettings.cardBorderRadius,
@@ -153,7 +155,7 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
-                        ThemeSettings.seedColor.withOpacity(0.00),
+                        ThemeSettings.seedColor.withOpacity(0.01),
                       ],
                     ),
                   ),

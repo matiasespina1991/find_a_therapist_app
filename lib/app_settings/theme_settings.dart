@@ -10,8 +10,8 @@ class ThemeSettings {
   static const EdgeInsetsGeometry scaffoldPadding = EdgeInsets.only(
     top: 20,
     bottom: 0,
-    left: 8,
-    right: 8,
+    left: 3,
+    right: 3,
   );
   static const Color seedColor = Colors.blueGrey;
   static const bool forceSeedColor = false;
@@ -62,7 +62,7 @@ class ThemeSettings {
   static const errorColor = Colors.red;
 
   static const ThemeColors scaffoldBackgroundColor = ThemeColors(
-    lightModePrimary: Color(0xFFFFF8FE),
+    lightModePrimary: Color(0xFFEFEFEF),
     darkModePrimary: Color(0xFF121212),
   );
 
