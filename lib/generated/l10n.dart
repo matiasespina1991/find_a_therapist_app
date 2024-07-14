@@ -1179,6 +1179,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Contact me`
+  String get contactMeButton {
+    return Intl.message(
+      'Contact me',
+      name: 'contactMeButton',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

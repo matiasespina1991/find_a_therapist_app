@@ -1,10 +1,8 @@
-// lib/screens/therapist_profile_screen.dart
 import 'package:country_picker/country_picker.dart';
 import 'package:expandable/expandable.dart';
 import 'package:findatherapistapp/app_settings/theme_settings.dart';
 import 'package:findatherapistapp/utils/admin/to_capital_case.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_localized_locales/flutter_localized_locales.dart';
 
@@ -25,7 +23,7 @@ class TherapistPublicProfileScreen extends StatelessWidget {
       useTopAppBar: true,
       showScreenTitleInAppBar: false,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.only(left: 10, right: 10, bottom: 90),
+        padding: const EdgeInsets.only(left: 10, right: 10, bottom: 60),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -248,7 +246,7 @@ class TherapistPublicProfileScreen extends StatelessWidget {
                         child: Container(
                           child: Text(
                             '⋯',
-                            style: Theme.of(context).textTheme.titleLarge,
+                            style: Theme.of(context).textTheme.titleMedium,
                           ),
                         ),
                       ),
@@ -256,31 +254,22 @@ class TherapistPublicProfileScreen extends StatelessWidget {
                   ],
                 ),
               ),
-            const SizedBox(height: 16.0),
-            Text(S.of(context).score,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    )),
-            Row(
-              children: [
-                Text(
-                  '${therapist.score.rating}',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                const SizedBox(width: 3),
-                const Icon(
-                  Icons.star,
-                  color: Colors.amber,
-                  size: 18,
-                ),
-                const SizedBox(width: 3),
-                Text(
-                  '(${therapist.score.amountRatings} ratings)',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-              ],
-            ),
-            const SizedBox(height: 16.0),
+            SizedBox(height: 16),
+            Center(
+                child: ElevatedButton(
+                    onPressed: () {},
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.chat_outlined,
+                          size: 16,
+                        ),
+                        SizedBox(width: 8),
+                        Text(S.of(context).contactMeButton),
+                      ],
+                    ))),
+            const SizedBox(height: 20.0),
             Text(
               S.of(context).professionalCertificates,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
