@@ -34,6 +34,8 @@ dependencies:
   google_generative_ai: ^0.4.3
   # Speech to Text is a Flutter plugin for converting speech to text in a Flutter app.
   speech_to_text: ^6.6.0
+  # Country Picker is a Flutter plugin for selecting countries in a Flutter app.
+  country_picker: ^2.0.26
 
 
 #  # -----------------  GENERAL PACKAGES  -----------------
@@ -154,6 +156,8 @@ dependencies:
 #  firebase_remote_config: ^5.0.1
 
   intl: any
+  flutter_localized_locales: ^2.0.5
+  expandable: ^5.0.1
 
 dev_dependencies:
   flutter_test:

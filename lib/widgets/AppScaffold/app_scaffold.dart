@@ -67,6 +67,14 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
       debugPrint(
           '[DebugConfig.forceDebugScreen is set to true. Locked screen is: $debugRouteName. Navigation suspended.]');
     }
+
+    final String debugRoutePath = DebugConfig.debugScreen.path;
+
+    if (mounted) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        context.go(debugRoutePath);
+      });
+    }
   }
 
   @override
@@ -114,14 +122,6 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
 
   LoadingScreen? _handleProtectedRoutes(auth) {
     if (DebugConfig.forceDebugScreen) {
-      final String debugRoutePath = DebugConfig.debugScreen.path;
-
-      if (mounted) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          context.go(debugRoutePath);
-        });
-      }
-
       return null;
     }
 

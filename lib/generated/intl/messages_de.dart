@@ -113,6 +113,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Das eingegebene Passwort ist ungültig."),
         "invalidPasswordTooShortMessage": MessageLookupByLibrary.simpleMessage(
             "Das Passwort muss mindestens 6 Zeichen lang sein."),
+        "languages": MessageLookupByLibrary.simpleMessage("Sprachen"),
         "lightMode": MessageLookupByLibrary.simpleMessage("Hellmodus"),
         "lightModeDarkMode":
             MessageLookupByLibrary.simpleMessage("Hell-/Dunkelmodus"),
@@ -157,8 +158,11 @@ class MessageLookup extends MessageLookupByLibrary {
             "Was Sie von Ihrem Therapeuten erwarten"),
         "positiveAspectsTitle":
             MessageLookupByLibrary.simpleMessage("Positive Aspekte"),
+        "professionalCertificates":
+            MessageLookupByLibrary.simpleMessage("Berufszertifikate"),
         "requestTextFieldHintText": MessageLookupByLibrary.simpleMessage(
             "Geben Sie hier Ihre Anfrage ein. Geben Sie uns so viele Informationen wie möglich."),
+        "score": MessageLookupByLibrary.simpleMessage("Bewertung"),
         "sendButton": MessageLookupByLibrary.simpleMessage("Senden"),
         "settingsButton": MessageLookupByLibrary.simpleMessage("Einstellungen"),
         "signInWithGoogleButtonLabel":

@@ -108,7 +108,14 @@
           "noTextFoundInResponseMessage": "Es gab einen Fehler beim Versuch, Ihre Anfrage zu verarbeiten. Wir haben das Problem gemeldet. Bitte versuchen Sie es später erneut.",
           "noJsonFoundInResponseTextMessage": "Es gab einen Fehler beim Versuch, Ihre Anfrage zu verarbeiten. Wir haben das Problem gemeldet. Bitte versuchen Sie es später erneut.",
           "generativeAiErrorMessage": "Es gab einen Fehler beim Versuch, Ihre Anfrage zu verarbeiten. Wir haben das Problem gemeldet. Bitte versuchen Sie es später erneut.",
-          "unknownErrorMessage": "Es gab einen Fehler beim Versuch, Ihre Anfrage zu verarbeiten. Wir haben das Problem gemeldet. Bitte versuchen Sie es später erneut."
+          "unknownErrorMessage": "Es gab einen Fehler beim Versuch, Ihre Anfrage zu verarbeiten. Wir haben das Problem gemeldet. Bitte versuchen Sie es später erneut.",
+           "languages": "Sprachen",
+           "Intro": "Intro",
+
+             "score": "Bewertung",
+           "professionalCertificates": "Berufszertifikate"
+
+
 
 
 }

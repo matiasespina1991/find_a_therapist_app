@@ -104,6 +104,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "homeScreenTitle":
             MessageLookupByLibrary.simpleMessage("Pantalla Principal"),
         "inputsSectionTitle": MessageLookupByLibrary.simpleMessage("Entradas"),
+        "intro": MessageLookupByLibrary.simpleMessage("Intro"),
         "invalidEmailMessage": MessageLookupByLibrary.simpleMessage(
             "Inserte un correo electrónico válido, por favor."),
         "invalidEmailSnackbarMessage": MessageLookupByLibrary.simpleMessage(
@@ -114,6 +115,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "La contraseña insertada no es válida."),
         "invalidPasswordTooShortMessage": MessageLookupByLibrary.simpleMessage(
             "La contraseña debe tener al menos 6 caracteres."),
+        "languages": MessageLookupByLibrary.simpleMessage("Idiomas"),
         "lightMode": MessageLookupByLibrary.simpleMessage("Modo claro"),
         "lightModeDarkMode":
             MessageLookupByLibrary.simpleMessage("Modo claro / modo oscuro"),
@@ -159,8 +161,11 @@ class MessageLookup extends MessageLookupByLibrary {
             "Lo que deseas que ofrezca tu terapeuta"),
         "positiveAspectsTitle":
             MessageLookupByLibrary.simpleMessage("Aspectos Positivos"),
+        "professionalCertificates":
+            MessageLookupByLibrary.simpleMessage("Certificados"),
         "requestTextFieldHintText": MessageLookupByLibrary.simpleMessage(
             "Escribe tu solicitud aquí. Proporciona tanta información como sea posible."),
+        "score": MessageLookupByLibrary.simpleMessage("Valoración"),
         "sendButton": MessageLookupByLibrary.simpleMessage("Enviar"),
         "settingsButton":
             MessageLookupByLibrary.simpleMessage("Configuraciones"),

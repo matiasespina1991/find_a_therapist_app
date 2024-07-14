@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 import '../screens/common/home_screen/home_screen.dart';
 import '../screens/common/login_screen/login_screen.dart';
+import '../screens/common/therapist_public_profile_screen/therapist_public_profile_screen.dart';
 import '../screens/therapist_area/therapist_profile_screen.dart';
 import '../screens/user_area/user_profile_screen/user_profile_screen.dart';
 import '../screens/user_area/user_request_screen/user_request_screen.dart';
@@ -55,7 +56,7 @@ class Routes {
   static RouteConfig therapistProfileScreen = RouteConfig(
     path: '/therapist-profile',
     name: 'Therapist Profile Screen',
-    builder: (context) => const TherapistProfileScreen(),
+    builder: (context) => const TherapistPersonalProfileScreen(),
   );
 
   /// ADMIN AREA ROUTES

@@ -18,7 +18,7 @@ files=(
     "lib/screens/common/home_screen/home_screen.dart"
 #    "lib/screens/common/login_screen/login_screen.dart"
      "lib/models/therapist_model.dart"
-        "lib/models/term_index.dart"
+        "lib/models/term_index_model.dart"
     "lib/screens/admin/debug_screen/debug_screen.dart"
     "lib/screens/user_area/user_request_screen/user_request_screen.dart"
     "lib/services/gemini_service.dart"

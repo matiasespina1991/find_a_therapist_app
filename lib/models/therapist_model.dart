@@ -130,8 +130,8 @@ class Score {
 
 class TherapistInfo {
   String bio;
-  String? publicPresentation;
-  String? privateNotes;
+  String publicPresentation;
+  String privateNotes;
   Location location;
   String firstName;
   bool userInfoIsVerified;

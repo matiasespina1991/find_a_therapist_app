@@ -99,6 +99,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "gotIt": MessageLookupByLibrary.simpleMessage("Got it"),
         "homeScreenTitle": MessageLookupByLibrary.simpleMessage("Home Screen"),
         "inputsSectionTitle": MessageLookupByLibrary.simpleMessage("Inputs"),
+        "intro": MessageLookupByLibrary.simpleMessage("Intro"),
         "invalidEmailMessage": MessageLookupByLibrary.simpleMessage(
             "Please insert a valid email."),
         "invalidEmailSnackbarMessage": MessageLookupByLibrary.simpleMessage(
@@ -109,6 +110,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "The password inserted is not valid."),
         "invalidPasswordTooShortMessage": MessageLookupByLibrary.simpleMessage(
             "Password must be at least 6 characters long."),
+        "languages": MessageLookupByLibrary.simpleMessage("Languages"),
         "lightMode": MessageLookupByLibrary.simpleMessage("Light Mode"),
         "lightModeDarkMode":
             MessageLookupByLibrary.simpleMessage("Light Mode/Dark Mode"),
@@ -153,8 +155,11 @@ class MessageLookup extends MessageLookupByLibrary {
             "What you expect your therapist to treat"),
         "positiveAspectsTitle":
             MessageLookupByLibrary.simpleMessage("Positive aspects"),
+        "professionalCertificates":
+            MessageLookupByLibrary.simpleMessage("Professional Certificates"),
         "requestTextFieldHintText": MessageLookupByLibrary.simpleMessage(
             "Enter your request here. Give us as much information as possible."),
+        "score": MessageLookupByLibrary.simpleMessage("Score"),
         "sendButton": MessageLookupByLibrary.simpleMessage("Send"),
         "settingsButton": MessageLookupByLibrary.simpleMessage("Settings"),
         "signInWithGoogleButtonLabel":

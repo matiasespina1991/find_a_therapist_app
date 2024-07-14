@@ -110,7 +110,12 @@
                 "noTextFoundInResponseMessage": "There was an error trying to process your request. We have reported the issue. Please try again later.",
                 "noJsonFoundInResponseTextMessage": "There was an error trying to process your request. We have reported the issue. Please try again later.",
                 "generativeAiErrorMessage": "An error occurred while trying to process your request. We have reported the issue. Please try again later.",
-                "unknownErrorMessage": "An error occurred while trying to process your request. We have reported the issue. Please try again later."
+                "unknownErrorMessage": "An error occurred while trying to process your request. We have reported the issue. Please try again later.",
+
+           "languages": "Languages",
+              "intro": "Intro",
+                "score": "Score",
+                "professionalCertificates": "Professional Certificates"
 
 
 

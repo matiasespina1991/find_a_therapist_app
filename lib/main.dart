@@ -1,9 +1,11 @@
+import 'package:country_picker/country_picker.dart';
 import 'package:findatherapistapp/routes/routes.dart';
 import 'package:findatherapistapp/screens/common/home_screen/home_screen.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_localized_locales/flutter_localized_locales.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:findatherapistapp/providers/providers_all.dart';
@@ -61,6 +63,8 @@ class MyApp extends ConsumerWidget {
             .map((e) => Locale.fromSubtags(languageCode: e))
             .toList(),
         localizationsDelegates: const [
+          LocaleNamesLocalizationsDelegate(),
+          CountryLocalizations.delegate,
           S.delegate,
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,

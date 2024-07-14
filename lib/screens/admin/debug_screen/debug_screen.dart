@@ -14,6 +14,7 @@ import '../../../services/gemini_service.dart';
 import '../../../utils/admin/log_all_terms.dart';
 import '../../../widgets/AppScaffold/app_scaffold.dart';
 import '../../../services/firestore_service.dart';
+import '../../common/therapist_public_profile_screen/therapist_public_profile_screen.dart';
 
 class DebugScreen extends ConsumerStatefulWidget {
   const DebugScreen({super.key});
@@ -79,27 +80,28 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(child: Text('No therapists found'));
           }
-
+          //
           // return ElevatedButton(
           //   onPressed: () async {
-          //     var userAspects = Aspects(
-          //       positive: [
-          //         'anxiety',
-          //         'depression',
-          //         'stress',
-          //         'relationships',
-          //         'self-esteem',
-          //         'astrological-counseling',
-          //       ],
-          //       negative: [
-          //         'addiction',
-          //         'trauma',
-          //         'grief',
-          //         'anger',
-          //         'eating disorders',
-          //       ],
-          //     );
-          //     findBestTherapist(userAspects);
+          //     return logAllTherapists();
+          //     // var userAspects = Aspects(
+          //     //   positive: [
+          //     //     'anxiety',
+          //     //     'depression',
+          //     //     'stress',
+          //     //     'relationships',
+          //     //     'self-esteem',
+          //     //     'astrological-counseling',
+          //     //   ],
+          //     //   negative: [
+          //     //     'addiction',
+          //     //     'trauma',
+          //     //     'grief',
+          //     //     'anger',
+          //     //     'eating disorders',
+          //     //   ],
+          //     // );
+          //     // findBestTherapist(userAspects);
           //   },
           //   child: const Text('Log all therapists'),
           // );
@@ -161,7 +163,15 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
                     color: Colors.transparent,
                     child: InkWell(
                       borderRadius: ThemeSettings.cardBorderRadius,
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => TherapistPublicProfileScreen(
+                                therapist: therapist),
+                          ),
+                        );
+                      },
                       child: Stack(
                         children: [
                           Padding(

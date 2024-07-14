@@ -19,6 +19,9 @@
 │   │   ├── language_settings.dart
 │   │   └── theme_settings.dart
 │   ├── assets
+│   │   ├── app_icons
+│   │   │   ├── lupe1.png
+│   │   │   └── lupe2.webp
 │   │   ├── icons
 │   │   │   ├── gold-plan-badge.png
 │   │   │   └── verified-badge.png
@@ -91,7 +94,11 @@
 │   │       └── main_theme.dart
 │   ├── utils
 │   │   ├── admin
-│   │   │   └── print_all_therapists.dart
+│   │   │   ├── find_best_therapist_by_aspects.dart
+│   │   │   ├── log_all_terms.dart
+│   │   │   ├── log_all_therapists.dart
+│   │   │   ├── update_all_therapists_aspects.dart
+│   │   │   └── update_terms_index_from_all_therapist.dart
 │   │   ├── debug
 │   │   │   ├── error_code_to_text.dart
 │   │   │   ├── log_configurations.dart
@@ -122,7 +129,7 @@
 ├── rename_imports.sh
 └── template_app.iml
 
-45 directories, 78 files
+46 directories, 84 files
 ///// pubspec.yaml /////
 name: findatherapistapp
 description: "An app to easily find the perfect therapist."
@@ -286,6 +293,14 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^4.0.0
   intl_utils: ^2.8.7
+  flutter_launcher_icons: "^0.13.1"
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "lib/assets/app_icons/lupe1.png"
+  min_sdk_android: 23
+
 
 flutter:
 
@@ -379,8 +394,8 @@ class ThemeSettings {
   static const EdgeInsetsGeometry scaffoldPadding = EdgeInsets.only(
     top: 20,
     bottom: 0,
-    left: 8,
-    right: 8,
+    left: 17,
+    right: 17,
   );
   static const Color seedColor = Colors.blueGrey;
   static const bool forceSeedColor = false;
@@ -431,7 +446,7 @@ class ThemeSettings {
   static const errorColor = Colors.red;
 
   static const ThemeColors scaffoldBackgroundColor = ThemeColors(
-    lightModePrimary: Color(0xFFFFF8FE),
+    lightModePrimary: Color(0xFFEFEFEF),
     darkModePrimary: Color(0xFF121212),
   );
 
@@ -973,6 +988,28 @@ class AuthorizationProvider extends ChangeNotifier {
       _authToken = await storage.read(key: 'auth_token');
     }
 
+    if (DebugConfig.debugMode || DebugConfig.forceDebugScreen) {
+      if (_authToken == null && _user == null) {
+        debugPrint('[User is not authenticated.]');
+      } else {
+        debugPrint('[User is authenticated.]');
+      }
+    }
+
+    if ((DebugConfig.bypassLoginScreen || DebugConfig.forceDebugScreen) &&
+        (_authToken == null && _user == null)) {
+      debugPrint('Signing user automatically...');
+      GoogleSignInAccount? currentUser = await _googleSignIn.signIn();
+      if (currentUser != null) {
+        _user = await _handleSignIn(currentUser);
+        if (_user != null) {
+          _authToken = _user?.uid;
+          await setAuthToken(_authToken!);
+          notifyListeners();
+        }
+      }
+    }
+
     _isLoading = false;
     notifyListeners();
 
@@ -1212,6 +1249,7 @@ class AppScaffold extends ConsumerStatefulWidget {
   final bool useTopAppBar;
   final bool showScreenTitleInAppBar;
   final EdgeInsetsGeometry? scaffoldPadding;
+  final bool ignoreGlobalPadding;
   const AppScaffold({
     super.key,
     required this.body,
@@ -1225,6 +1263,7 @@ class AppScaffold extends ConsumerStatefulWidget {
     this.useTopAppBar = false,
     this.showScreenTitleInAppBar = true,
     this.scaffoldPadding,
+    this.ignoreGlobalPadding = false,
   });
 
   @override
@@ -1235,6 +1274,18 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
   bool _connectivityChecked = false;
   bool _userWentOffline = false;
   Timer? _connectivityTimer;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final String debugRouteName = DebugConfig.debugScreen.name;
+
+    if (DebugConfig.forceDebugScreen && debugRouteName.isNotEmpty) {
+      debugPrint(
+          '[DebugConfig.forceDebugScreen is set to true. Locked screen is: $debugRouteName. Navigation suspended.]');
+    }
+  }
 
   @override
   void dispose() {
@@ -1282,11 +1333,7 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
   LoadingScreen? _handleProtectedRoutes(auth) {
     if (DebugConfig.forceDebugScreen) {
       final String debugRoutePath = DebugConfig.debugScreen.path;
-      final String debugRouteName =
-          DebugConfig.debugScreen.name ?? debugRoutePath;
 
-      debugPrint(
-          '[DebugConfig.forceDebugScreen is set to true. Locked screen is: $debugRouteName. Navigation suspended.]');
       if (mounted) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           context.go(debugRoutePath);
@@ -1407,7 +1454,9 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
             !DebugConfig.forceDebugScreen &&
             !DebugConfig.bypassLoginScreen,
         child: Padding(
-          padding: widget.scaffoldPadding ?? ThemeSettings.scaffoldPadding,
+          padding: widget.ignoreGlobalPadding
+              ? EdgeInsets.zero
+              : (widget.scaffoldPadding ?? ThemeSettings.scaffoldPadding),
           child: widget.body,
         ),
       );
@@ -1672,6 +1721,7 @@ class TherapistModel {
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
       'aspects': aspects.toJson(),
@@ -1765,6 +1815,8 @@ class Score {
 
 class TherapistInfo {
   String bio;
+  String? publicPresentation;
+  String? privateNotes;
   Location location;
   String firstName;
   bool userInfoIsVerified;
@@ -1776,6 +1828,8 @@ class TherapistInfo {
 
   TherapistInfo({
     required this.bio,
+    required this.publicPresentation,
+    required this.privateNotes,
     required this.location,
     required this.firstName,
     required this.userInfoIsVerified,
@@ -1789,6 +1843,8 @@ class TherapistInfo {
   factory TherapistInfo.fromJson(Map<String, dynamic> json) {
     return TherapistInfo(
       bio: json['bio'],
+      publicPresentation: json['publicPresentation'],
+      privateNotes: json['privateNotes'],
       location: Location.fromJson(json['location']),
       firstName: json['firstName'],
       userInfoIsVerified: json['userInfoIsVerified'],
@@ -1805,6 +1861,8 @@ class TherapistInfo {
   Map<String, dynamic> toJson() {
     return {
       'bio': bio,
+      'publicPresentation': publicPresentation,
+      'privateNotes': privateNotes,
       'location': location.toJson(),
       'firstName': firstName,
       'userInfoIsVerified': userInfoIsVerified,
@@ -1926,18 +1984,97 @@ class ProfilePictureUrl {
   }
 }
 
-///// lib/models/term_index.dart /////
+///// lib/models/term_index_model.dart /////
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+class TermIndex {
+  String id;
+  String term;
+  Map<String, List<String>> associatedTerms;
+  List<TherapistIndex> negative;
+  List<TherapistIndex> positive;
+
+  TermIndex({
+    required this.id,
+    required this.term,
+    required this.associatedTerms,
+    required this.negative,
+    required this.positive,
+  });
+
+  factory TermIndex.fromJson(Map<String, dynamic> json, String id) {
+    Map<String, List<String>> associatedTerms = {
+      'equivalents': List<String>.from(json['equivalents'] ?? []),
+      'related': List<String>.from(json['related'] ?? []),
+      'subcategories': List<String>.from(json['subcategories'] ?? []),
+    };
+
+    List<TherapistIndex> negative = (json['negative'] as List)
+        .map((item) => TherapistIndex.fromJson(item))
+        .toList();
+
+    List<TherapistIndex> positive = (json['positive'] as List)
+        .map((item) => TherapistIndex.fromJson(item))
+        .toList();
+
+    return TermIndex(
+      id: id,
+      term: json['term'] ?? '',
+      associatedTerms: associatedTerms,
+      negative: negative,
+      positive: positive,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'term': term,
+      'associatedTerms': {
+        'equivalents': associatedTerms['equivalents'],
+        'related': associatedTerms['related'],
+        'subcategories': associatedTerms['subcategories'],
+      },
+      'negative': negative.map((item) => item.toJson()).toList(),
+      'positive': positive.map((item) => item.toJson()).toList(),
+    };
+  }
+}
+
+class TherapistIndex {
+  String therapistId;
+
+  TherapistIndex({
+    required this.therapistId,
+  });
+
+  factory TherapistIndex.fromJson(Map<String, dynamic> json) {
+    return TherapistIndex(
+      therapistId: json['therapistId'] ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'therapistId': therapistId,
+    };
+  }
+}
 
 ///// lib/screens/admin/debug_screen/debug_screen.dart /////
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:findatherapistapp/app_settings/theme_settings.dart';
 import 'package:findatherapistapp/providers/providers_all.dart';
-import 'package:findatherapistapp/utils/admin/print_all_therapists.dart';
+import 'package:findatherapistapp/utils/admin/find_best_therapist_by_aspects.dart';
+import 'package:findatherapistapp/utils/admin/log_all_therapists.dart';
 import 'package:findatherapistapp/widgets/Skeletons/SkeletonTherapistCard/skeleton_therapist_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../models/gemini_tags_response_model.dart';
+import '../../../models/term_index_model.dart';
 import '../../../models/therapist_model.dart';
+import '../../../services/gemini_service.dart';
+import '../../../utils/admin/log_all_terms.dart';
 import '../../../widgets/AppScaffold/app_scaffold.dart';
 import '../../../services/firestore_service.dart';
 
@@ -1984,9 +2121,7 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
   Widget build(BuildContext context) {
     return AppScaffold(
       scrollPhysics: NeverScrollableScrollPhysics(),
-      scaffoldPadding: ThemeSettings.scaffoldPadding.subtract(
-        const EdgeInsets.only(top: 20),
-      ),
+      ignoreGlobalPadding: true,
       appBarTitle: 'Debug Screen',
       isProtected: false,
       body: FutureBuilder<List<TherapistModel>>(
@@ -2008,15 +2143,34 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
             return const Center(child: Text('No therapists found'));
           }
 
-          return ElevatedButton(
-              onPressed: () {
-                printAllTherapists();
-              },
-              child: Text('Test'));
+          // return ElevatedButton(
+          //   onPressed: () async {
+          //     var userAspects = Aspects(
+          //       positive: [
+          //         'anxiety',
+          //         'depression',
+          //         'stress',
+          //         'relationships',
+          //         'self-esteem',
+          //         'astrological-counseling',
+          //       ],
+          //       negative: [
+          //         'addiction',
+          //         'trauma',
+          //         'grief',
+          //         'anger',
+          //         'eating disorders',
+          //       ],
+          //     );
+          //     findBestTherapist(userAspects);
+          //   },
+          //   child: const Text('Log all therapists'),
+          // );
 
           return RefreshIndicator(
             onRefresh: _refreshTherapists,
             child: ListView.builder(
+              clipBehavior: Clip.antiAliasWithSaveLayer,
               physics: const AlwaysScrollableScrollPhysics(),
               shrinkWrap: true,
               itemCount: snapshot.data?.length,
@@ -2028,6 +2182,7 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
                 return Container(
                   margin: const EdgeInsets.symmetric(
                     vertical: ThemeSettings.cardVerticalSpacing,
+                    horizontal: 6,
                   ),
                   decoration: BoxDecoration(
                     color: theme.themeMode == ThemeMode.dark
@@ -2036,9 +2191,9 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
                     boxShadow: [
                       if (theme.themeMode == ThemeMode.light)
                         BoxShadow(
-                          color: Colors.grey.withOpacity(0.6),
-                          blurRadius: 1,
-                          offset: const Offset(0, 1),
+                          color: Colors.grey.withOpacity(0.8),
+                          blurRadius: 5,
+                          offset: const Offset(1, 2),
                         ),
                     ],
                     borderRadius: ThemeSettings.cardBorderRadius,
@@ -2061,7 +2216,7 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
-                        ThemeSettings.seedColor.withOpacity(0.00),
+                        ThemeSettings.seedColor.withOpacity(0.01),
                       ],
                     ),
                   ),
@@ -2103,27 +2258,28 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
                                         ),
                                       ),
                                     ),
-                                    Positioned(
-                                      bottom: 1.5,
-                                      right: 2,
-                                      child: Card(
-                                        elevation: 0.5,
-                                        child: Container(
-                                          width: 17,
-                                          height: 17,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: therapist.isOnline
-                                                ? Colors.green
-                                                : Colors.red,
-                                            border: Border.all(
-                                              color: Colors.white,
-                                              width: 3,
+                                    if (therapist.isOnline)
+                                      Positioned(
+                                        bottom: 1.5,
+                                        right: 2,
+                                        child: Card(
+                                          elevation: 0.5,
+                                          child: Container(
+                                            width: 17,
+                                            height: 17,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: therapist.isOnline
+                                                  ? Colors.green
+                                                  : Colors.red,
+                                              border: Border.all(
+                                                color: Colors.white,
+                                                width: 3,
+                                              ),
                                             ),
                                           ),
                                         ),
                                       ),
-                                    ),
                                   ],
                                 ),
                                 const SizedBox(width: 20),

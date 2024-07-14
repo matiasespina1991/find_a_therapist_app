@@ -1,13 +1,15 @@
 import 'package:flutter/cupertino.dart';
 
-class TherapistProfileScreen extends StatefulWidget {
-  const TherapistProfileScreen({super.key});
+class TherapistPersonalProfileScreen extends StatefulWidget {
+  const TherapistPersonalProfileScreen({super.key});
 
   @override
-  State<TherapistProfileScreen> createState() => _TherapistProfileScreenState();
+  State<TherapistPersonalProfileScreen> createState() =>
+      _TherapistPersonalProfileScreenState();
 }
 
-class _TherapistProfileScreenState extends State<TherapistProfileScreen> {
+class _TherapistPersonalProfileScreenState
+    extends State<TherapistPersonalProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return const Placeholder();
