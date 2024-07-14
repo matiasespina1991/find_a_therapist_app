@@ -110,13 +110,11 @@
           "generativeAiErrorMessage": "Es gab einen Fehler beim Versuch, Ihre Anfrage zu verarbeiten. Wir haben das Problem gemeldet. Bitte versuchen Sie es später erneut.",
           "unknownErrorMessage": "Es gab einen Fehler beim Versuch, Ihre Anfrage zu verarbeiten. Wir haben das Problem gemeldet. Bitte versuchen Sie es später erneut.",
            "languages": "Sprachen",
-           "Intro": "Intro",
+           "therapistAboutMe": "Über mich",
 
              "score": "Bewertung",
            "professionalCertificates": "Berufszertifikate",
-           "contactMeButton": "Kontaktiere mich"
-
-
-
-
+           "contactMeButton": "Kontaktiere mich",
+            "settingsScreenTitle": "Einstellungen",
+            "changeLanguageButton": "Sprache ändern"
 }

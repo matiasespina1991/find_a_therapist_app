@@ -36,6 +36,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "cancelButton": MessageLookupByLibrary.simpleMessage("Cancelar"),
         "candidateBlockedDueToSafetyMessage": MessageLookupByLibrary.simpleMessage(
             "Se ha detectado lenguaje no apropiado en su solicitud y no hemos podido procesarla. Por favor, inténtelo nuevamente. Si cree que esto se trata de un error, por favor contáctenos."),
+        "changeLanguageButton":
+            MessageLookupByLibrary.simpleMessage("Cambiar Idioma"),
         "chipOneLabel": MessageLookupByLibrary.simpleMessage("Chip Uno"),
         "chipThreeLabel": MessageLookupByLibrary.simpleMessage("Chip Tres"),
         "chipTwoLabel": MessageLookupByLibrary.simpleMessage("Chip Dos"),
@@ -105,7 +107,6 @@ class MessageLookup extends MessageLookupByLibrary {
         "homeScreenTitle":
             MessageLookupByLibrary.simpleMessage("Pantalla Principal"),
         "inputsSectionTitle": MessageLookupByLibrary.simpleMessage("Entradas"),
-        "intro": MessageLookupByLibrary.simpleMessage("Intro"),
         "invalidEmailMessage": MessageLookupByLibrary.simpleMessage(
             "Inserte un correo electrónico válido, por favor."),
         "invalidEmailSnackbarMessage": MessageLookupByLibrary.simpleMessage(
@@ -170,6 +171,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "sendButton": MessageLookupByLibrary.simpleMessage("Enviar"),
         "settingsButton":
             MessageLookupByLibrary.simpleMessage("Configuraciones"),
+        "settingsScreenTitle":
+            MessageLookupByLibrary.simpleMessage("Configuraciones"),
         "signInWithGoogleButtonLabel":
             MessageLookupByLibrary.simpleMessage("Iniciar sesión con Google"),
         "signingInMessage":
@@ -208,6 +211,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Botón de Texto"),
         "textFieldLabel":
             MessageLookupByLibrary.simpleMessage("Campo de Texto de Ejemplo"),
+        "therapistAboutMe": MessageLookupByLibrary.simpleMessage("Sobre mí"),
         "unableToLoginNoInternet":
             MessageLookupByLibrary.simpleMessage("No se puede iniciar sesión"),
         "unauthorizedAccess":

@@ -19,4 +19,6 @@ class DebugConfig {
       true; // If true, the route set in debugScreen will be shown and screen protection will be ignored
   static const bool bypassLoginScreen =
       false; // If true, login screen will be skipped
+  // static const bool alwaysAllowNavigation =
+  //     true;
 }

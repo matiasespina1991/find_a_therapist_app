@@ -32,21 +32,24 @@ class AppScaffold extends ConsumerStatefulWidget {
   final bool showScreenTitleInAppBar;
   final EdgeInsetsGeometry? scaffoldPadding;
   final bool ignoreGlobalPadding;
-  const AppScaffold({
-    super.key,
-    required this.body,
-    required this.appBarTitle,
-    required this.isProtected,
-    this.useSafeArea,
-    this.hideFloatingSpeedDialMenu = false,
-    this.scrollPhysics,
-    this.backgroundAnimation,
-    this.backgroundAnimationDarkMode,
-    this.useTopAppBar = false,
-    this.showScreenTitleInAppBar = true,
-    this.scaffoldPadding,
-    this.ignoreGlobalPadding = false,
-  });
+  final List<Widget>? actions;
+  final bool? centerTitle;
+  const AppScaffold(
+      {super.key,
+      required this.body,
+      required this.appBarTitle,
+      required this.isProtected,
+      this.useSafeArea,
+      this.hideFloatingSpeedDialMenu = false,
+      this.scrollPhysics,
+      this.backgroundAnimation,
+      this.backgroundAnimationDarkMode,
+      this.useTopAppBar = false,
+      this.showScreenTitleInAppBar = true,
+      this.scaffoldPadding,
+      this.ignoreGlobalPadding = false,
+      this.actions,
+      this.centerTitle});
 
   @override
   AppScaffoldState createState() => AppScaffoldState();
@@ -64,16 +67,12 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
     final String debugRouteName = DebugConfig.debugScreen.name;
 
     if (DebugConfig.forceDebugScreen && debugRouteName.isNotEmpty) {
+      bool navigationAllowed = true;
+      // if (DebugConfig.alwaysAllowNavigation) {
+      //   navigationAllowed = true;
+      // }
       debugPrint(
-          '[DebugConfig.forceDebugScreen is set to true. Locked screen is: $debugRouteName. Navigation suspended.]');
-    }
-
-    final String debugRoutePath = DebugConfig.debugScreen.path;
-
-    if (mounted) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        context.go(debugRoutePath);
-      });
+          '[DebugConfig.forceDebugScreen is set to true. Target screen is: $debugRouteName. Navigation ${navigationAllowed ? 'allowed' : 'is blocked'}.');
     }
   }
 
@@ -101,6 +100,8 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
       child: Scaffold(
         appBar: (AppGeneralSettings.useTopAppBar || widget.useTopAppBar)
             ? ThemeAppBar(
+                centerTitle: widget.centerTitle,
+                actions: widget.actions,
                 title: widget.showScreenTitleInAppBar ? widget.appBarTitle : '',
               )
             : null,

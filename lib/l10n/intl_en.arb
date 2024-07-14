@@ -113,10 +113,12 @@
                 "unknownErrorMessage": "An error occurred while trying to process your request. We have reported the issue. Please try again later.",
 
            "languages": "Languages",
-              "intro": "Intro",
+              "therapistAboutMe": "About me",
                 "score": "Score",
                 "professionalCertificates": "Professional Certificates",
-                   "contactMeButton": "Contact me"
+                   "contactMeButton": "Contact me",
+                    "settingsScreenTitle": "Settings",
+                     "changeLanguageButton": "Change language"
 
 
 

@@ -110,10 +110,12 @@
     "generativeAiErrorMessage": "Ocurrió un error al intentar procesar su solicitud. Hemos reportado el problema. Por favor, inténtelo nuevamente más tarde.",
     "unknownErrorMessage": "Hubo un error al intentar procesar su solicitud. Hemos reportado el problema. Por favor, inténtelo nuevamente más tarde.",
     "languages": "Idiomas",
-    "intro": "Intro",
+   "therapistAboutMe": "Sobre mí",
     "score": "Valoración",
     "professionalCertificates": "Certificados",
-      "contactMeButton": "Contactar"
+      "contactMeButton": "Contactar",
+      "settingsScreenTitle": "Configuraciones",
+       "changeLanguageButton": "Cambiar Idioma"
 
 
 

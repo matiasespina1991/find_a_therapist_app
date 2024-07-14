@@ -36,6 +36,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "cancelButton": MessageLookupByLibrary.simpleMessage("Abbrechen"),
         "candidateBlockedDueToSafetyMessage": MessageLookupByLibrary.simpleMessage(
             "Es wurde unangemessene Sprache in Ihrer Anfrage erkannt und wir konnten sie nicht verarbeiten. Bitte versuchen Sie es erneut. Wenn Sie glauben, dass dies ein Fehler ist, kontaktieren Sie uns bitte."),
+        "changeLanguageButton":
+            MessageLookupByLibrary.simpleMessage("Sprache ändern"),
         "chipOneLabel": MessageLookupByLibrary.simpleMessage("Chip Eins"),
         "chipThreeLabel": MessageLookupByLibrary.simpleMessage("Chip Drei"),
         "chipTwoLabel": MessageLookupByLibrary.simpleMessage("Chip Zwei"),
@@ -167,6 +169,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "score": MessageLookupByLibrary.simpleMessage("Bewertung"),
         "sendButton": MessageLookupByLibrary.simpleMessage("Senden"),
         "settingsButton": MessageLookupByLibrary.simpleMessage("Einstellungen"),
+        "settingsScreenTitle":
+            MessageLookupByLibrary.simpleMessage("Einstellungen"),
         "signInWithGoogleButtonLabel":
             MessageLookupByLibrary.simpleMessage("Mit Google anmelden"),
         "signingInMessage":
@@ -204,6 +208,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "textButtonLabel": MessageLookupByLibrary.simpleMessage("Text Taste"),
         "textFieldLabel":
             MessageLookupByLibrary.simpleMessage("Beispiel Textfeld"),
+        "therapistAboutMe": MessageLookupByLibrary.simpleMessage("Über mich"),
         "unableToLoginNoInternet":
             MessageLookupByLibrary.simpleMessage("Anmeldung nicht möglich"),
         "unauthorizedAccess":

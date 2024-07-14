@@ -1,6 +1,8 @@
 # Uncomment this line to define a global platform for your project
 platform :ios, '13.0'
 
+$iOSVersion = '13.0'
+
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
@@ -36,6 +38,17 @@ target 'Runner' do
 #     inherit! :search_paths
 #   end
 end
+
+installer.pods_project.build_configurations.each do |config|
+    config.build_settings["EXCLUDED_ARCHS[sdk=*]"] = "armv7"
+    config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = $iOSVersion
+ end
+
+  target.build_configurations.each do |config|
+       if Gem::Version.new($iOSVersion) > Gem::Version.new(config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'])
+         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = $iOSVersion
+       end
+     end
 
 
 post_install do |installer|

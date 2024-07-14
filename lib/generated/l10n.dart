@@ -1150,11 +1150,11 @@ class S {
     );
   }
 
-  /// `Intro`
-  String get intro {
+  /// `About me`
+  String get therapistAboutMe {
     return Intl.message(
-      'Intro',
-      name: 'intro',
+      'About me',
+      name: 'therapistAboutMe',
       desc: '',
       args: [],
     );
@@ -1185,6 +1185,26 @@ class S {
     return Intl.message(
       'Contact me',
       name: 'contactMeButton',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Settings`
+  String get settingsScreenTitle {
+    return Intl.message(
+      'Settings',
+      name: 'settingsScreenTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Change language`
+  String get changeLanguageButton {
+    return Intl.message(
+      'Change language',
+      name: 'changeLanguageButton',
       desc: '',
       args: [],
     );

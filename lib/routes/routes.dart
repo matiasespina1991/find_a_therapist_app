@@ -1,3 +1,4 @@
+import 'package:findatherapistapp/app_settings/app_general_settings.dart';
 import 'package:findatherapistapp/screens/admin/debug_screen/debug_screen.dart';
 import 'package:findatherapistapp/screens/common/loading_screen/loading_screen.dart';
 import 'package:findatherapistapp/screens/common/not_found_screen/not_found_screen.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/material.dart';
 
 import '../screens/common/home_screen/home_screen.dart';
 import '../screens/common/login_screen/login_screen.dart';
+import '../screens/common/settings_screen/settings_screen.dart';
 import '../screens/common/therapist_public_profile_screen/therapist_public_profile_screen.dart';
 import '../screens/therapist_area/therapist_profile_screen.dart';
 import '../screens/user_area/user_profile_screen/user_profile_screen.dart';
@@ -24,6 +26,12 @@ class Routes {
     path: '/',
     name: 'Home Screen',
     builder: (context) => const HomeScreen(),
+  );
+
+  static RouteConfig settingsScreen = RouteConfig(
+    path: '/settings-screen',
+    name: 'Settings Screen',
+    builder: (context) => const SettingsScreen(),
   );
 
   static RouteConfig notFoundScreen = RouteConfig(
@@ -71,6 +79,7 @@ class Routes {
     List<RouteConfig> allRoutes = [
       loginScreen,
       homeScreen,
+      settingsScreen,
       userProfileScreen,
       userRequestScreen,
       therapistProfileScreen,
@@ -87,6 +96,8 @@ class Routes {
   }
 
   static final GoRouter router = GoRouter(
+    initialLocation:
+        DebugConfig.forceDebugScreen ? DebugConfig.debugScreen.path : null,
     routes: _generateRoutes(),
   );
 }
