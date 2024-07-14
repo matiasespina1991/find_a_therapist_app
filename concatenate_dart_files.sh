@@ -22,7 +22,7 @@ files=(
         "lib/models/term_index_model.dart"
     "lib/screens/admin/debug_screen/debug_screen.dart"
     "lib/screens/user_area/user_request_screen/user_request_screen.dart"
-
+    "lib/utils/admin/find_best_therapist_by_aspects.dart"
     "lib/services/gemini_service.dart"
     "lib/models/gemini_tags_response_model.dart"
 

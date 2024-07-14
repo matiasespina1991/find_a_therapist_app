@@ -74,7 +74,9 @@
 │   │   │   ├── home_screen
 │   │   │   ├── loading_screen
 │   │   │   ├── login_screen
-│   │   │   └── not_found_screen
+│   │   │   ├── not_found_screen
+│   │   │   ├── settings_screen
+│   │   │   └── therapist_public_profile_screen
 │   │   ├── therapist_area
 │   │   │   └── therapist_profile_screen.dart
 │   │   └── user_area
@@ -97,6 +99,7 @@
 │   │   │   ├── find_best_therapist_by_aspects.dart
 │   │   │   ├── log_all_terms.dart
 │   │   │   ├── log_all_therapists.dart
+│   │   │   ├── to_capital_case.dart
 │   │   │   ├── update_all_therapists_aspects.dart
 │   │   │   └── update_terms_index_from_all_therapist.dart
 │   │   ├── debug
@@ -122,14 +125,16 @@
 │       │   └── template_app_bar.dart
 │       ├── ThemeFloatingSpeedDialMenu
 │       │   └── theme_floating_speed_dial_menu.dart
-│       └── ThemeInputTextField
-│           └── theme_input_text_field.dart
+│       ├── ThemeInputTextField
+│       │   └── theme_input_text_field.dart
+│       └── TherapistListCard
+│           └── therapist_list_card.dart
 ├── pubspec.lock
 ├── pubspec.yaml
 ├── rename_imports.sh
 └── template_app.iml
 
-46 directories, 84 files
+49 directories, 86 files
 ///// pubspec.yaml /////
 name: findatherapistapp
 description: "An app to easily find the perfect therapist."
@@ -167,6 +172,8 @@ dependencies:
   google_generative_ai: ^0.4.3
   # Speech to Text is a Flutter plugin for converting speech to text in a Flutter app.
   speech_to_text: ^6.6.0
+  # Country Picker is a Flutter plugin for selecting countries in a Flutter app.
+  country_picker: ^2.0.26
 
 
 #  # -----------------  GENERAL PACKAGES  -----------------
@@ -287,6 +294,9 @@ dependencies:
 #  firebase_remote_config: ^5.0.1
 
   intl: any
+  flutter_localized_locales: ^2.0.5
+  expandable: ^5.0.1
+  google_mlkit_translation: ^0.11.0
 
 dev_dependencies:
   flutter_test:
@@ -354,6 +364,8 @@ class DebugConfig {
       true; // If true, the route set in debugScreen will be shown and screen protection will be ignored
   static const bool bypassLoginScreen =
       false; // If true, login screen will be skipped
+  // static const bool alwaysAllowNavigation =
+  //     true;
 }
 
 ///// lib/app_settings/app_info.dart /////
@@ -490,6 +502,7 @@ class ThemeSettings {
     darkModePrimary: Colors.white,
   );
 
+  ///AppBar text & background color
   static const ThemeColors appbarOnBackgroundColor = ThemeColors(
     lightModePrimary: Colors.white,
     darkModePrimary: Colors.white,
@@ -733,6 +746,7 @@ class MainTheme {
 }
 
 ///// lib/routes/routes.dart /////
+import 'package:findatherapistapp/app_settings/app_general_settings.dart';
 import 'package:findatherapistapp/screens/admin/debug_screen/debug_screen.dart';
 import 'package:findatherapistapp/screens/common/loading_screen/loading_screen.dart';
 import 'package:findatherapistapp/screens/common/not_found_screen/not_found_screen.dart';
@@ -741,6 +755,8 @@ import 'package:flutter/material.dart';
 
 import '../screens/common/home_screen/home_screen.dart';
 import '../screens/common/login_screen/login_screen.dart';
+import '../screens/common/settings_screen/settings_screen.dart';
+import '../screens/common/therapist_public_profile_screen/therapist_public_profile_screen.dart';
 import '../screens/therapist_area/therapist_profile_screen.dart';
 import '../screens/user_area/user_profile_screen/user_profile_screen.dart';
 import '../screens/user_area/user_request_screen/user_request_screen.dart';
@@ -758,6 +774,12 @@ class Routes {
     path: '/',
     name: 'Home Screen',
     builder: (context) => const HomeScreen(),
+  );
+
+  static RouteConfig settingsScreen = RouteConfig(
+    path: '/settings-screen',
+    name: 'Settings Screen',
+    builder: (context) => const SettingsScreen(),
   );
 
   static RouteConfig notFoundScreen = RouteConfig(
@@ -790,7 +812,7 @@ class Routes {
   static RouteConfig therapistProfileScreen = RouteConfig(
     path: '/therapist-profile',
     name: 'Therapist Profile Screen',
-    builder: (context) => const TherapistProfileScreen(),
+    builder: (context) => const TherapistPersonalProfileScreen(),
   );
 
   /// ADMIN AREA ROUTES
@@ -805,6 +827,7 @@ class Routes {
     List<RouteConfig> allRoutes = [
       loginScreen,
       homeScreen,
+      settingsScreen,
       userProfileScreen,
       userRequestScreen,
       therapistProfileScreen,
@@ -821,6 +844,8 @@ class Routes {
   }
 
   static final GoRouter router = GoRouter(
+    initialLocation:
+        DebugConfig.forceDebugScreen ? DebugConfig.debugScreen.path : null,
     routes: _generateRoutes(),
   );
 }
@@ -838,15 +863,20 @@ class RouteConfig {
 }
 
 ///// lib/main.dart /////
+import 'package:country_picker/country_picker.dart';
 import 'package:findatherapistapp/routes/routes.dart';
+import 'package:findatherapistapp/screens/admin/debug_screen/_print_all_terms_therapists_screen.dart';
 import 'package:findatherapistapp/screens/common/home_screen/home_screen.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_localized_locales/flutter_localized_locales.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:findatherapistapp/providers/providers_all.dart';
+import 'app_settings/app_general_settings.dart';
 import 'app_settings/auth_config.dart';
 import 'globals.dart';
 import 'app_settings/app_info.dart';
@@ -901,6 +931,8 @@ class MyApp extends ConsumerWidget {
             .map((e) => Locale.fromSubtags(languageCode: e))
             .toList(),
         localizationsDelegates: const [
+          LocaleNamesLocalizationsDelegate(),
+          CountryLocalizations.delegate,
           S.delegate,
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
@@ -924,15 +956,6 @@ class MyApp extends ConsumerWidget {
         routeInformationProvider: Routes.router.routeInformationProvider,
       ),
     );
-  }
-}
-
-class MainScreen extends StatelessWidget {
-  const MainScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const HomeScreen();
   }
 }
 
@@ -1250,21 +1273,24 @@ class AppScaffold extends ConsumerStatefulWidget {
   final bool showScreenTitleInAppBar;
   final EdgeInsetsGeometry? scaffoldPadding;
   final bool ignoreGlobalPadding;
-  const AppScaffold({
-    super.key,
-    required this.body,
-    required this.appBarTitle,
-    required this.isProtected,
-    this.useSafeArea,
-    this.hideFloatingSpeedDialMenu = false,
-    this.scrollPhysics,
-    this.backgroundAnimation,
-    this.backgroundAnimationDarkMode,
-    this.useTopAppBar = false,
-    this.showScreenTitleInAppBar = true,
-    this.scaffoldPadding,
-    this.ignoreGlobalPadding = false,
-  });
+  final List<Widget>? actions;
+  final bool? centerTitle;
+  const AppScaffold(
+      {super.key,
+      required this.body,
+      required this.appBarTitle,
+      required this.isProtected,
+      this.useSafeArea,
+      this.hideFloatingSpeedDialMenu = false,
+      this.scrollPhysics,
+      this.backgroundAnimation,
+      this.backgroundAnimationDarkMode,
+      this.useTopAppBar = false,
+      this.showScreenTitleInAppBar = true,
+      this.scaffoldPadding,
+      this.ignoreGlobalPadding = false,
+      this.actions,
+      this.centerTitle});
 
   @override
   AppScaffoldState createState() => AppScaffoldState();
@@ -1282,8 +1308,12 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
     final String debugRouteName = DebugConfig.debugScreen.name;
 
     if (DebugConfig.forceDebugScreen && debugRouteName.isNotEmpty) {
+      bool navigationAllowed = true;
+      // if (DebugConfig.alwaysAllowNavigation) {
+      //   navigationAllowed = true;
+      // }
       debugPrint(
-          '[DebugConfig.forceDebugScreen is set to true. Locked screen is: $debugRouteName. Navigation suspended.]');
+          '[DebugConfig.forceDebugScreen is set to true. Target screen is: $debugRouteName. Navigation ${navigationAllowed ? 'allowed' : 'is blocked'}.');
     }
   }
 
@@ -1311,6 +1341,8 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
       child: Scaffold(
         appBar: (AppGeneralSettings.useTopAppBar || widget.useTopAppBar)
             ? ThemeAppBar(
+                centerTitle: widget.centerTitle,
+                actions: widget.actions,
                 title: widget.showScreenTitleInAppBar ? widget.appBarTitle : '',
               )
             : null,
@@ -1332,14 +1364,6 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
 
   LoadingScreen? _handleProtectedRoutes(auth) {
     if (DebugConfig.forceDebugScreen) {
-      final String debugRoutePath = DebugConfig.debugScreen.path;
-
-      if (mounted) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          context.go(debugRoutePath);
-        });
-      }
-
       return null;
     }
 
@@ -1561,6 +1585,203 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
           variant: 'success',
           duration: 'long');
     }
+  }
+}
+
+///// lib/widgets/TherapistListCard/therapist_list_card.dart /////
+import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:findatherapistapp/app_settings/theme_settings.dart';
+import 'package:findatherapistapp/models/therapist_model.dart';
+
+class TherapistListCard extends StatelessWidget {
+  final TherapistModel therapist;
+  final VoidCallback onTap;
+
+  const TherapistListCard({
+    super.key,
+    required this.therapist,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(
+        vertical: ThemeSettings.cardVerticalSpacing,
+        horizontal: 6,
+      ),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        boxShadow: [
+          if (Theme.of(context).brightness == Brightness.light)
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.8),
+              blurRadius: 5,
+              offset: const Offset(1, 2),
+            ),
+        ],
+        borderRadius: ThemeSettings.cardBorderRadius,
+        border: BoxBorder.lerp(
+          Border.all(
+            color: Colors.grey.withOpacity(0.2),
+            width: 0.5,
+          ),
+          Border.all(
+            color: Colors.grey.withOpacity(0.2),
+            width: 0.5,
+          ),
+          0.5,
+        ),
+      ),
+      foregroundDecoration: BoxDecoration(
+        borderRadius: ThemeSettings.cardBorderRadius,
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.transparent,
+            ThemeSettings.seedColor.withOpacity(0.01),
+          ],
+        ),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: ThemeSettings.cardBorderRadius,
+          onTap: onTap,
+          child: Stack(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(15),
+                child: Row(
+                  children: [
+                    Stack(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.4),
+                                blurRadius: 1,
+                                offset: const Offset(0, 1),
+                              ),
+                            ],
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.white,
+                              width: 2,
+                            ),
+                          ),
+                          padding: const EdgeInsets.all(2),
+                          child: CircleAvatar(
+                            radius: 40,
+                            backgroundImage: CachedNetworkImageProvider(
+                              therapist.therapistInfo.profilePictureUrl.small,
+                            ),
+                          ),
+                        ),
+                        if (therapist.isOnline)
+                          Positioned(
+                            bottom: 1.5,
+                            right: 2,
+                            child: Card(
+                              elevation: 0.5,
+                              child: Container(
+                                width: 17,
+                                height: 17,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: therapist.isOnline
+                                      ? Colors.green
+                                      : Colors.red,
+                                  border: Border.all(
+                                    color: Colors.white,
+                                    width: 3,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(width: 20),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  '${therapist.therapistInfo.firstName} ${therapist.therapistInfo.lastName}',
+                                  style: const TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              if (therapist.therapistInfo.userInfoIsVerified)
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 4),
+                                  child: therapist.subscription.plan == 'gold'
+                                      ? Image.asset(
+                                          'lib/assets/icons/gold-plan-badge.png',
+                                          width: 15,
+                                        )
+                                      : Image.asset(
+                                          'lib/assets/icons/verified-badge.png',
+                                          width: 15,
+                                        ),
+                                ),
+                            ],
+                          ),
+                          Text(
+                            '${therapist.therapistInfo.location.city}, ${therapist.therapistInfo.location.country}',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey[500],
+                            ),
+                          ),
+                          Text(
+                            therapist.therapistInfo.bio,
+                            style: TextStyle(
+                              fontSize: 15.5,
+                              color: Colors.grey[700],
+                            ),
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Positioned(
+                bottom: 7,
+                right: 15,
+                child: Row(
+                  children: [
+                    Text('${therapist.score.rating}',
+                        style: const TextStyle(
+                          fontSize: 15,
+                        )),
+                    const SizedBox(width: 3),
+                    const Icon(
+                      Icons.star,
+                      color: Colors.amber,
+                      size: 18,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 
@@ -1815,8 +2036,8 @@ class Score {
 
 class TherapistInfo {
   String bio;
-  String? publicPresentation;
-  String? privateNotes;
+  String publicPresentation;
+  String privateNotes;
   Location location;
   String firstName;
   bool userInfoIsVerified;
@@ -2077,6 +2298,8 @@ import '../../../services/gemini_service.dart';
 import '../../../utils/admin/log_all_terms.dart';
 import '../../../widgets/AppScaffold/app_scaffold.dart';
 import '../../../services/firestore_service.dart';
+import '../../../widgets/TherapistListCard/therapist_list_card.dart';
+import '../../common/therapist_public_profile_screen/therapist_public_profile_screen.dart';
 
 class DebugScreen extends ConsumerStatefulWidget {
   const DebugScreen({super.key});
@@ -2142,27 +2365,28 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(child: Text('No therapists found'));
           }
-
+          //
           // return ElevatedButton(
           //   onPressed: () async {
-          //     var userAspects = Aspects(
-          //       positive: [
-          //         'anxiety',
-          //         'depression',
-          //         'stress',
-          //         'relationships',
-          //         'self-esteem',
-          //         'astrological-counseling',
-          //       ],
-          //       negative: [
-          //         'addiction',
-          //         'trauma',
-          //         'grief',
-          //         'anger',
-          //         'eating disorders',
-          //       ],
-          //     );
-          //     findBestTherapist(userAspects);
+          //     return logAllTherapists();
+          //     // var userAspects = Aspects(
+          //     //   positive: [
+          //     //     'anxiety',
+          //     //     'depression',
+          //     //     'stress',
+          //     //     'relationships',
+          //     //     'self-esteem',
+          //     //     'astrological-counseling',
+          //     //   ],
+          //     //   negative: [
+          //     //     'addiction',
+          //     //     'trauma',
+          //     //     'grief',
+          //     //     'anger',
+          //     //     'eating disorders',
+          //     //   ],
+          //     // );
+          //     // findBestTherapist(userAspects);
           //   },
           //   child: const Text('Log all therapists'),
           // );
@@ -2177,191 +2401,17 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
               itemBuilder: (context, index) {
                 final therapist = snapshot.data![index];
 
-                var theme = ref.watch(themeProvider);
-
-                return Container(
-                  margin: const EdgeInsets.symmetric(
-                    vertical: ThemeSettings.cardVerticalSpacing,
-                    horizontal: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: theme.themeMode == ThemeMode.dark
-                        ? Colors.grey[900]
-                        : Colors.white,
-                    boxShadow: [
-                      if (theme.themeMode == ThemeMode.light)
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.8),
-                          blurRadius: 5,
-                          offset: const Offset(1, 2),
-                        ),
-                    ],
-                    borderRadius: ThemeSettings.cardBorderRadius,
-                    border: BoxBorder.lerp(
-                      Border.all(
-                        color: Colors.grey.withOpacity(0.2),
-                        width: 0.5,
+                return TherapistListCard(
+                  therapist: therapist,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            TherapistPublicProfileScreen(therapist: therapist),
                       ),
-                      Border.all(
-                        color: Colors.grey.withOpacity(0.2),
-                        width: 0.5,
-                      ),
-                      0.5,
-                    ),
-                  ),
-                  foregroundDecoration: BoxDecoration(
-                    borderRadius: ThemeSettings.cardBorderRadius,
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.transparent,
-                        ThemeSettings.seedColor.withOpacity(0.01),
-                      ],
-                    ),
-                  ),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      borderRadius: ThemeSettings.cardBorderRadius,
-                      onTap: () {},
-                      child: Stack(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(15),
-                            child: Row(
-                              children: [
-                                Stack(
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.grey.withOpacity(0.4),
-                                            blurRadius: 1,
-                                            offset: const Offset(0, 1),
-                                          ),
-                                        ],
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                          color: Colors.white,
-                                          width: 2,
-                                        ),
-                                      ),
-                                      padding: const EdgeInsets.all(2),
-                                      child: CircleAvatar(
-                                        radius: 40,
-                                        backgroundImage:
-                                            CachedNetworkImageProvider(
-                                          therapist.therapistInfo
-                                              .profilePictureUrl.small,
-                                        ),
-                                      ),
-                                    ),
-                                    if (therapist.isOnline)
-                                      Positioned(
-                                        bottom: 1.5,
-                                        right: 2,
-                                        child: Card(
-                                          elevation: 0.5,
-                                          child: Container(
-                                            width: 17,
-                                            height: 17,
-                                            decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              color: therapist.isOnline
-                                                  ? Colors.green
-                                                  : Colors.red,
-                                              border: Border.all(
-                                                color: Colors.white,
-                                                width: 3,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                                const SizedBox(width: 20),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Flexible(
-                                            child: Text(
-                                              '${therapist.therapistInfo.firstName} ${therapist.therapistInfo.lastName}',
-                                              style: const TextStyle(
-                                                fontSize: 17,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                          if (therapist
-                                              .therapistInfo.userInfoIsVerified)
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 4),
-                                              child:
-                                                  therapist.subscription.plan ==
-                                                          'gold'
-                                                      ? Image.asset(
-                                                          'lib/assets/icons/gold-plan-badge.png',
-                                                          width: 15,
-                                                        )
-                                                      : Image.asset(
-                                                          'lib/assets/icons/verified-badge.png',
-                                                          width: 15,
-                                                        ),
-                                            ),
-                                        ],
-                                      ),
-                                      Text(
-                                        '${therapist.therapistInfo.location.city}, ${therapist.therapistInfo.location.country}',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.grey[500],
-                                        ),
-                                      ),
-                                      Text(
-                                        therapist.therapistInfo.bio,
-                                        style: TextStyle(
-                                          fontSize: 15.5,
-                                          color: Colors.grey[700],
-                                        ),
-                                        maxLines: 3,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Positioned(
-                              bottom: 7,
-                              right: 15,
-                              child: Row(
-                                children: [
-                                  Text('${therapist.score.rating}',
-                                      style: const TextStyle(
-                                        fontSize: 15,
-                                      )),
-                                  const SizedBox(width: 3),
-                                  const Icon(
-                                    Icons.star,
-                                    color: Colors.amber,
-                                    size: 18,
-                                  ),
-                                ],
-                              )),
-                        ],
-                      ),
-                    ),
-                  ),
+                    );
+                  },
                 );
               },
             ),
@@ -2704,6 +2754,73 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
     log(geminiResponse.toJson().toString());
 
     return geminiResponse;
+  }
+}
+
+///// lib/utils/admin/find_best_therapist_by_aspects.dart /////
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:findatherapistapp/services/firestore_service.dart';
+import 'package:findatherapistapp/models/therapist_model.dart';
+
+Future<void> findBestTherapist(Aspects userAspects) async {
+  FirebaseFirestore firestore = FirestoreService.instance;
+
+  try {
+    QuerySnapshot therapistSnapshot =
+        await firestore.collection('therapists').get();
+    List<QueryDocumentSnapshot> therapistDocs = therapistSnapshot.docs;
+
+    List<Map<String, dynamic>> matchScores = [];
+
+    for (var therapistDoc in therapistDocs) {
+      var therapistData = therapistDoc.data() as Map<String, dynamic>;
+      TherapistModel therapist =
+          TherapistModel.fromJson(therapistData, therapistDoc.id);
+
+      int positiveMatches = 0;
+      int negativeMatches = 0;
+
+      for (var positive in userAspects.positive) {
+        if (therapist.aspects.positive.contains(positive)) {
+          positiveMatches++;
+        }
+        if (therapist.aspects.negative.contains(positive)) {
+          negativeMatches++;
+        }
+      }
+
+      for (var userNegativeAspect in userAspects.negative) {
+        if (therapist.aspects.positive.contains(userNegativeAspect)) {
+          negativeMatches++;
+        }
+        if (therapist.aspects.negative.contains(userNegativeAspect)) {
+          negativeMatches++;
+        }
+      }
+
+      int totalAspects =
+          userAspects.positive.length + userAspects.negative.length;
+      double matchScore = totalAspects > 0
+          ? ((positiveMatches - negativeMatches) / totalAspects) * 100
+          : 0.0;
+
+      matchScores.add({
+        'therapistId': therapist.id,
+        'therapistName':
+            '${therapist.therapistInfo.firstName} ${therapist.therapistInfo.lastName}',
+        'matchScore': matchScore,
+      });
+    }
+
+    matchScores.sort((a, b) => b['matchScore'].compareTo(a['matchScore']));
+
+    for (var match in matchScores) {
+      debugPrint(
+          'Therapist: ${match['therapistName']}, Match Score: ${match['matchScore']}%');
+    }
+  } catch (e) {
+    debugPrint('Failed to find best therapist: $e');
   }
 }
 
