@@ -16,7 +16,7 @@ class DebugConfig {
   static const bool showDebugPrints = false;
   static RouteConfig debugScreen = Routes.debugScreen;
   static const forceDebugScreen =
-      true; // If true, the route set in debugScreen will be shown and screen protection will be ignored
+      false; // If true, the route set in debugScreen will be shown and screen protection will be ignored
   static const bool bypassLoginScreen =
       false; // If true, login screen will be skipped
   // static const bool alwaysAllowNavigation =

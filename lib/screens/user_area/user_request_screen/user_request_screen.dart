@@ -7,11 +7,14 @@ import 'package:findatherapistapp/services/gemini_service.dart';
 import 'package:findatherapistapp/services/speech_to_text_service.dart';
 import '../../../app_settings/theme_settings.dart';
 import '../../../models/gemini_tags_response_model.dart';
+import '../../../models/therapist_model.dart';
 import '../../../providers/providers_all.dart';
 import '../../../utils/debug/error_code_to_text.dart';
 import '../../../utils/ui/is_dark_mode.dart';
 import '../../../widgets/AppScaffold/app_scaffold.dart';
 import '../../../generated/l10n.dart';
+import '../../../utils/admin/find_best_therapist_by_aspects.dart';
+import '../therapist_result_screen/therapist_result_screen.dart';
 
 class UserRequestScreen extends ConsumerStatefulWidget {
   const UserRequestScreen({super.key});
@@ -313,6 +316,20 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
   }
 
   Future<GeminiTagsResponse?> _sendRequest() async {
+    final matchedTherapists = await findBestTherapist(Aspects(
+      positive: ['astrology'],
+      negative: ['psychology'],
+    ));
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            TherapistResultsScreen(matchedTherapists: matchedTherapists),
+      ),
+    );
+
+    return null;
     if (isSendingRequest) return null;
 
     setState(() {
@@ -321,9 +338,26 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
     final inputText = _requestController.text;
     final GeminiTagsResponse geminiResponse =
         await _geminiService.getTherapyTags(inputText);
+
+    setState(() {
+      _tagsResponse = geminiResponse;
+    });
+
+    if (geminiResponse.tags.positive.isNotEmpty ||
+        geminiResponse.tags.negative.isNotEmpty) {
+      final matchedTherapists =
+          await findBestTherapist(geminiResponse.tags.toAspects());
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              TherapistResultsScreen(matchedTherapists: matchedTherapists),
+        ),
+      );
+    }
+
     setState(() {
       isSendingRequest = false;
-      _tagsResponse = geminiResponse;
     });
 
     log(geminiResponse.toJson().toString());

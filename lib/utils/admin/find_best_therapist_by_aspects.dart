@@ -3,7 +3,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:findatherapistapp/services/firestore_service.dart';
 import 'package:findatherapistapp/models/therapist_model.dart';
 
-Future<void> findBestTherapist(Aspects userAspects) async {
+import '../../models/term_index_model.dart';
+
+Future<List<Map<String, dynamic>>> findBestTherapist(
+    Aspects userAspects) async {
   FirebaseFirestore firestore = FirestoreService.instance;
 
   try {
@@ -22,20 +25,29 @@ Future<void> findBestTherapist(Aspects userAspects) async {
       int negativeMatches = 0;
 
       for (var positive in userAspects.positive) {
-        if (therapist.aspects.positive.contains(positive)) {
-          positiveMatches++;
-        }
-        if (therapist.aspects.negative.contains(positive)) {
-          negativeMatches++;
+        List<String> relatedTerms = await getRelatedTerms(positive);
+        for (var term in relatedTerms) {
+          if (therapist.aspects.positive.contains(term)) {
+            positiveMatches++;
+            if (term == positive) {
+              positiveMatches++; // Extra point for exact match
+            }
+          }
+          if (therapist.aspects.negative.contains(term)) {
+            negativeMatches++;
+          }
         }
       }
 
       for (var userNegativeAspect in userAspects.negative) {
-        if (therapist.aspects.positive.contains(userNegativeAspect)) {
-          negativeMatches++;
-        }
-        if (therapist.aspects.negative.contains(userNegativeAspect)) {
-          negativeMatches++;
+        List<String> relatedTerms = await getRelatedTerms(userNegativeAspect);
+        for (var term in relatedTerms) {
+          if (therapist.aspects.positive.contains(term)) {
+            negativeMatches++;
+          }
+          if (therapist.aspects.negative.contains(term)) {
+            negativeMatches++;
+          }
         }
       }
 
@@ -46,7 +58,7 @@ Future<void> findBestTherapist(Aspects userAspects) async {
           : 0.0;
 
       matchScores.add({
-        'therapistId': therapist.id,
+        'therapist': therapist,
         'therapistName':
             '${therapist.therapistInfo.firstName} ${therapist.therapistInfo.lastName}',
         'matchScore': matchScore,
@@ -59,7 +71,33 @@ Future<void> findBestTherapist(Aspects userAspects) async {
       debugPrint(
           'Therapist: ${match['therapistName']}, Match Score: ${match['matchScore']}%');
     }
+
+    return matchScores;
   } catch (e) {
     debugPrint('Failed to find best therapist: $e');
+    return [];
+  }
+}
+
+Future<List<String>> getRelatedTerms(String term) async {
+  FirebaseFirestore firestore = FirestoreService.instance;
+  CollectionReference termsCollection = firestore.collection('terms-index');
+
+  DocumentSnapshot termDoc = await termsCollection.doc(term).get();
+
+  if (termDoc.exists) {
+    TermIndex termIndex =
+        TermIndex.fromJson(termDoc.data() as Map<String, dynamic>, termDoc.id);
+
+    List<String> relatedTerms = [termIndex.term];
+    if (termIndex.associatedTerms.containsKey('subcategories')) {
+      relatedTerms.addAll(termIndex.associatedTerms['subcategories']!);
+    }
+    if (termIndex.associatedTerms.containsKey('equivalents')) {
+      relatedTerms.addAll(termIndex.associatedTerms['equivalents']!);
+    }
+    return relatedTerms;
+  } else {
+    return [term];
   }
 }

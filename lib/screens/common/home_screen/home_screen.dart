@@ -1,4 +1,9 @@
 import 'package:findatherapistapp/app_settings/app_info.dart';
+import 'package:findatherapistapp/utils/admin/add_terms_as_subcategory.dart';
+import 'package:findatherapistapp/utils/admin/add_therapist.dart';
+import 'package:findatherapistapp/utils/admin/consolidate_terms.dart';
+import 'package:findatherapistapp/utils/admin/log_all_therapists.dart';
+import 'package:findatherapistapp/utils/admin/update_terms_index_from_all_therapist.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -108,6 +113,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ],
             ),
+            ElevatedButton(
+                onPressed: () {
+                  // updateTermsIndex();
+
+                  // consolidateTerms('cognitive-behavioral-techniques', [
+                  //   'cognitive-strategies',
+                  // ]);
+
+                  //
+                  // addTermsAsSubcategory('insomnia', [
+                  //   'anxiety',
+                  // ]);
+                  logAllTherapists();
+
+                  // family-counseling, family-dynamics, family-support, family-therapy
+                },
+                child: Text('Test')),
           ],
         ),
       ),

@@ -1,3 +1,5 @@
+import 'package:findatherapistapp/models/therapist_model.dart';
+
 class GeminiTagsResponse {
   final Tags tags;
   final GeminiErrorResponse? error;
@@ -46,6 +48,13 @@ class Tags {
       'positive': positive,
       'negative': negative,
     };
+  }
+
+  Aspects toAspects() {
+    return Aspects(
+      positive: positive,
+      negative: negative,
+    );
   }
 }
 

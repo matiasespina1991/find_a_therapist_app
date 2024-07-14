@@ -199,14 +199,18 @@ class _TherapistPublicProfileScreenState
                                               .map((specialization) =>
                                                   toCapitalCase(specialization))
                                               .join(', '),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
                                             fontSize: 16,
                                             color: Colors.grey[500],
                                           ),
                                         );
                                       } else if (snapshot.hasError) {
+                                        debugPrint(
+                                            'Error when trying to translate specializations: ${snapshot.error}');
                                         return Text(
-                                          'Error when trying to translate specializations: ${snapshot.error}',
+                                          '.',
                                           style: TextStyle(
                                             fontSize: 16,
                                             color: Colors.grey[500],
@@ -215,6 +219,8 @@ class _TherapistPublicProfileScreenState
                                       } else {
                                         return Text(
                                           snapshot.data ?? '',
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
                                             fontSize: 16,
                                             color: Colors.grey[500],
@@ -230,6 +236,8 @@ class _TherapistPublicProfileScreenState
                                         .map((specialization) =>
                                             toCapitalCase(specialization))
                                         .join(', '),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                       fontSize: 16,
                                       color: Colors.grey[500],

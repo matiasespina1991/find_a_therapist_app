@@ -46,40 +46,41 @@ Future<void> _updateTermIndex(FirebaseFirestore firestore, String aspect,
     DocumentSnapshot termDoc = await termRef.get();
 
     if (termDoc.exists) {
-      TermIndex termIndex = TermIndex.fromJson(
-          termDoc.data() as Map<String, dynamic>, termDoc.id);
+      debugPrint('Term "$aspect" exists. Updating...');
+      await _addTherapistToTerm(termDoc, therapistId, aspectType);
+    } else {
+      debugPrint('Term "$aspect" does not exist. Checking equivalents...');
+      QuerySnapshot equivalentTermsSnapshot = await firestore
+          .collection('terms-index')
+          .where('associatedTerms.equivalents', arrayContains: aspect)
+          .get();
 
-      if (aspectType == 'positive') {
-        if (!termIndex.positive
-            .any((element) => element.therapistId == therapistId)) {
-          termIndex.positive.add(TherapistIndex(therapistId: therapistId));
+      if (equivalentTermsSnapshot.docs.isNotEmpty) {
+        for (var equivalentTermDoc in equivalentTermsSnapshot.docs) {
+          debugPrint('Equivalent term found: ${equivalentTermDoc.id}');
+          await _addTherapistToTerm(equivalentTermDoc, therapistId, aspectType);
         }
       } else {
-        if (!termIndex.negative
-            .any((element) => element.therapistId == therapistId)) {
-          termIndex.negative.add(TherapistIndex(therapistId: therapistId));
-        }
+        debugPrint(
+            'No equivalent term found for "$aspect". Creating new term...');
+        TermIndex termIndex = TermIndex(
+          id: aspect,
+          term: aspect,
+          associatedTerms: {
+            'equivalents': [],
+            'related': [],
+            'subcategories': [],
+          },
+          positive: aspectType == 'positive'
+              ? [TherapistIndex(therapistId: therapistId)]
+              : [],
+          negative: aspectType == 'negative'
+              ? [TherapistIndex(therapistId: therapistId)]
+              : [],
+        );
+
+        await termRef.set(termIndex.toJson());
       }
-
-      await termRef.set(termIndex.toJson(), SetOptions(merge: true));
-    } else {
-      TermIndex termIndex = TermIndex(
-        id: termDoc.id,
-        term: aspect,
-        associatedTerms: {
-          'equivalents': [],
-          'related': [],
-          'subcategories': [],
-        },
-        positive: aspectType == 'positive'
-            ? [TherapistIndex(therapistId: therapistId)]
-            : [],
-        negative: aspectType == 'negative'
-            ? [TherapistIndex(therapistId: therapistId)]
-            : [],
-      );
-
-      await termRef.set(termIndex.toJson());
     }
 
     debugPrint(
@@ -88,4 +89,39 @@ Future<void> _updateTermIndex(FirebaseFirestore firestore, String aspect,
     debugPrint(
         'Failed to update term index for aspect $aspect, therapist $therapistId: $e');
   }
+}
+
+Future<void> _addTherapistToTerm(
+    DocumentSnapshot termDoc, String therapistId, String aspectType) async {
+  FirebaseFirestore firestore = FirestoreService.instance;
+
+  TermIndex termIndex =
+      TermIndex.fromJson(termDoc.data() as Map<String, dynamic>, termDoc.id);
+
+  if (aspectType == 'positive') {
+    if (!termIndex.positive
+        .any((element) => element.therapistId == therapistId)) {
+      termIndex.positive.add(TherapistIndex(therapistId: therapistId));
+      debugPrint(
+          'Added therapist $therapistId to positive of term ${termDoc.id}');
+    } else {
+      debugPrint(
+          'Therapist $therapistId already exists in positive of term ${termDoc.id}');
+    }
+  } else {
+    if (!termIndex.negative
+        .any((element) => element.therapistId == therapistId)) {
+      termIndex.negative.add(TherapistIndex(therapistId: therapistId));
+      debugPrint(
+          'Added therapist $therapistId to negative of term ${termDoc.id}');
+    } else {
+      debugPrint(
+          'Therapist $therapistId already exists in negative of term ${termDoc.id}');
+    }
+  }
+
+  await firestore
+      .collection('terms-index')
+      .doc(termDoc.id)
+      .set(termIndex.toJson(), SetOptions(merge: true));
 }
