@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,6 +31,8 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
   GeminiTagsResponse? _tagsResponse;
   bool isSendingRequest = false;
   bool _isListening = false;
+  bool _isAutoWriting = false;
+  Timer? _autoWriteTimer;
 
   @override
   void initState() {
@@ -45,10 +48,41 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
   void dispose() {
     _speechService.stopListening();
     _requestController.dispose();
+    _autoWriteTimer?.cancel();
     super.dispose();
   }
 
+  void _startAutoWrite() async {
+    if (_isListening) {
+      _stopListening();
+    }
+    setState(() {
+      _isAutoWriting = true;
+    });
+
+    _autoWriteTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_isAutoWriting) {
+        setState(() {
+          _requestController.text += ' auto-generated text';
+        });
+      } else {
+        timer.cancel();
+      }
+    });
+  }
+
+  void _stopAutoWrite() async {
+    setState(() {
+      _isAutoWriting = false;
+    });
+    _autoWriteTimer?.cancel();
+  }
+
   void _startListening() async {
+    if (_isAutoWriting) {
+      _stopAutoWrite();
+    }
+
     var localeService = ref.watch(localeProvider);
 
     setState(() {
@@ -115,6 +149,44 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                 maxLines: isSendingRequest ? 5 : 18,
                 enabled: !isSendingRequest,
               ),
+
+              /// Auto Writting Icon
+              Positioned(
+                right: 58,
+                bottom: 13,
+                child: InkWell(
+                    borderRadius: BorderRadius.circular(50),
+                    onTap: _isAutoWriting ? _stopAutoWrite : _startAutoWrite,
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        boxShadow: [
+                          if (_isAutoWriting)
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              blurRadius: 0,
+                              spreadRadius: 0,
+                            ),
+                        ],
+                        shape: BoxShape.circle,
+                      ),
+                      child: isSendingRequest
+                          ? const SizedBox()
+                          : Icon(
+                              Icons.auto_awesome_outlined,
+                              color: _isAutoWriting && !isDarkMode(context)
+                                  ? Colors.yellow
+                                  : isDarkMode(context) && _isAutoWriting
+                                      ? Colors.white
+                                      : isDarkMode(context) && !_isAutoWriting
+                                          ? Colors.white.withOpacity(0.7)
+                                          : Colors.black.withOpacity(0.7),
+                              size: 28,
+                            ),
+                    )),
+              ),
+
+              /// Record Icon
               Positioned(
                 right: 13,
                 bottom: 13,
@@ -133,7 +205,11 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                               _isListening ? Icons.mic : Icons.mic_none,
                               color: _isListening && !isDarkMode(context)
                                   ? Colors.white
-                                  : Colors.black.withOpacity(0.7),
+                                  : isDarkMode(context) && _isListening
+                                      ? Colors.white
+                                      : isDarkMode(context) && !_isListening
+                                          ? Colors.white.withOpacity(0.7)
+                                          : Colors.black.withOpacity(0.7),
                               size: 30,
                             ),
                     )),

@@ -24,12 +24,14 @@ class _AllTherapistsScreenState extends ConsumerState<AllTherapistsScreen> {
   late Future<List<TherapistModel>> _futureTherapists;
   int currentPage = 0;
   late PageController _pageController;
+  late NumberPaginatorController _numberPaginatorController;
 
   @override
   void initState() {
     super.initState();
     _futureTherapists = _fetchTherapists();
     _pageController = PageController(initialPage: currentPage);
+    _numberPaginatorController = NumberPaginatorController();
   }
 
   Future<List<TherapistModel>> _fetchTherapists() async {
@@ -103,6 +105,7 @@ class _AllTherapistsScreenState extends ConsumerState<AllTherapistsScreen> {
                     onPageChanged: (index) {
                       setState(() {
                         currentPage = index;
+                        _numberPaginatorController.navigateToPage(index);
                       });
                     },
                     itemCount: totalPages,
@@ -141,6 +144,7 @@ class _AllTherapistsScreenState extends ConsumerState<AllTherapistsScreen> {
                   config: const NumberPaginatorUIConfig(
                       buttonSelectedBackgroundColor: ThemeSettings.seedColor),
                   numberPages: totalPages,
+                  controller: _numberPaginatorController,
                   initialPage: currentPage,
                   onPageChange: (int index) {
                     // setState(() {
