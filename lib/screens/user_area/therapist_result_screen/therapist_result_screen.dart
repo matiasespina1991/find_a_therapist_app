@@ -22,6 +22,7 @@ class TherapistResultsScreen extends StatelessWidget {
       ignoreGlobalPadding: true,
       scrollPhysics: NeverScrollableScrollPhysics(),
       body: ListView.builder(
+        padding: EdgeInsets.only(bottom: 75, top: 10),
         itemCount: matchedTherapists.length,
         itemBuilder: (context, index) {
           final match = matchedTherapists[index];

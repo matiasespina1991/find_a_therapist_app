@@ -324,6 +324,44 @@ class _TherapistPublicProfileScreenState
                         ],
                       ),
                       const SizedBox(height: 8.0),
+                      // ElevatedButton(
+                      //   style: ElevatedButton.styleFrom(
+                      //     minimumSize: const Size(0, 32),
+                      //   ),
+                      //   onPressed: () {},
+                      //   child: Row(
+                      //     mainAxisSize: MainAxisSize.min,
+                      //     children: [
+                      //       Text(S.of(context).contactMeButton),
+                      //     ],
+                      //   ),
+                      // ),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.star,
+                            size: 16,
+                            color: Colors.amber,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            widget.therapist.score.rating.toStringAsFixed(1),
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey[700],
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            '(${widget.therapist.score.amountRatings})',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey[700],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8.0),
                       Text(S.of(context).languages,
                           style:
                               Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -497,6 +535,12 @@ class _TherapistPublicProfileScreenState
                       const SizedBox(height: 16),
                       Center(
                           child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                minimumSize: const Size(0, 38),
+                              ),
                               onPressed: () {},
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
@@ -506,7 +550,7 @@ class _TherapistPublicProfileScreenState
                                     size: 16,
                                   ),
                                   const SizedBox(width: 8),
-                                  Text(S.of(context).contactMeButton),
+                                  Text(S.of(context).messageMeButton),
                                 ],
                               ))),
                       const SizedBox(height: 20.0),

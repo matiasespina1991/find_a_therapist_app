@@ -1180,11 +1180,11 @@ class S {
     );
   }
 
-  /// `Contact me`
-  String get contactMeButton {
+  /// `Message me`
+  String get messageMeButton {
     return Intl.message(
-      'Contact me',
-      name: 'contactMeButton',
+      'Message me',
+      name: 'messageMeButton',
       desc: '',
       args: [],
     );

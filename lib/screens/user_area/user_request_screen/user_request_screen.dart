@@ -100,7 +100,10 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text('${S.of(context).tellUsWhatYouAreLookingFor}:',
-              style: Theme.of(context).textTheme.headlineSmall),
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(fontSize: 17)),
           const SizedBox(height: 20),
           Stack(
             children: [
@@ -131,13 +134,15 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                         color: _isListening ? Colors.red : Colors.transparent,
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(
-                        _isListening ? Icons.mic : Icons.mic_none,
-                        color: _isListening && !isDarkMode(context)
-                            ? Colors.white
-                            : null,
-                        size: 30,
-                      ),
+                      child: isSendingRequest
+                          ? SizedBox()
+                          : Icon(
+                              _isListening ? Icons.mic : Icons.mic_none,
+                              color: _isListening && !isDarkMode(context)
+                                  ? Colors.white
+                                  : null,
+                              size: 30,
+                            ),
                     )),
               ),
             ],
@@ -217,18 +222,21 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                     children: [
                       Flexible(
                         child: Text(
-                          S.of(context).positiveAspectsTitle,
-                          style: Theme.of(context).textTheme.headlineMedium,
+                          S.of(context).positiveAspectsTitle + ':',
+                          style:
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 4),
                   Text(
                     '(${S.of(context).positiveAspectsDescription})',
-                    style: Theme.of(context).textTheme.titleMedium,
+                    style: Theme.of(context).textTheme.titleSmall,
                   ),
-                  const SizedBox(height: 10.0),
+                  const SizedBox(height: 11.0),
                   Wrap(
                     spacing: 8.0,
                     runSpacing: 4.0,
@@ -264,15 +272,17 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                   const Divider(),
                   const SizedBox(height: 5),
                   Text(
-                    S.of(context).negativeAspectsTitle,
-                    style: Theme.of(context).textTheme.headlineMedium,
+                    S.of(context).negativeAspectsTitle + ':',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 4),
                   Text(
                     '(${S.of(context).negativeAspectsDescription})',
-                    style: Theme.of(context).textTheme.titleMedium,
+                    style: Theme.of(context).textTheme.titleSmall,
                   ),
-                  const SizedBox(height: 10.0),
+                  const SizedBox(height: 11.0),
                   Wrap(
                     spacing: 8.0,
                     runSpacing: 4.0,

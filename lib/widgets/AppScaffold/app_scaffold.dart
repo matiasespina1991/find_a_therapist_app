@@ -255,7 +255,9 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
                 !DebugConfig.forceDebugScreen &&
                 !DebugConfig.bypassLoginScreen,
             child: Padding(
-              padding: ThemeSettings.scaffoldPadding,
+              padding: widget.ignoreGlobalPadding
+                  ? EdgeInsets.zero
+                  : (widget.scaffoldPadding ?? ThemeSettings.scaffoldPadding),
               child: widget.body,
             ),
           ),

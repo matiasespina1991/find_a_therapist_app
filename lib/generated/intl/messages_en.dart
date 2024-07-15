@@ -41,7 +41,6 @@ class MessageLookup extends MessageLookupByLibrary {
         "chipThreeLabel": MessageLookupByLibrary.simpleMessage("Chip Three"),
         "chipTwoLabel": MessageLookupByLibrary.simpleMessage("Chip Two"),
         "chipsSectionTitle": MessageLookupByLibrary.simpleMessage("Chips"),
-        "contactMeButton": MessageLookupByLibrary.simpleMessage("Contact me"),
         "continueButton": MessageLookupByLibrary.simpleMessage("Continue"),
         "darkMode": MessageLookupByLibrary.simpleMessage("Dark Mode"),
         "elevatedButtonLabel":
@@ -128,6 +127,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Login successful!"),
         "logoutButton": MessageLookupByLibrary.simpleMessage("Logout"),
         "meetingType": MessageLookupByLibrary.simpleMessage("Meeting type"),
+        "messageMeButton": MessageLookupByLibrary.simpleMessage("Message me"),
         "negativeAspectsDescription": MessageLookupByLibrary.simpleMessage(
             "What you don\'t want your therapist bring or treat"),
         "negativeAspectsTitle":

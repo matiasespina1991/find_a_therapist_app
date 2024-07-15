@@ -67,9 +67,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               SizedBox(height: 20),
               Text(
                 S.of(context).changeLanguageButton,
-                style: Theme.of(context).textTheme.titleMedium,
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 3),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -79,7 +78,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     },
                     child: const Text(
                       '🇺🇸',
-                      style: TextStyle(fontSize: 30),
+                      style: TextStyle(fontSize: 26),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -91,7 +90,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     },
                     child: const Text(
                       '🇪🇸',
-                      style: TextStyle(fontSize: 30),
+                      style: TextStyle(fontSize: 26),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -103,7 +102,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     },
                     child: const Text(
                       '🇩🇪',
-                      style: TextStyle(fontSize: 30),
+                      style: TextStyle(fontSize: 26),
                     ),
                   ),
                 ],

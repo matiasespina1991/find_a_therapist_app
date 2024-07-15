@@ -114,7 +114,7 @@
 
              "score": "Bewertung",
            "professionalCertificates": "Berufszertifikate",
-           "contactMeButton": "Kontaktiere mich",
+           "messageMeButton": "Nachricht senden",
             "settingsScreenTitle": "Einstellungen",
             "changeLanguageButton": "Sprache ändern",
             "remote": "Remote",
