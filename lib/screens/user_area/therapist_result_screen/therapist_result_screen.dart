@@ -16,6 +16,7 @@ class TherapistResultsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
+      centerTitle: true,
       useTopAppBar: true,
       showScreenTitleInAppBar: true,
       ignoreGlobalPadding: true,

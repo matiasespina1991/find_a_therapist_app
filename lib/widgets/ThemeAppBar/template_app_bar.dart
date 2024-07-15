@@ -31,6 +31,7 @@ class ThemeAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: Text(
         title ?? '',
         style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              fontSize: 19,
               color: _isDarkMode
                   ? ThemeSettings.appbarOnBackgroundColor.darkModePrimary
                   : ThemeSettings.appbarOnBackgroundColor.lightModePrimary,
