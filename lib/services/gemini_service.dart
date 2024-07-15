@@ -195,4 +195,57 @@ Expected Output: A structured object tags with two arrays, positive and negative
       return text;
     }
   }
+
+  Future<String> generateAutoWriteText({required String language}) async {
+    String textlanguage = 'english';
+
+    if (language == 'es') {
+      textlanguage = 'spanish';
+    } else if (language == 'fr') {
+      textlanguage = 'french';
+    } else if (language == 'de') {
+      textlanguage = 'german';
+    }
+
+    final model = google_ai.GenerativeModel(
+      model: 'gemini-1.5-flash-latest',
+      apiKey: apiKey,
+    );
+
+    final prompt = '''
+Generate a detailed therapy request in ${textlanguage} language for an individual looking for a therapist. The request should include personal details (dont write '[your age] [your gender identity] [your race/ethnicity]', you invent the name and details), specific challenges, and preferences for the therapist and therapy methods. The text should be around 300 characters. You should only write one, not two or three. 
+
+Example: My name is John Doe, and I am a black individual living in Germany. I've been struggling to find a therapist who understands my cultural background and the unique challenges I face. Specifically, I am looking for a black therapist who can relate to my experiences and provide culturally sensitive therapy. I've encountered issues such as racial discrimination, microaggressions, and feelings of isolation. Additionally, I have faced difficulties with anxiety, low self-esteem, and trust issues stemming from past relationships. I am currently very heartbroken due to a recent breakup with my ex, which has exacerbated my feelings of depression and loneliness. Despite my efforts, it has been incredibly difficult to find a black therapist in Germany who meets these criteria.
+
+I have also been experiencing significant stress and burnout from work, which has affected my overall well-being and ability to maintain a healthy work-life balance. My sleep patterns are irregular, often suffering from insomnia, which further impacts my mental health. I've also struggled with body image issues and disordered eating, leading to a negative self-perception and constant worry about my appearance. These compounded issues have made it challenging to engage in social activities, and I often feel socially anxious and withdrawn.
+
+I am interested in therapies that focus on overcoming racial trauma, building self-esteem, and fostering personal growth. I also have a keen interest in astrology, and I find Jungian analysis very insightful. However, my previous experiences with therapy have left me feeling skeptical and uncertain about the effectiveness of traditional methods. I am looking for a therapist who can offer alternative approaches and help me navigate my interest in non-traditional therapeutic practices. I am particularly drawn to therapy sessions that incorporate elements of spirituality and holistic healing. It is crucial for me to find a therapist who can understand and address my multifaceted challenges and provide a compassionate and effective treatment plan.
+
+There are also certain types of therapists and therapeutic approaches I would like to avoid. For instance, I do not want a therapist who strictly follows cognitive-behavioral therapy (CBT), as I have found it too rigid and not in alignment with my needs. I also prefer not to work with a psychiatrist, as I am not looking for medication-based treatment. I am uncomfortable with therapists who focus heavily on psychoanalysis or Freudian theories, as I do not resonate with those methods. Additionally, I would like to avoid therapists who dismiss or are skeptical of holistic and spiritual approaches to mental health. It is also important to me that my therapist does not have a clinical, impersonal approach, as I value a more empathetic and personalized therapeutic relationship.
+ ''';
+
+    try {
+      final Iterable<google_ai.Content> content = [
+        google_ai.Content.text(prompt),
+      ];
+      final google_ai.GenerateContentResponse response =
+          await model.generateContent(content);
+
+      if (response.candidates.isEmpty) {
+        return '';
+      }
+
+      String? responseText;
+      for (var candidate in response.candidates) {
+        if (candidate.text != null && candidate.text!.isNotEmpty) {
+          responseText = candidate.text;
+          break;
+        }
+      }
+
+      return responseText ?? '';
+    } catch (e) {
+      return '';
+    }
+  }
 }

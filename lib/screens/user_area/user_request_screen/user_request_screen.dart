@@ -31,8 +31,11 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
   GeminiTagsResponse? _tagsResponse;
   bool isSendingRequest = false;
   bool _isListening = false;
+  bool _isImprovingTranscription = false;
   bool _isAutoWriting = false;
   Timer? _autoWriteTimer;
+
+  String listenedText = '';
 
   @override
   void initState() {
@@ -60,13 +63,20 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
       _isAutoWriting = true;
     });
 
-    _autoWriteTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_isAutoWriting) {
+    final localeService = ref.read(localeProvider);
+
+    final newText = await _geminiService.generateAutoWriteText(
+        language: localeService.locale.languageCode);
+    int charIndex = 0;
+
+    _autoWriteTimer = Timer.periodic(const Duration(milliseconds: 20), (timer) {
+      if (_isAutoWriting && charIndex < newText.length) {
         setState(() {
-          _requestController.text += ' auto-generated text';
+          _requestController.text += newText[charIndex];
         });
+        charIndex++;
       } else {
-        timer.cancel();
+        _stopAutoWrite();
       }
     });
   }
@@ -94,29 +104,34 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
       localeId: localeService.locale.languageCode,
       onResult: (text) {
         setState(() {
+          listenedText = text;
           _requestController.text = _requestLastText + text;
         });
       },
     );
+    setState(() {
+      listenedText = '';
+    });
   }
 
   void _stopListening() async {
     _speechService.stopListening();
     setState(() => _isListening = false);
 
-    if (_requestController.text.isNotEmpty) {
+    if (_requestController.text.isNotEmpty && listenedText.length > 0) {
       await _improveTranscription(_requestController.text);
     }
   }
 
   Future<void> _improveTranscription(String text) async {
     setState(() {
-      isSendingRequest = true;
+      _isImprovingTranscription = true;
     });
+
     final improvedText = await _geminiService.improveTranscription(text);
     setState(() {
       _requestController.text = improvedText;
-      isSendingRequest = false;
+      _isImprovingTranscription = false;
       _requestLastText = improvedText;
     });
   }
@@ -147,7 +162,9 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                   border: const OutlineInputBorder(),
                 ),
                 maxLines: isSendingRequest ? 5 : 18,
-                enabled: !isSendingRequest,
+                enabled: !isSendingRequest ||
+                    !_isImprovingTranscription ||
+                    _isAutoWriting,
               ),
 
               /// Auto Writting Icon
@@ -160,6 +177,9 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
+                        color: _isAutoWriting && isDarkMode(context)
+                            ? Colors.white24
+                            : Colors.transparent,
                         boxShadow: [
                           if (_isAutoWriting)
                             BoxShadow(
@@ -173,7 +193,9 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                       child: isSendingRequest
                           ? const SizedBox()
                           : Icon(
-                              Icons.auto_awesome_outlined,
+                              _isAutoWriting
+                                  ? Icons.auto_awesome
+                                  : Icons.auto_awesome_outlined,
                               color: _isAutoWriting && !isDarkMode(context)
                                   ? Colors.yellow
                                   : isDarkMode(context) && _isAutoWriting
@@ -225,12 +247,16 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                     minimumSize: const Size(120, ThemeSettings.buttonsHeight),
                   ),
                   onPressed: isSendingRequest ? null : _sendRequest,
-                  child: isSendingRequest
+                  child: isSendingRequest ||
+                          _isImprovingTranscription ||
+                          _isAutoWriting
                       ? SizedBox(
                           height: 20,
                           width: 20,
                           child: LoadingCircle(
-                            color: Colors.white.withOpacity(0.9),
+                            color: isDarkMode(context)
+                                ? Colors.black.withOpacity(0.8)
+                                : Colors.white.withOpacity(0.8),
                           ),
                         )
                       : Text(S.of(context).sendButton)),
