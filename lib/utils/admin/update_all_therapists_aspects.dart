@@ -20,9 +20,7 @@ Future<void> updateALLTherapistAspects() async {
       var data = doc.data() as Map<String, dynamic>;
       TherapistModel therapist = TherapistModel.fromJson(data, doc.id);
 
-      String combinedText = (therapist.therapistInfo.publicPresentation ?? '') +
-          ' ' +
-          (therapist.therapistInfo.privateNotes ?? '');
+      String combinedText = '${therapist.therapistInfo.publicPresentation ?? ''} ${therapist.therapistInfo.privateNotes ?? ''}';
 
       // Call Gemini service to get tags
       GeminiTagsResponse geminiResponse =

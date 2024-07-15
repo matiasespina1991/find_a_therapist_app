@@ -1,7 +1,7 @@
-import 'package:findatherapistapp/utils/ui/is_dark_mode.dart';
 import 'package:flutter/material.dart';
 
 import '../../app_settings/theme_settings.dart';
+import '../../utils/ui/is_dark_mode.dart';
 
 class ThemeAppBar extends StatelessWidget implements PreferredSizeWidget {
   const ThemeAppBar(
@@ -19,11 +19,11 @@ class ThemeAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final _isDarkMode = isDarkMode(context);
-    final _iconColor = _isDarkMode
+    final iconColor = _isDarkMode
         ? ThemeSettings.appbarOnBackgroundColor.darkModePrimary
         : ThemeSettings.appbarOnBackgroundColor.lightModePrimary;
     return AppBar(
-      iconTheme: IconThemeData(color: _iconColor),
+      iconTheme: IconThemeData(color: iconColor),
       centerTitle: centerTitle,
       foregroundColor: _isDarkMode
           ? ThemeSettings.appbarOnBackgroundColor.darkModePrimary

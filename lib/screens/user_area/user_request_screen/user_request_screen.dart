@@ -7,7 +7,6 @@ import 'package:findatherapistapp/services/gemini_service.dart';
 import 'package:findatherapistapp/services/speech_to_text_service.dart';
 import '../../../app_settings/theme_settings.dart';
 import '../../../models/gemini_tags_response_model.dart';
-import '../../../models/therapist_model.dart';
 import '../../../providers/providers_all.dart';
 import '../../../utils/debug/error_code_to_text.dart';
 import '../../../utils/ui/is_dark_mode.dart';
@@ -135,7 +134,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                         shape: BoxShape.circle,
                       ),
                       child: isSendingRequest
-                          ? SizedBox()
+                          ? const SizedBox()
                           : Icon(
                               _isListening ? Icons.mic : Icons.mic_none,
                               color: _isListening && !isDarkMode(context)
@@ -222,7 +221,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                     children: [
                       Flexible(
                         child: Text(
-                          S.of(context).positiveAspectsTitle + ':',
+                          '${S.of(context).positiveAspectsTitle}:',
                           style:
                               Theme.of(context).textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.bold,
@@ -272,7 +271,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                   const Divider(),
                   const SizedBox(height: 5),
                   Text(
-                    S.of(context).negativeAspectsTitle + ':',
+                    '${S.of(context).negativeAspectsTitle}:',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),

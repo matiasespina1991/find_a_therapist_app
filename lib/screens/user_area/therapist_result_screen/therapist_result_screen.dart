@@ -9,9 +9,9 @@ class TherapistResultsScreen extends StatelessWidget {
   final List<Map<String, dynamic>> matchedTherapists;
 
   const TherapistResultsScreen({
-    Key? key,
+    super.key,
     required this.matchedTherapists,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -20,9 +20,9 @@ class TherapistResultsScreen extends StatelessWidget {
       useTopAppBar: true,
       showScreenTitleInAppBar: true,
       ignoreGlobalPadding: true,
-      scrollPhysics: NeverScrollableScrollPhysics(),
+      scrollPhysics: const NeverScrollableScrollPhysics(),
       body: ListView.builder(
-        padding: EdgeInsets.only(bottom: 75, top: 10),
+        padding: const EdgeInsets.only(bottom: 75, top: 10),
         itemCount: matchedTherapists.length,
         itemBuilder: (context, index) {
           final match = matchedTherapists[index];

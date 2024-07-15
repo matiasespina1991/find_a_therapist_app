@@ -9,11 +9,11 @@ class TherapistListCard extends StatelessWidget {
   final double? matchScore;
 
   const TherapistListCard({
-    Key? key,
+    super.key,
     required this.therapist,
     required this.onTap,
-    this.matchScore = 0.0,
-  }) : super(key: key);
+    this.matchScore,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -238,9 +238,9 @@ class TherapistListCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
               decoration: BoxDecoration(
                   color: ThemeSettings.seedColor.withOpacity(0.8),
-                  borderRadius: BorderRadius.only(
-                    topRight: const Radius.circular(10),
-                    bottomLeft: const Radius.circular(25),
+                  borderRadius: const BorderRadius.only(
+                    topRight: Radius.circular(10),
+                    bottomLeft: Radius.circular(25),
                   )),
               child: Padding(
                 padding: const EdgeInsets.only(

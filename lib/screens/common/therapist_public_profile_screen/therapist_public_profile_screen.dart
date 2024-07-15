@@ -566,8 +566,7 @@ class _TherapistPublicProfileScreenState
                                 subtitle: Text(
                                     '${certificate.institution}, ${certificate.yearObtained}'),
                                 leading: Image.network(certificate.photoUrl),
-                              ))
-                          .toList(),
+                              )),
                     ],
                   ),
                 ),

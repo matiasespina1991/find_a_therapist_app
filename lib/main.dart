@@ -1,17 +1,13 @@
 import 'package:country_picker/country_picker.dart';
 import 'package:findatherapistapp/routes/routes.dart';
-import 'package:findatherapistapp/screens/admin/debug_screen/_print_all_terms_therapists_screen.dart';
-import 'package:findatherapistapp/screens/common/home_screen/home_screen.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_localized_locales/flutter_localized_locales.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:findatherapistapp/providers/providers_all.dart';
-import 'app_settings/app_general_settings.dart';
 import 'app_settings/auth_config.dart';
 import 'globals.dart';
 import 'app_settings/app_info.dart';
