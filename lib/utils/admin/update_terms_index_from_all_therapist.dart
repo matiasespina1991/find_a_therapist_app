@@ -98,10 +98,13 @@ Future<void> _addTherapistToTerm(
   TermIndex termIndex =
       TermIndex.fromJson(termDoc.data() as Map<String, dynamic>, termDoc.id);
 
+  bool needsUpdate = false;
+
   if (aspectType == 'positive') {
     if (!termIndex.positive
         .any((element) => element.therapistId == therapistId)) {
       termIndex.positive.add(TherapistIndex(therapistId: therapistId));
+      needsUpdate = true;
       debugPrint(
           'Added therapist $therapistId to positive of term ${termDoc.id}');
     } else {
@@ -112,6 +115,7 @@ Future<void> _addTherapistToTerm(
     if (!termIndex.negative
         .any((element) => element.therapistId == therapistId)) {
       termIndex.negative.add(TherapistIndex(therapistId: therapistId));
+      needsUpdate = true;
       debugPrint(
           'Added therapist $therapistId to negative of term ${termDoc.id}');
     } else {
@@ -120,8 +124,10 @@ Future<void> _addTherapistToTerm(
     }
   }
 
-  await firestore
-      .collection('terms-index')
-      .doc(termDoc.id)
-      .set(termIndex.toJson(), SetOptions(merge: true));
+  if (needsUpdate) {
+    await firestore
+        .collection('terms-index')
+        .doc(termDoc.id)
+        .set(termIndex.toJson(), SetOptions(merge: true));
+  }
 }
