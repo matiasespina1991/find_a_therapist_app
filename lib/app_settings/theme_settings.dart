@@ -46,7 +46,7 @@ class ThemeSettings {
     y: 390,
     blur: 80,
     active: true,
-    opacity: 0.8,
+    opacity: 0.6,
   );
 
   static const ternaryLottieBackgroundAnimation = LottieAnimationBackground(

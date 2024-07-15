@@ -161,7 +161,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                           height: 20,
                           width: 20,
                           child: LoadingCircle(
-                            color: Theme.of(context).colorScheme.onPrimary,
+                            color: Colors.white.withOpacity(0.9),
                           ),
                         )
                       : Text(S.of(context).sendButton)),
@@ -315,7 +315,6 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                           ],
                   ),
                   const SizedBox(height: 5),
-                  const Divider(),
                 ],
               ),
           ],
