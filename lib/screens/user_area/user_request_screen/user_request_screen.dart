@@ -110,12 +110,6 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                 controller: _requestController,
                 decoration: InputDecoration(
                   hintText: S.of(context).requestTextFieldHintText,
-                  hintStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onSurface
-                            .withOpacity(0.5),
-                      ),
                   border: const OutlineInputBorder(),
                 ),
                 maxLines: isSendingRequest ? 5 : 18,
@@ -139,7 +133,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                               _isListening ? Icons.mic : Icons.mic_none,
                               color: _isListening && !isDarkMode(context)
                                   ? Colors.white
-                                  : null,
+                                  : Colors.black.withOpacity(0.7),
                               size: 30,
                             ),
                     )),
@@ -152,7 +146,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
             children: <Widget>[
               ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(130, ThemeSettings.buttonsHeight),
+                    minimumSize: const Size(120, ThemeSettings.buttonsHeight),
                   ),
                   onPressed: isSendingRequest ? null : _sendRequest,
                   child: isSendingRequest

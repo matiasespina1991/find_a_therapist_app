@@ -100,6 +100,7 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
       child: Scaffold(
         appBar: (AppGeneralSettings.useTopAppBar || widget.useTopAppBar)
             ? ThemeAppBar(
+                appBarHeight: ThemeSettings.appBarHeight,
                 centerTitle: widget.centerTitle,
                 actions: widget.actions,
                 title: widget.showScreenTitleInAppBar ? widget.appBarTitle : '',

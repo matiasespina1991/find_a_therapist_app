@@ -7,8 +7,8 @@ class InputTheme {
     return InputDecorationTheme(
       hintStyle: TextStyle(
         color: brightness == Brightness.light
-            ? ThemeSettings.primaryTextColor.lightModePrimary
-            : ThemeSettings.primaryTextColor.darkModePrimary,
+            ? ThemeSettings.primaryTextColor.lightModePrimary.withOpacity(0.4)
+            : ThemeSettings.primaryTextColor.darkModePrimary.withOpacity(0.4),
       ),
       labelStyle: TextStyle(
         color: brightness == Brightness.light

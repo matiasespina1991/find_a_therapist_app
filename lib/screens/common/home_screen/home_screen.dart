@@ -43,16 +43,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         child: Column(
           children: <Widget>[
             const SizedBox(
-              height: 60,
+              height: 48,
             ),
             Lottie.asset(
               'lib/assets/lottie_animations/animation2.json',
               width: double.infinity,
-              height: 200,
+              height: 190,
               fit: BoxFit.cover,
             ),
             const SizedBox(
-              height: 210,
+              height: 197,
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 27),

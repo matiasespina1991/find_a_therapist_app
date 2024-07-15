@@ -13,6 +13,7 @@ class ThemeSettings {
     left: 17,
     right: 17,
   );
+  static double appBarHeight = 60;
   static const Color seedColor = Colors.blueGrey;
   static const bool forceSeedColor = false;
   static const String defaultScrollPhysics =
@@ -21,7 +22,7 @@ class ThemeSettings {
   static const String textInputBorderStyle = 'border'; // 'border' / 'no-border'
   static const bool glassTextInputs = true;
   static const double buttonsElevation = 1.1;
-  static const double buttonsHeight = 47;
+  static const double buttonsHeight = 45;
   static const double buttonsOpacity = 0.9;
   static const String noInternetNotificationType =
       'modal'; // 'snackbar' / 'modal' / 'dialog'
@@ -67,7 +68,7 @@ class ThemeSettings {
   );
 
   static const ThemeColors appBarBackgroundColor = ThemeColors(
-    lightModePrimary: Colors.blueGrey,
+    lightModePrimary: Colors.black12,
     darkModePrimary: Color(0xFF121212),
   );
 
@@ -106,9 +107,9 @@ class ThemeSettings {
     darkModePrimary: Colors.white,
   );
 
-  ///AppBar text & background color
+  ///AppBar text & icons color
   static const ThemeColors appbarOnBackgroundColor = ThemeColors(
-    lightModePrimary: Colors.white,
+    lightModePrimary: Colors.black38,
     darkModePrimary: Colors.white,
   );
 

@@ -5,6 +5,7 @@ import 'package:findatherapistapp/screens/common/not_found_screen/not_found_scre
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 
+import '../screens/common/all_therapists_screen/all_therapists_screen.dart';
 import '../screens/common/home_screen/home_screen.dart';
 import '../screens/common/login_screen/login_screen.dart';
 import '../screens/common/settings_screen/settings_screen.dart';
@@ -31,6 +32,12 @@ class Routes {
     path: '/settings-screen',
     name: 'Settings Screen',
     builder: (context) => const SettingsScreen(),
+  );
+
+  static RouteConfig allTherapistsScreen = RouteConfig(
+    path: '/all-therapists',
+    name: 'All Therapists Screen',
+    builder: (context) => const AllTherapistsScreen(),
   );
 
   static RouteConfig notFoundScreen = RouteConfig(
@@ -85,6 +92,7 @@ class Routes {
       notFoundScreen,
       loadingScreen,
       debugScreen,
+      allTherapistsScreen
     ];
     return allRoutes
         .map((routeConfig) => GoRoute(

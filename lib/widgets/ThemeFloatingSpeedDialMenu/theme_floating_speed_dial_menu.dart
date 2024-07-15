@@ -74,6 +74,16 @@ class _ThemeFloatingSpeedDialMenuState
           },
         ),
         SpeedDialChild(
+          child: Icon(
+            Icons.list_alt,
+          ),
+          label: S.of(context).allTherapists,
+          labelStyle: TextStyle(fontSize: childMenuFontSize),
+          onTap: () {
+            context.push(Routes.allTherapistsScreen.path);
+          },
+        ),
+        SpeedDialChild(
           child: const Icon(Icons.logout),
           label: S.of(context).logoutButton,
           labelStyle: TextStyle(fontSize: childMenuFontSize),

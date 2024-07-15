@@ -1239,6 +1239,16 @@ class S {
       args: [],
     );
   }
+
+  /// `All therapists`
+  String get allTherapists {
+    return Intl.message(
+      'All therapists',
+      name: 'allTherapists',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

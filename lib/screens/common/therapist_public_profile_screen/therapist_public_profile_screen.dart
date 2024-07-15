@@ -51,32 +51,34 @@ class _TherapistPublicProfileScreenState
 
         return AppScaffold(
           actions: [
-            IconButton(
-              style: ButtonStyle(
-                backgroundColor: WidgetStateProperty.all(
-                  (_themeProvider.themeMode == ThemeMode.light &&
-                          !translateToUserDefinedLanguage)
-                      ? Colors.transparent
-                      : (_themeProvider.themeMode == ThemeMode.dark &&
-                              !translateToUserDefinedLanguage)
-                          ? Colors.black.withOpacity(0.1)
-                          : Colors.white.withOpacity(0.1),
+            if (Localizations.localeOf(context).languageCode.toLowerCase() !=
+                'en')
+              IconButton(
+                style: ButtonStyle(
+                  backgroundColor: WidgetStateProperty.all(
+                    (_themeProvider.themeMode == ThemeMode.light &&
+                            !translateToUserDefinedLanguage)
+                        ? Colors.transparent
+                        : (_themeProvider.themeMode == ThemeMode.dark &&
+                                !translateToUserDefinedLanguage)
+                            ? Colors.black.withOpacity(0.1)
+                            : Colors.white.withOpacity(0.1),
+                  ),
                 ),
+                icon: const Icon(
+                  Icons.g_translate,
+                ),
+                color: (_themeProvider.themeMode == ThemeMode.light &&
+                        translateToUserDefinedLanguage)
+                    ? Colors.white
+                    : ThemeSettings.appbarOnBackgroundColor.lightModePrimary,
+                onPressed: () {
+                  setState(() {
+                    translateToUserDefinedLanguage =
+                        !translateToUserDefinedLanguage;
+                  });
+                },
               ),
-              icon: const Icon(
-                Icons.g_translate,
-              ),
-              color: (_themeProvider.themeMode == ThemeMode.light &&
-                      translateToUserDefinedLanguage)
-                  ? Colors.white
-                  : Colors.white,
-              onPressed: () {
-                setState(() {
-                  translateToUserDefinedLanguage =
-                      !translateToUserDefinedLanguage;
-                });
-              },
-            ),
           ],
           useTopAppBar: true,
           showScreenTitleInAppBar: false,
@@ -280,10 +282,9 @@ class _TherapistPublicProfileScreenState
                                         return Text(
                                           widget.therapist.therapistInfo.bio,
                                           style: TextStyle(
-                                            fontSize: 15.5,
+                                            fontSize: 15,
                                             color: Colors.grey[700],
                                             fontStyle: FontStyle.italic,
-                                            fontFamily: 'OpenSans',
                                           ),
                                           maxLines: 3,
                                           overflow: TextOverflow.ellipsis,
@@ -295,10 +296,9 @@ class _TherapistPublicProfileScreenState
                                         return Text(
                                           snapshot.data ?? '',
                                           style: TextStyle(
-                                            fontSize: 15.5,
+                                            fontSize: 15,
                                             color: Colors.grey[700],
                                             fontStyle: FontStyle.italic,
-                                            fontFamily: 'OpenSans',
                                           ),
                                           maxLines: 3,
                                           overflow: TextOverflow.ellipsis,
@@ -310,10 +310,9 @@ class _TherapistPublicProfileScreenState
                                   Text(
                                     widget.therapist.therapistInfo.bio,
                                     style: TextStyle(
-                                      fontSize: 15.5,
+                                      fontSize: 15,
                                       color: Colors.grey[700],
                                       fontStyle: FontStyle.italic,
-                                      fontFamily: 'OpenSans',
                                     ),
                                     maxLines: 3,
                                     overflow: TextOverflow.ellipsis,

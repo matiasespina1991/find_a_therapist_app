@@ -24,6 +24,7 @@ class TherapistListCard extends StatelessWidget {
             vertical: ThemeSettings.cardVerticalSpacing,
             horizontal: 6,
           ),
+          constraints: const BoxConstraints(minHeight: 130),
           decoration: BoxDecoration(
             color: Theme.of(context).cardColor,
             boxShadow: [

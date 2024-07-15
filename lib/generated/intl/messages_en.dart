@@ -25,6 +25,7 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "_locale": MessageLookupByLibrary.simpleMessage("en"),
+        "allTherapists": MessageLookupByLibrary.simpleMessage("All therapists"),
         "applyAsTherapistButton":
             MessageLookupByLibrary.simpleMessage("Apply as therapist"),
         "back": MessageLookupByLibrary.simpleMessage("Back"),

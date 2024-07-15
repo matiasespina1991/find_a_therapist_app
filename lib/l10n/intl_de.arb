@@ -119,5 +119,6 @@
             "changeLanguageButton": "Sprache ändern",
             "remote": "Remote",
             "presential": "Präsent",
-            "meetingType": "Treffen"
+            "meetingType": "Treffen",
+            "allTherapists": "Alle Therapeuten"
 }

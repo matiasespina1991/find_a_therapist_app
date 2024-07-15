@@ -23,11 +23,13 @@ class ThemeAppBar extends StatelessWidget implements PreferredSizeWidget {
         ? ThemeSettings.appbarOnBackgroundColor.darkModePrimary
         : ThemeSettings.appbarOnBackgroundColor.lightModePrimary;
     return AppBar(
+      toolbarHeight: appBarHeight ?? kToolbarHeight,
       iconTheme: IconThemeData(color: iconColor),
+
       centerTitle: centerTitle,
-      foregroundColor: _isDarkMode
-          ? ThemeSettings.appbarOnBackgroundColor.darkModePrimary
-          : ThemeSettings.appbarOnBackgroundColor.lightModePrimary,
+      // backgroundColor: _isDarkMode
+      //     ? Colors.red.withOpacity(0.1)
+      //     : ThemeSettings.appBarBackgroundColor.lightModePrimary,
       title: Text(
         title ?? '',
         style: Theme.of(context).textTheme.titleLarge?.copyWith(
