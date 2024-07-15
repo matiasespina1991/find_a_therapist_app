@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:findatherapistapp/app_settings/app_info.dart';
 import 'package:findatherapistapp/utils/admin/add_terms_as_subcategory.dart';
 import 'package:findatherapistapp/utils/admin/add_therapist.dart';
@@ -14,6 +17,7 @@ import 'package:findatherapistapp/widgets/AppScaffold/app_scaffold.dart';
 import '../../../generated/l10n.dart';
 import '../../../providers/providers_all.dart';
 import '../../../routes/routes.dart';
+import '../../../services/firestore_service.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -113,23 +117,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ],
             ),
-            ElevatedButton(
-                onPressed: () {
-                  // updateTermsIndex();
-
-                  // consolidateTerms('cognitive-behavioral-techniques', [
-                  //   'cognitive-strategies',
-                  // ]);
-
-                  //
-                  // addTermsAsSubcategory('insomnia', [
-                  //   'anxiety',
-                  // ]);
-                  logAllTherapists();
-
-                  // family-counseling, family-dynamics, family-support, family-therapy
-                },
-                child: Text('Test')),
+            // ElevatedButton(
+            //     onPressed: () {
+            //       // updateTermsIndex();
+            //
+            //       // consolidateTerms('cognitive-behavioral-techniques', [
+            //       //   'cognitive-strategies',
+            //       // ]);
+            //
+            //       //
+            //       // addTermsAsSubcategory('insomnia', [
+            //       //   'anxiety',
+            //       // ]);
+            //       // logAllTherapists();
+            //
+            //       // family-counseling, family-dynamics, family-support, family-therapy
+            //     },
+            //     child: Text('Test')),
           ],
         ),
       ),

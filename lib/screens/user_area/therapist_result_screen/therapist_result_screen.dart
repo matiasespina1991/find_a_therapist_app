@@ -27,8 +27,6 @@ class TherapistResultsScreen extends StatelessWidget {
           final therapist = match['therapist'] as TherapistModel;
           final matchScore = match['matchScore'] as double;
 
-          if (matchScore <= 0) return Container();
-
           return TherapistListCard(
             therapist: therapist,
             onTap: () {

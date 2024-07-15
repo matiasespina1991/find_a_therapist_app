@@ -116,5 +116,8 @@
            "professionalCertificates": "Berufszertifikate",
            "contactMeButton": "Kontaktiere mich",
             "settingsScreenTitle": "Einstellungen",
-            "changeLanguageButton": "Sprache ändern"
+            "changeLanguageButton": "Sprache ändern",
+            "remote": "Remote",
+            "presential": "Präsent",
+            "meetingType": "Treffen"
 }

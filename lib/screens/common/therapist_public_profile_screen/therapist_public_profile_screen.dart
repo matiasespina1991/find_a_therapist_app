@@ -337,7 +337,49 @@ class _TherapistPublicProfileScreenState
                             .join(', '),
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
-                      const SizedBox(height: 16.0),
+                      const SizedBox(height: 10.0),
+                      if (widget.therapist.therapistInfo.meetingType.remote !=
+                              false ||
+                          widget.therapist.therapistInfo.meetingType
+                                  .presential !=
+                              false)
+                        Text(S.of(context).meetingType,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                )),
+                      if (widget.therapist.therapistInfo.meetingType.remote !=
+                              false ||
+                          widget.therapist.therapistInfo.meetingType
+                                  .presential !=
+                              false)
+                        Wrap(
+                          children: [
+                            if (widget
+                                .therapist.therapistInfo.meetingType.remote)
+                              Text(
+                                S.of(context).remote,
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                            if (widget.therapist.therapistInfo.meetingType
+                                    .remote &&
+                                widget.therapist.therapistInfo.meetingType
+                                    .presential)
+                              Text(
+                                ', ',
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                            if (widget
+                                .therapist.therapistInfo.meetingType.presential)
+                              Text(
+                                S.of(context).presential,
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                          ],
+                        ),
+                      const SizedBox(height: 10.0),
                       Text(
                         S.of(context).therapistAboutMe,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -396,7 +438,7 @@ class _TherapistPublicProfileScreenState
                                                 BorderRadius.circular(5),
                                           ),
                                           child: Text(
-                                            '#${aspect}',
+                                            '#$aspect',
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .bodyMedium,
@@ -423,7 +465,7 @@ class _TherapistPublicProfileScreenState
                                                   BorderRadius.circular(5),
                                             ),
                                             child: Text(
-                                              '#${aspect}',
+                                              '#$aspect',
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .bodyMedium,

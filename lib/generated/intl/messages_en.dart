@@ -127,6 +127,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "loginSuccessfulMessage":
             MessageLookupByLibrary.simpleMessage("Login successful!"),
         "logoutButton": MessageLookupByLibrary.simpleMessage("Logout"),
+        "meetingType": MessageLookupByLibrary.simpleMessage("Meeting type"),
         "negativeAspectsDescription": MessageLookupByLibrary.simpleMessage(
             "What you don\'t want your therapist bring or treat"),
         "negativeAspectsTitle":
@@ -157,8 +158,10 @@ class MessageLookup extends MessageLookupByLibrary {
             "What you expect your therapist to treat"),
         "positiveAspectsTitle":
             MessageLookupByLibrary.simpleMessage("Positive aspects"),
+        "presential": MessageLookupByLibrary.simpleMessage("Presential"),
         "professionalCertificates":
             MessageLookupByLibrary.simpleMessage("Professional Certificates"),
+        "remote": MessageLookupByLibrary.simpleMessage("Remote"),
         "requestTextFieldHintText": MessageLookupByLibrary.simpleMessage(
             "Enter your request here. Give us as much information as possible."),
         "score": MessageLookupByLibrary.simpleMessage("Score"),

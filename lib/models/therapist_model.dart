@@ -140,6 +140,7 @@ class TherapistInfo {
   List<String> spokenLanguages;
   List<ProfessionalCertificate> professionalCertificates;
   ProfilePictureUrl profilePictureUrl;
+  MeetingType meetingType;
 
   TherapistInfo({
     required this.bio,
@@ -153,6 +154,7 @@ class TherapistInfo {
     required this.spokenLanguages,
     required this.professionalCertificates,
     required this.profilePictureUrl,
+    required this.meetingType,
   });
 
   factory TherapistInfo.fromJson(Map<String, dynamic> json) {
@@ -170,6 +172,7 @@ class TherapistInfo {
           .map((i) => ProfessionalCertificate.fromJson(i))
           .toList(),
       profilePictureUrl: ProfilePictureUrl.fromJson(json['profilePictureUrl']),
+      meetingType: MeetingType.fromJson(json['meetingType']),
     );
   }
 
@@ -187,6 +190,7 @@ class TherapistInfo {
       'professionalCertificates':
           professionalCertificates.map((i) => i.toJson()).toList(),
       'profilePictureUrl': profilePictureUrl.toJson(),
+      'meetingType': meetingType.toJson(),
     };
   }
 }
@@ -295,6 +299,30 @@ class ProfilePictureUrl {
       'large': large,
       'small': small,
       'thumb': thumb,
+    };
+  }
+}
+
+class MeetingType {
+  bool presential;
+  bool remote;
+
+  MeetingType({
+    required this.presential,
+    required this.remote,
+  });
+
+  factory MeetingType.fromJson(Map<String, dynamic> json) {
+    return MeetingType(
+      presential: json['presential'],
+      remote: json['remote'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'presential': presential,
+      'remote': remote,
     };
   }
 }

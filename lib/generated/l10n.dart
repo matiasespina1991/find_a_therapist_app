@@ -1209,6 +1209,36 @@ class S {
       args: [],
     );
   }
+
+  /// `Remote`
+  String get remote {
+    return Intl.message(
+      'Remote',
+      name: 'remote',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Presential`
+  String get presential {
+    return Intl.message(
+      'Presential',
+      name: 'presential',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Meeting type`
+  String get meetingType {
+    return Intl.message(
+      'Meeting type',
+      name: 'meetingType',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

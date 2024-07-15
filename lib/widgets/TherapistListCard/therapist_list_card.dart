@@ -153,12 +153,44 @@ class TherapistListCard extends StatelessWidget {
                                     ),
                                 ],
                               ),
-                              Text(
-                                '${therapist.therapistInfo.location.city}, ${therapist.therapistInfo.location.country}',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.grey[500],
-                                ),
+                              Row(
+                                children: [
+                                  Text(
+                                    '${therapist.therapistInfo.location.city}, ${therapist.therapistInfo.location.country}',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.grey[500],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    '•',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.grey[500],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 5),
+                                  if (therapist
+                                          .therapistInfo.meetingType.remote ==
+                                      true)
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 7, vertical: 0),
+                                      decoration: BoxDecoration(
+                                        color: ThemeSettings.seedColor
+                                            .withOpacity(0.4),
+                                        borderRadius: BorderRadius.circular(99),
+                                      ),
+                                      child: const Center(
+                                        child: Text('Remote',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.white,
+                                            )),
+                                      ),
+                                    ),
+                                ],
                               ),
                               Text(
                                 therapist.therapistInfo.bio,
@@ -200,20 +232,26 @@ class TherapistListCard extends StatelessWidget {
         ),
         if (matchScore != null)
           Positioned(
-            right: 25,
-            top: 20,
+            right: 5,
+            top: 4,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
               decoration: BoxDecoration(
-                color: ThemeSettings.seedColor.withOpacity(0.8),
-                borderRadius: BorderRadius.circular(99),
-              ),
-              child: Text('${matchScore?.toStringAsFixed(1)}%',
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                  color: ThemeSettings.seedColor.withOpacity(0.8),
+                  borderRadius: BorderRadius.only(
+                    topRight: const Radius.circular(10),
+                    bottomLeft: const Radius.circular(25),
                   )),
+              child: Padding(
+                padding: const EdgeInsets.only(
+                    right: 1, left: 10, top: 4, bottom: 5),
+                child: Text('${matchScore?.toStringAsFixed(1)}%',
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    )),
+              ),
             ),
           )
       ],

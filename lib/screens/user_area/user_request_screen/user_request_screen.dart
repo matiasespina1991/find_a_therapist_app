@@ -116,7 +116,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                       ),
                   border: const OutlineInputBorder(),
                 ),
-                maxLines: 18,
+                maxLines: isSendingRequest ? 5 : 18,
                 enabled: !isSendingRequest,
               ),
               Positioned(
