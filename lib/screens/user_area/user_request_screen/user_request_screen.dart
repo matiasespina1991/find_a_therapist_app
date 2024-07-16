@@ -13,10 +13,7 @@ import '../../../utils/debug/error_code_to_text.dart';
 import '../../../utils/ui/is_dark_mode.dart';
 import '../../../widgets/AppScaffold/app_scaffold.dart';
 import '../../../generated/l10n.dart';
-import '../../../utils/admin/find_best_therapist_by_aspects.dart';
-import '../../../widgets/AspectSection/aspect_section.dart';
 import '../../common/aspects_screen/aspects_screen.dart';
-import '../therapist_result_screen/therapist_result_screen.dart';
 
 class UserRequestScreen extends ConsumerStatefulWidget {
   const UserRequestScreen({super.key});
@@ -36,6 +33,8 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
   bool _isImprovingTranscription = false;
   bool _isAutoWriting = false;
   Timer? _autoWriteTimer;
+  bool remoteChecked = true;
+  bool presentialChecked = true;
 
   String listenedText = '';
 
@@ -120,7 +119,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
     _speechService.stopListening();
     setState(() => _isListening = false);
 
-    if (_requestController.text.isNotEmpty && listenedText.length > 0) {
+    if (_requestController.text.isNotEmpty && listenedText.isNotEmpty) {
       await _improveTranscription(_requestController.text);
     }
   }
@@ -141,15 +140,15 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
+      scrollPhysics: const ClampingScrollPhysics(),
       useTopAppBar: true,
       isProtected: true,
-      showScreenTitleInAppBar: false,
-      appBarTitle: 'Request a Therapist',
+      appBarTitle: S.of(context).yourRequest,
       body: SingleChildScrollView(
           child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text('${S.of(context).tellUsWhatYouAreLookingFor}',
+          Text(S.of(context).tellUsWhatYouAreLookingFor,
               style: Theme.of(context)
                   .textTheme
                   .titleMedium
@@ -241,29 +240,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
             ],
           ),
           const SizedBox(height: 15),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: <Widget>[
-              ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(120, ThemeSettings.buttonsHeight),
-                  ),
-                  onPressed: isSendingRequest ? null : _sendUserRequest,
-                  child: isSendingRequest ||
-                          _isImprovingTranscription ||
-                          _isAutoWriting
-                      ? SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: LoadingCircle(
-                            color: isDarkMode(context)
-                                ? Colors.white.withOpacity(0.8)
-                                : Colors.white.withOpacity(0.8),
-                          ),
-                        )
-                      : Text(S.of(context).sendButton)),
-            ],
-          ),
+
           if (_tagsResponse != null) ...[
             if (_tagsResponse!.error != null) ...[
               const SizedBox(height: 15),
@@ -309,7 +286,132 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
               )
             ],
           ],
-          const SizedBox(height: 60),
+
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '${S.of(context).meetingType}:',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: ListTile(
+                        onTap: () {
+                          setState(() {
+                            if (!presentialChecked) return;
+
+                            remoteChecked = !remoteChecked;
+                          });
+                        },
+                        contentPadding:
+                            const EdgeInsets.only(left: 25, right: 10),
+                        shape: RoundedRectangleBorder(
+                          side: BorderSide(
+                            width: 2,
+                            color: Theme.of(context).dividerColor,
+                          ),
+                          borderRadius: ThemeSettings.buttonsBorderRadius,
+                        ),
+                        title: Text(S.of(context).remote,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  fontSize: 15,
+                                )),
+                        trailing: IgnorePointer(
+                          child: Checkbox(
+                              value: remoteChecked, onChanged: (value) {}),
+                        )),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: ListTile(
+                        onTap: () {
+                          setState(() {
+                            if (!remoteChecked) return;
+                            presentialChecked = !presentialChecked;
+                          });
+                        },
+                        contentPadding:
+                            const EdgeInsets.only(left: 25, right: 10),
+                        shape: RoundedRectangleBorder(
+                          side: BorderSide(
+                            width: 2,
+                            color: Theme.of(context).dividerColor,
+                          ),
+                          borderRadius: ThemeSettings.buttonsBorderRadius,
+                        ),
+                        title: Text(S.of(context).presential,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(fontSize: 15)),
+                        trailing: IgnorePointer(
+                          child: Checkbox(
+                              value: presentialChecked, onChanged: (value) {}),
+                        )),
+                  ),
+                ],
+              ),
+
+              /// add country and city input in a column
+              // const SizedBox(height: 20),
+              // Text(
+              //   '${S.of(context).country}:',
+              //   style: Theme.of(context).textTheme.titleMedium,
+              // ),
+              // const SizedBox(height: 10),
+              // TextField(
+              //   decoration: InputDecoration(
+              //     hintText: S.of(context).country,
+              //     border: const OutlineInputBorder(),
+              //   ),
+              // ),
+              // const SizedBox(height: 20),
+              // Text(
+              //   '${S.of(context).city}:',
+              //   style: Theme.of(context).textTheme.titleMedium,
+              // ),
+              // const SizedBox(height: 10),
+              // TextField(
+              //   decoration: InputDecoration(
+              //     hintText: S.of(context).city,
+              //     border: const OutlineInputBorder(),
+              //   ),
+              // ),
+            ],
+          ),
+          const SizedBox(height: 12),
+
+          /// Send Button
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(120, ThemeSettings.buttonsHeight),
+                  ),
+                  onPressed: isSendingRequest ? null : _sendUserRequest,
+                  child: isSendingRequest ||
+                          _isImprovingTranscription ||
+                          _isAutoWriting
+                      ? SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: LoadingCircle(
+                            color: isDarkMode(context)
+                                ? Colors.white.withOpacity(0.8)
+                                : Colors.white.withOpacity(0.8),
+                          ),
+                        )
+                      : Text(S.of(context).sendButton)),
+            ],
+          ),
+          const SizedBox(height: 90),
         ],
       )),
     );
@@ -329,17 +431,15 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
       _tagsResponse = geminiResponse;
     });
 
-    if (geminiResponse != null) {
+    if (mounted) {
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => AspectsScreen(
-            aspects: geminiResponse!.tags.toAspects(),
+            aspects: geminiResponse.tags.toAspects(),
           ),
         ),
       );
-    } else {
-      debugPrint('Error: Gemini response returned null');
     }
 
     setState(() {

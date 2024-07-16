@@ -38,12 +38,15 @@ class _AspectsScreenState extends ConsumerState<AspectsScreen> {
             _searchingForTherapists = false;
             _therapistsSearchDone = false;
           });
-          NotificationModal.errorModal(
-              context: context,
-              title: 'No therapists found',
-              message:
-                  'We are sorry, we could not find any therapists that match your needs',
-              onTapConfirm: () {});
+          if (mounted) {
+            NotificationModal.errorModal(
+                context: context,
+                title: 'No therapists found',
+                message:
+                    'We are sorry, we could not find any therapists that match your needs',
+                onTapConfirm: () {});
+          }
+
           return;
         }
         setState(() {
@@ -53,15 +56,17 @@ class _AspectsScreenState extends ConsumerState<AspectsScreen> {
         });
       }
 
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) =>
-              TherapistResultsScreen(matchedTherapists: matchedTherapists),
-        ),
-      );
+      if (mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                TherapistResultsScreen(matchedTherapists: matchedTherapists),
+          ),
+        );
+      }
     } catch (e) {
-      print('Error when trying to search for a therapist: $e');
+      debugPrint('Error when trying to search for a therapist: $e');
     }
   }
 
@@ -69,25 +74,25 @@ class _AspectsScreenState extends ConsumerState<AspectsScreen> {
   Widget build(BuildContext context) {
     return AppScaffold(
       useTopAppBar: true,
-      appBarTitle: 'Aspects detected by AI:',
+      appBarTitle: S.of(context).aspectsDetectedByAi,
       isProtected: true,
       body: Column(
         children: [
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               OutlinedButton(
                 style: OutlinedButton.styleFrom(
-                  fixedSize: Size(170, 40),
+                  fixedSize: const Size(170, 40),
                 ),
                 onPressed: () => context.pop(),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(S.of(context).redoRequestButton),
-                    SizedBox(width: 8),
-                    Icon(
+                    const SizedBox(width: 8),
+                    const Icon(
                       Icons.refresh_outlined,
                       size: 16,
                     ),
@@ -119,8 +124,8 @@ class _AspectsScreenState extends ConsumerState<AspectsScreen> {
                                   mainAxisSize: MainAxisSize.max,
                                   children: [
                                     Text(S.of(context).findMyTherapistButton),
-                                    SizedBox(width: 8),
-                                    Icon(
+                                    const SizedBox(width: 8),
+                                    const Icon(
                                       Icons.send_outlined,
                                       size: 16,
                                     ),
@@ -137,8 +142,8 @@ class _AspectsScreenState extends ConsumerState<AspectsScreen> {
                                   mainAxisSize: MainAxisSize.max,
                                   children: [
                                     Text(S.of(context).seeResultsButton),
-                                    SizedBox(width: 8),
-                                    Icon(
+                                    const SizedBox(width: 8),
+                                    const Icon(
                                       Icons.send_outlined,
                                       size: 16,
                                     ),
@@ -148,7 +153,7 @@ class _AspectsScreenState extends ConsumerState<AspectsScreen> {
                           ),
                           if (_searchingForTherapists)
                             Center(
-                              child: Container(
+                              child: SizedBox(
                                 width: 30,
                                 height: 30,
                                 child: LoadingCircle(
@@ -164,7 +169,7 @@ class _AspectsScreenState extends ConsumerState<AspectsScreen> {
               ),
             ],
           ),
-          Divider(
+          const Divider(
             height: 70,
           ),
           Center(

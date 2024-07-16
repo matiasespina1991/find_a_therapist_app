@@ -990,6 +990,56 @@ class S {
     );
   }
 
+  /// `Aspects detected by AI:`
+  String get aspectsDetectedByAi {
+    return Intl.message(
+      'Aspects detected by AI:',
+      name: 'aspectsDetectedByAi',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Matched therapists:`
+  String get matchedTherapists {
+    return Intl.message(
+      'Matched therapists:',
+      name: 'matchedTherapists',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `User Profile`
+  String get userProfile {
+    return Intl.message(
+      'User Profile',
+      name: 'userProfile',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Therapist Profile`
+  String get therapistProfile {
+    return Intl.message(
+      'Therapist Profile',
+      name: 'therapistProfile',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your request`
+  String get yourRequest {
+    return Intl.message(
+      'Your request',
+      name: 'yourRequest',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Tell us what you are looking for (Describe your issues and preferences in detail):`
   String get tellUsWhatYouAreLookingFor {
     return Intl.message(
@@ -1005,6 +1055,36 @@ class S {
     return Intl.message(
       'Enter your request here - Provide as much information as possible about your needs, challenges, and what you\'re looking for in a therapist.   \n\ne.g.:  \nHello, I am a 32-year-old individual looking for a therapist who can relate to my experiences and provide culturally sensitive therapy. I have faced difficulties with anxiety, low self-esteem, and have been finding it hard to socialize lately. I need someone who specializes in Cognitive Behavioral Therapy, and knowledge in astrology would be a plus. I would prefer a therapist of color and...',
       name: 'requestTextFieldHintText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Meeting type`
+  String get meetingType {
+    return Intl.message(
+      'Meeting type',
+      name: 'meetingType',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Remote`
+  String get remote {
+    return Intl.message(
+      'Remote',
+      name: 'remote',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Presential`
+  String get presential {
+    return Intl.message(
+      'Presential',
+      name: 'presential',
       desc: '',
       args: [],
     );
@@ -1225,36 +1305,6 @@ class S {
     return Intl.message(
       'Change language',
       name: 'changeLanguageButton',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Remote`
-  String get remote {
-    return Intl.message(
-      'Remote',
-      name: 'remote',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Presential`
-  String get presential {
-    return Intl.message(
-      'Presential',
-      name: 'presential',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Meeting type`
-  String get meetingType {
-    return Intl.message(
-      'Meeting type',
-      name: 'meetingType',
       desc: '',
       args: [],
     );

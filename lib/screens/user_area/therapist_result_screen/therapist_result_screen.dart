@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:findatherapistapp/models/therapist_model.dart';
 import 'package:findatherapistapp/widgets/TherapistListCard/therapist_list_card.dart';
 
+import '../../../generated/l10n.dart';
 import '../../../widgets/AppScaffold/app_scaffold.dart';
 import '../../common/therapist_public_profile_screen/therapist_public_profile_screen.dart';
 
@@ -44,7 +45,7 @@ class TherapistResultsScreen extends StatelessWidget {
           );
         },
       ),
-      appBarTitle: 'Matched Therapists',
+      appBarTitle: S.of(context).matchedTherapists,
       isProtected: true,
     );
   }

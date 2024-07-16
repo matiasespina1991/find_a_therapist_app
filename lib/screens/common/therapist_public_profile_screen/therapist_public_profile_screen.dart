@@ -494,9 +494,7 @@ class _TherapistPublicProfileScreenState
                                           widget.therapist.aspects.positive.map(
                                         (aspect) {
                                           if (aspect.public == false) {
-                                            debugPrint(
-                                                'Aspect ${aspect.term} is private');
-                                            return SizedBox();
+                                            return const SizedBox();
                                           } else {
                                             return Container(
                                               padding: const EdgeInsets.all(4),
@@ -524,13 +522,10 @@ class _TherapistPublicProfileScreenState
                                 heightFactor: 1,
                                 alignment: Alignment.centerLeft,
                                 child: ExpandableButton(
-                                  child: Container(
-                                    child: Text(
-                                      '⋯',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleMedium,
-                                    ),
+                                  child: Text(
+                                    '⋯',
+                                    style:
+                                        Theme.of(context).textTheme.titleMedium,
                                   ),
                                 ),
                               ),

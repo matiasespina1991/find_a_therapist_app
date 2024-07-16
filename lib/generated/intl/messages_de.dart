@@ -28,6 +28,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "_locale": MessageLookupByLibrary.simpleMessage("de"),
         "allTherapists":
             MessageLookupByLibrary.simpleMessage("Alle Therapeuten"),
+        "aspectsDetectedByAi": MessageLookupByLibrary.simpleMessage(
+            "Aspekte, die von AI erkannt wurden:"),
         "back": MessageLookupByLibrary.simpleMessage("Zurück"),
         "backToInternetConnection":
             MessageLookupByLibrary.simpleMessage("Sie sind wieder online"),
@@ -129,6 +131,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "loginSuccessfulMessage":
             MessageLookupByLibrary.simpleMessage("Erfolgreich angemeldet!"),
         "logoutButton": MessageLookupByLibrary.simpleMessage("Abmelden"),
+        "matchedTherapists":
+            MessageLookupByLibrary.simpleMessage("Matched Therapeuten:"),
         "meetingType": MessageLookupByLibrary.simpleMessage("Treffen"),
         "messageMeButton":
             MessageLookupByLibrary.simpleMessage("Nachricht senden"),
@@ -171,7 +175,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Als Therapeut registrieren"),
         "remote": MessageLookupByLibrary.simpleMessage("Remote"),
         "requestTextFieldHintText": MessageLookupByLibrary.simpleMessage(
-            "Geben Sie hier Ihre Anfrage ein - Geben Sie so viele Informationen wie möglich über Ihre Bedürfnisse, Herausforderungen und was Sie von einem Therapeuten erwarten.   \n  \nz.B.:\nHallo, ich bin eine 32-jährige Person und suche einen Therapeuten, der meine Erfahrungen nachvollziehen kann und kulturell sensible Therapie anbietet. Ich habe Schwierigkeiten mit Angstzuständen, geringem Selbstwertgefühl und finde es in letzter Zeit schwer, Kontakte zu knüpfen. Ich brauche jemanden, der auf kognitive Verhaltenstherapie spezialisiert ist, und Kenntnisse in Astrologie wären ein Plus. Ich würde einen farbigen Therapeuten bevorzugen und... "),
+            "Geben Sie hier Ihre Anfrage ein - Geben Sie so viele Informationen wie möglich über Ihre Bedürfnisse, Herausforderungen und was Sie von einem Therapeuten erwarten.   \n  \nz.B.:\nHallo, ich bin eine 32-jährige Person und suche einen Therapeuten. Ich habe Schwierigkeiten mit Angstzuständen, geringem Selbstwertgefühl und finde es in letzter Zeit schwer, Kontakte zu knüpfen. Ich brauche jemanden, der auf kognitive Verhaltenstherapie spezialisiert ist. Ich würde einen farbigen Therapeuten bevorzugen und... "),
         "score": MessageLookupByLibrary.simpleMessage("Bewertung"),
         "seeResultsButton":
             MessageLookupByLibrary.simpleMessage("Ergebnisse anzeigen"),
@@ -217,6 +221,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "textFieldLabel":
             MessageLookupByLibrary.simpleMessage("Beispiel Textfeld"),
         "therapistAboutMe": MessageLookupByLibrary.simpleMessage("Über mich"),
+        "therapistProfile":
+            MessageLookupByLibrary.simpleMessage("Therapeutenprofil"),
         "unableToLoginNoInternet":
             MessageLookupByLibrary.simpleMessage("Anmeldung nicht möglich"),
         "unauthorizedAccess":
@@ -224,12 +230,14 @@ class MessageLookup extends MessageLookupByLibrary {
         "unauthorizedAccessMessage": m0,
         "unknownErrorMessage": MessageLookupByLibrary.simpleMessage(
             "Es gab einen Fehler beim Versuch, Ihre Anfrage zu verarbeiten. Wir haben das Problem gemeldet. Bitte versuchen Sie es später erneut."),
+        "userProfile": MessageLookupByLibrary.simpleMessage("Benutzerprofil"),
         "welcomeScreenSubtitleDescription": MessageLookupByLibrary.simpleMessage(
             "Dein AI-Partner, der dir hilft, den richtigen Therapeuten für dich und deine spezifischen Bedürfnisse zu finden, egal wo auf der Welt!"),
         "welcomeToPrefix":
             MessageLookupByLibrary.simpleMessage("Willkommen bei "),
         "yes": MessageLookupByLibrary.simpleMessage("Ja"),
         "youAreCurrentlyOfflineMessage": MessageLookupByLibrary.simpleMessage(
-            "Sie sind derzeit offline. Bitte überprüfen Sie Ihre Internetverbindung.")
+            "Sie sind derzeit offline. Bitte überprüfen Sie Ihre Internetverbindung."),
+        "yourRequest": MessageLookupByLibrary.simpleMessage("Ihre Anfrage")
       };
 }

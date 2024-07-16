@@ -36,7 +36,9 @@ class ThemeAppBar extends StatelessWidget implements PreferredSizeWidget {
               fontSize: 19,
               color: _isDarkMode
                   ? ThemeSettings.appbarOnBackgroundColor.darkModePrimary
-                  : ThemeSettings.appbarOnBackgroundColor.lightModePrimary,
+                      .withOpacity(0.9)
+                  : ThemeSettings.appbarOnBackgroundColor.lightModePrimary
+                      .withOpacity(0.6),
             ),
       ),
       actions: actions ?? [],

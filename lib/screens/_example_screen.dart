@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../widgets/AppScaffold/app_scaffold.dart';
+import '../generated/l10n.dart';
 
 class ExampleScreen extends ConsumerStatefulWidget {
   const ExampleScreen({super.key});
@@ -12,10 +13,10 @@ class ExampleScreen extends ConsumerStatefulWidget {
 class _ExampleScreenState extends ConsumerState<ExampleScreen> {
   @override
   Widget build(BuildContext context) {
-    return const AppScaffold(
-      appBarTitle: 'Example Screen',
+    return AppScaffold(
+      appBarTitle: S.of(context).exampleTitleSmallPrefix,
       isProtected: false,
-      body: Center(
+      body: const Center(
         child: Text('Example screen', style: TextStyle(fontSize: 24)),
       ),
     );

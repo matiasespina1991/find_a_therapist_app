@@ -119,7 +119,7 @@ class _AllTherapistsScreenState extends ConsumerState<AllTherapistsScreen> {
                               : endIndex);
 
                       return ListView.builder(
-                        physics: ClampingScrollPhysics(),
+                        physics: const ClampingScrollPhysics(),
                         itemCount: pageItems.length,
                         itemBuilder: (context, index) {
                           final therapist = pageItems[index];

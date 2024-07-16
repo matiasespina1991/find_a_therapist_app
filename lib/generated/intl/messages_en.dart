@@ -26,6 +26,8 @@ class MessageLookup extends MessageLookupByLibrary {
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "_locale": MessageLookupByLibrary.simpleMessage("en"),
         "allTherapists": MessageLookupByLibrary.simpleMessage("All therapists"),
+        "aspectsDetectedByAi":
+            MessageLookupByLibrary.simpleMessage("Aspects detected by AI:"),
         "back": MessageLookupByLibrary.simpleMessage("Back"),
         "backToInternetConnection":
             MessageLookupByLibrary.simpleMessage("You are back online"),
@@ -124,6 +126,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "loginSuccessfulMessage":
             MessageLookupByLibrary.simpleMessage("Login successful!"),
         "logoutButton": MessageLookupByLibrary.simpleMessage("Logout"),
+        "matchedTherapists":
+            MessageLookupByLibrary.simpleMessage("Matched therapists:"),
         "meetingType": MessageLookupByLibrary.simpleMessage("Meeting type"),
         "messageMeButton": MessageLookupByLibrary.simpleMessage("Message me"),
         "negativeAspectsDescription": MessageLookupByLibrary.simpleMessage(
@@ -208,6 +212,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "textFieldLabel":
             MessageLookupByLibrary.simpleMessage("Example TextField"),
         "therapistAboutMe": MessageLookupByLibrary.simpleMessage("About me"),
+        "therapistProfile":
+            MessageLookupByLibrary.simpleMessage("Therapist Profile"),
         "unableToLoginNoInternet":
             MessageLookupByLibrary.simpleMessage("Unable to Login"),
         "unauthorizedAccess":
@@ -215,11 +221,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "unauthorizedAccessMessage": m0,
         "unknownErrorMessage": MessageLookupByLibrary.simpleMessage(
             "An error occurred while trying to process your request. We have reported the issue. Please try again later."),
+        "userProfile": MessageLookupByLibrary.simpleMessage("User Profile"),
         "welcomeScreenSubtitleDescription": MessageLookupByLibrary.simpleMessage(
             "Your AI-powered partner that helps you find the right therapist for you and your specific needs - worldwide!"),
         "welcomeToPrefix": MessageLookupByLibrary.simpleMessage("Welcome to "),
         "yes": MessageLookupByLibrary.simpleMessage("Yes"),
         "youAreCurrentlyOfflineMessage": MessageLookupByLibrary.simpleMessage(
-            "You are currently offline. Please check your internet connection.")
+            "You are currently offline. Please check your internet connection."),
+        "yourRequest": MessageLookupByLibrary.simpleMessage("Your request")
       };
 }

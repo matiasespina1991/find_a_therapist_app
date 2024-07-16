@@ -1,20 +1,25 @@
-import 'package:findatherapistapp/widgets/AppScaffold/app_scaffold.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../generated/l10n.dart';
+import '../../../widgets/AppScaffold/app_scaffold.dart';
 
-class UserProfileScreen extends StatefulWidget {
+class UserProfileScreen extends ConsumerStatefulWidget {
   const UserProfileScreen({super.key});
 
   @override
-  State<UserProfileScreen> createState() => _UserProfileScreenState();
+  ConsumerState<UserProfileScreen> createState() => _UserProfileScreenState();
 }
 
-class _UserProfileScreenState extends State<UserProfileScreen> {
+class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
   @override
   Widget build(BuildContext context) {
-    return const AppScaffold(
-      isProtected: true,
-      body: Placeholder(),
-      appBarTitle: 'User Profile',
+    return AppScaffold(
+      appBarTitle: S.of(context).userProfile,
+      useTopAppBar: true,
+      isProtected: false,
+      body: const Center(
+        child: Text('User profile', style: TextStyle(fontSize: 24)),
+      ),
     );
   }
 }

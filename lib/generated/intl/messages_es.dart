@@ -28,6 +28,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "_locale": MessageLookupByLibrary.simpleMessage("es"),
         "allTherapists":
             MessageLookupByLibrary.simpleMessage("Todos los terapeutas"),
+        "aspectsDetectedByAi": MessageLookupByLibrary.simpleMessage(
+            "Aspectos detectados por la IA:"),
         "back": MessageLookupByLibrary.simpleMessage("Atrás"),
         "backToInternetConnection":
             MessageLookupByLibrary.simpleMessage("Estás de vuelta en línea"),
@@ -130,6 +132,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "loginSuccessfulMessage":
             MessageLookupByLibrary.simpleMessage("Haz iniciado sesión!"),
         "logoutButton": MessageLookupByLibrary.simpleMessage("Cerrar sesión"),
+        "matchedTherapists":
+            MessageLookupByLibrary.simpleMessage("Match de terapeutas:"),
         "meetingType":
             MessageLookupByLibrary.simpleMessage("Modalidad de Encuentro"),
         "messageMeButton":
@@ -221,6 +225,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "textFieldLabel":
             MessageLookupByLibrary.simpleMessage("Campo de Texto de Ejemplo"),
         "therapistAboutMe": MessageLookupByLibrary.simpleMessage("Sobre mí"),
+        "therapistProfile":
+            MessageLookupByLibrary.simpleMessage("Perfil de terapeuta"),
         "unableToLoginNoInternet":
             MessageLookupByLibrary.simpleMessage("No se puede iniciar sesión"),
         "unauthorizedAccess":
@@ -228,10 +234,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "unauthorizedAccessMessage": m0,
         "unknownErrorMessage": MessageLookupByLibrary.simpleMessage(
             "Hubo un error al intentar procesar su solicitud. Hemos reportado el problema. Por favor, inténtelo nuevamente más tarde."),
+        "userProfile":
+            MessageLookupByLibrary.simpleMessage("Perfil de usuario"),
         "welcomeToPrefix":
             MessageLookupByLibrary.simpleMessage("Bienvenido a "),
         "yes": MessageLookupByLibrary.simpleMessage("Sí"),
         "youAreCurrentlyOfflineMessage": MessageLookupByLibrary.simpleMessage(
-            "Actualmente estás sin conexión a Internet.")
+            "Actualmente estás sin conexión a Internet."),
+        "yourRequest": MessageLookupByLibrary.simpleMessage("Tu solicitud")
       };
 }

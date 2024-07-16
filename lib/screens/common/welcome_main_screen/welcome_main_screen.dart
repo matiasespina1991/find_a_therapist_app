@@ -1,9 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:findatherapistapp/app_settings/app_info.dart';
-import 'package:findatherapistapp/utils/admin/add_therapists_in_batch.dart';
-import 'package:findatherapistapp/utils/admin/consolidate_terms.dart';
 import 'package:findatherapistapp/utils/admin/update_all_therapists_aspects.dart';
-import 'package:findatherapistapp/utils/admin/update_terms_index_from_all_therapist.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -13,7 +9,6 @@ import 'package:findatherapistapp/app_settings/app_general_settings.dart';
 import 'package:findatherapistapp/widgets/AppScaffold/app_scaffold.dart';
 
 import '../../../generated/l10n.dart';
-import '../../../models/therapist_model.dart';
 import '../../../routes/routes.dart';
 
 class WelcomeMainScreen extends ConsumerStatefulWidget {
