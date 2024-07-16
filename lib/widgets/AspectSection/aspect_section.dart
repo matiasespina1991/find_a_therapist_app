@@ -27,10 +27,10 @@ class AspectSection extends StatelessWidget {
         ),
         const SizedBox(height: 11.0),
         _buildAspectChips(context, positiveAspects, Colors.green),
-        const SizedBox(height: 5),
-        const Divider(),
-        const SizedBox(height: 5),
 
+        const Divider(
+          height: 70,
+        ),
         // Negative aspects
         _buildAspectTitle(context, S.of(context).negativeAspectsTitle),
         const SizedBox(height: 4),
@@ -63,7 +63,9 @@ class AspectSection extends StatelessWidget {
       children: aspects.isNotEmpty
           ? aspects
               .map((aspect) => Chip(
-                    side: const BorderSide(color: Colors.grey, width: 1.0),
+                    side: BorderSide(
+                        color: _isDarkMode ? chipColor : Colors.black12,
+                        width: 1.0),
                     label: Text(aspect,
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                               color: _isDarkMode ? chipColor : Colors.white,

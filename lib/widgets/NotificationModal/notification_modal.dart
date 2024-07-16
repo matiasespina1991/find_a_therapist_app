@@ -50,6 +50,52 @@ class NotificationModal {
     );
   }
 
+  static void errorModal({
+    required BuildContext context,
+    required String title,
+    required String message,
+    required VoidCallback onTapConfirm,
+  }) {
+    showModalBottomSheet(
+      enableDrag: false,
+      isDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return SizedBox(
+          height: 300,
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(':(', style: TextStyle(fontSize: 35)),
+                  const SizedBox(height: 20),
+                  Text(title, style: Theme.of(context).textTheme.headlineSmall),
+                  const SizedBox(height: 8),
+                  Text(message,
+                      style: Theme.of(context).textTheme.bodyLarge,
+                      textAlign: TextAlign.center),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: 200,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        context.pop();
+                        onTapConfirm();
+                      },
+                      child: Text(S.of(context).gotIt),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   static void failedLogin({
     required BuildContext context,
     required VoidCallback onTapConfirm,

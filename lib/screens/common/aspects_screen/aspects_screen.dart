@@ -1,4 +1,5 @@
 import 'package:findatherapistapp/models/therapist_model.dart';
+import 'package:findatherapistapp/widgets/NotificationModal/notification_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -30,6 +31,21 @@ class _AspectsScreenState extends ConsumerState<AspectsScreen> {
           _searchingForTherapists = true;
         });
         final _matchedTherapists = await findBestTherapist(widget.aspects);
+
+        if (_matchedTherapists.isEmpty) {
+          setState(() {
+            matchedTherapists = _matchedTherapists;
+            _searchingForTherapists = false;
+            _therapistsSearchDone = false;
+          });
+          NotificationModal.errorModal(
+              context: context,
+              title: 'No therapists found',
+              message:
+                  'We are sorry, we could not find any therapists that match your needs',
+              onTapConfirm: () {});
+          return;
+        }
         setState(() {
           matchedTherapists = _matchedTherapists;
           _searchingForTherapists = false;
@@ -57,6 +73,7 @@ class _AspectsScreenState extends ConsumerState<AspectsScreen> {
       isProtected: true,
       body: Column(
         children: [
+          SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -147,7 +164,9 @@ class _AspectsScreenState extends ConsumerState<AspectsScreen> {
               ),
             ],
           ),
-          Divider(),
+          Divider(
+            height: 70,
+          ),
           Center(
               child: AspectSection(
             positiveAspects: widget.aspects.positive,
