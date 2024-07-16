@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:findatherapistapp/widgets/NotificationSnackbar/notification_snackbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_google_places_sdk/flutter_google_places_sdk.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:findatherapistapp/widgets/LoadingCircle/loading_circle.dart';
 import 'package:findatherapistapp/services/gemini_service.dart';
@@ -362,17 +363,25 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
 
               /// add country and city input in a column
               // const SizedBox(height: 20),
-              // Text(
-              //   '${S.of(context).country}:',
-              //   style: Theme.of(context).textTheme.titleMedium,
-              // ),
-              // const SizedBox(height: 10),
-              // TextField(
-              //   decoration: InputDecoration(
-              //     hintText: S.of(context).country,
-              //     border: const OutlineInputBorder(),
-              //   ),
-              // ),
+              Text(
+                // '${S.of(context).country}:',
+                'Country:',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                onChanged: (value) async {
+                  final places = FlutterGooglePlacesSdk('my-key');
+                  final predictions =
+                      await places.findAutocompletePredictions('Tel Aviv');
+                  print('Result: $predictions');
+                  // _requestController.text = value;
+                },
+                decoration: InputDecoration(
+                  // hintText: S.of(context).country,
+                  border: OutlineInputBorder(),
+                ),
+              ),
               // const SizedBox(height: 20),
               // Text(
               //   '${S.of(context).city}:',
