@@ -92,6 +92,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Beim Abmelden ist ein Fehler aufgetreten. Bitte versuche es erneut."),
         "fillAllFields": MessageLookupByLibrary.simpleMessage(
             "Bitte füllen Sie die folgenden Felder aus:"),
+        "findMyTherapistButton":
+            MessageLookupByLibrary.simpleMessage("Finde meinen Therapeuten"),
         "findYourTherapistButton":
             MessageLookupByLibrary.simpleMessage("Finde deinen Therapeuten"),
         "forgotPasswordButton":
@@ -163,12 +165,16 @@ class MessageLookup extends MessageLookupByLibrary {
         "presential": MessageLookupByLibrary.simpleMessage("Präsent"),
         "professionalCertificates":
             MessageLookupByLibrary.simpleMessage("Berufszertifikate"),
+        "redoRequestButton":
+            MessageLookupByLibrary.simpleMessage("Anfrage wiederholen"),
         "registerAsTherapistButton":
             MessageLookupByLibrary.simpleMessage("Als Therapeut registrieren"),
         "remote": MessageLookupByLibrary.simpleMessage("Remote"),
         "requestTextFieldHintText": MessageLookupByLibrary.simpleMessage(
             "Geben Sie hier Ihre Anfrage ein - Geben Sie so viele Informationen wie möglich über Ihre Bedürfnisse, Herausforderungen und was Sie von einem Therapeuten erwarten.   \n  \nz.B.:\nHallo, ich bin eine 32-jährige Person und suche einen Therapeuten, der meine Erfahrungen nachvollziehen kann und kulturell sensible Therapie anbietet. Ich habe Schwierigkeiten mit Angstzuständen, geringem Selbstwertgefühl und finde es in letzter Zeit schwer, Kontakte zu knüpfen. Ich brauche jemanden, der auf kognitive Verhaltenstherapie spezialisiert ist, und Kenntnisse in Astrologie wären ein Plus. Ich würde einen farbigen Therapeuten bevorzugen und... "),
         "score": MessageLookupByLibrary.simpleMessage("Bewertung"),
+        "seeResultsButton":
+            MessageLookupByLibrary.simpleMessage("Ergebnisse anzeigen"),
         "sendButton": MessageLookupByLibrary.simpleMessage("Senden"),
         "settingsButton": MessageLookupByLibrary.simpleMessage("Einstellungen"),
         "settingsScreenTitle":

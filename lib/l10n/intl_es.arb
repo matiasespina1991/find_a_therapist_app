@@ -100,6 +100,10 @@
            "negativeAspectsTitle": "Aspectos Negativos",
           "negativeAspectsDescription": "Lo que no deseas que trate u ofrezca tu terapeuta",
           "positiveAspectsTitle": "Aspectos Positivos",
+
+           "redoRequestButton": "Rehacer solicitud",
+           "findMyTherapistButton": "Encuentra mi terapeuta",
+              "seeResultsButton": "Ver resultados",
           "positiveAspectsDescription": "Lo que deseas que ofrezca tu terapeuta",
           "notFound": "No se encontraron.",
     "ohNoSomethingWentWrong": "Oh no, algo salió mal!",

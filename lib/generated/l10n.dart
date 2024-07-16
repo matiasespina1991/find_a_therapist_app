@@ -1010,6 +1010,36 @@ class S {
     );
   }
 
+  /// `Redo request`
+  String get redoRequestButton {
+    return Intl.message(
+      'Redo request',
+      name: 'redoRequestButton',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Find my therapist`
+  String get findMyTherapistButton {
+    return Intl.message(
+      'Find my therapist',
+      name: 'findMyTherapistButton',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `See results`
+  String get seeResultsButton {
+    return Intl.message(
+      'See results',
+      name: 'seeResultsButton',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Negative aspects`
   String get negativeAspectsTitle {
     return Intl.message(

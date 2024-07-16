@@ -14,6 +14,8 @@ import '../../../utils/ui/is_dark_mode.dart';
 import '../../../widgets/AppScaffold/app_scaffold.dart';
 import '../../../generated/l10n.dart';
 import '../../../utils/admin/find_best_therapist_by_aspects.dart';
+import '../../../widgets/AspectSection/aspect_section.dart';
+import '../../common/aspects_screen/aspects_screen.dart';
 import '../therapist_result_screen/therapist_result_screen.dart';
 
 class UserRequestScreen extends ConsumerStatefulWidget {
@@ -161,10 +163,10 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                   hintText: S.of(context).requestTextFieldHintText,
                   border: const OutlineInputBorder(),
                 ),
-                maxLines: isSendingRequest ? 5 : 18,
+                maxLines: 18,
                 enabled: !isSendingRequest ||
                     !_isImprovingTranscription ||
-                    _isAutoWriting,
+                    !_isAutoWriting,
               ),
 
               /// Auto Writting Icon
@@ -246,7 +248,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(120, ThemeSettings.buttonsHeight),
                   ),
-                  onPressed: isSendingRequest ? null : _sendRequest,
+                  onPressed: isSendingRequest ? null : _sendUserRequest,
                   child: isSendingRequest ||
                           _isImprovingTranscription ||
                           _isAutoWriting
@@ -255,7 +257,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                           width: 20,
                           child: LoadingCircle(
                             color: isDarkMode(context)
-                                ? Colors.black.withOpacity(0.8)
+                                ? Colors.white.withOpacity(0.8)
                                 : Colors.white.withOpacity(0.8),
                           ),
                         )
@@ -306,112 +308,6 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                 ),
               )
             ],
-            if (_tagsResponse!.error == null)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 10),
-                  const Divider(),
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          '${S.of(context).positiveAspectsTitle}:',
-                          style:
-                              Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '(${S.of(context).positiveAspectsDescription})',
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                  const SizedBox(height: 11.0),
-                  Wrap(
-                    spacing: 8.0,
-                    runSpacing: 4.0,
-                    children: _tagsResponse!.tags.positive.isNotEmpty
-                        ? _tagsResponse!.tags.positive
-                            .map((aspect) => Chip(
-                                  side: const BorderSide(
-                                      color: Colors.green, width: 1.0),
-                                  label: Text(aspect,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyLarge
-                                          ?.copyWith(
-                                            color: isDarkMode(context)
-                                                ? Colors.green
-                                                : Colors.white,
-                                          )),
-                                  backgroundColor: isDarkMode(context)
-                                      ? Colors.transparent
-                                      : Colors.green.shade400,
-                                ))
-                            .toList()
-                        : [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8.0, vertical: 13.0),
-                              child: Text(S.of(context).notFound,
-                                  style: Theme.of(context).textTheme.bodyLarge),
-                            ),
-                          ],
-                  ),
-                  const SizedBox(height: 5),
-                  const Divider(),
-                  const SizedBox(height: 5),
-                  Text(
-                    '${S.of(context).negativeAspectsTitle}:',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '(${S.of(context).negativeAspectsDescription})',
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                  const SizedBox(height: 11.0),
-                  Wrap(
-                    spacing: 8.0,
-                    runSpacing: 4.0,
-                    children: _tagsResponse!.tags.negative.isNotEmpty
-                        ? _tagsResponse!.tags.negative
-                            .map((aspect) => Chip(
-                                  side: const BorderSide(
-                                      color: Colors.red, width: 1.0),
-                                  label: Text(aspect,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyLarge
-                                          ?.copyWith(
-                                            color: isDarkMode(context)
-                                                ? Colors.red
-                                                : Colors.white,
-                                          )),
-                                  backgroundColor: isDarkMode(context)
-                                      ? Colors.transparent
-                                      : Colors.red.shade400,
-                                ))
-                            .toList()
-                        : [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8.0, vertical: 13.0),
-                              child: Text(S.of(context).notFound,
-                                  style: Theme.of(context).textTheme.bodyLarge),
-                            ),
-                          ],
-                  ),
-                  const SizedBox(height: 5),
-                ],
-              ),
           ],
           const SizedBox(height: 60),
         ],
@@ -419,7 +315,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
     );
   }
 
-  Future<GeminiTagsResponse?> _sendRequest() async {
+  Future<Object?> _sendUserRequest() async {
     if (isSendingRequest) return null;
 
     setState(() {
@@ -433,17 +329,17 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
       _tagsResponse = geminiResponse;
     });
 
-    if (geminiResponse.tags.positive.isNotEmpty ||
-        geminiResponse.tags.negative.isNotEmpty) {
-      final matchedTherapists =
-          await findBestTherapist(geminiResponse.tags.toAspects());
+    if (geminiResponse != null) {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) =>
-              TherapistResultsScreen(matchedTherapists: matchedTherapists),
+          builder: (context) => AspectsScreen(
+            aspects: geminiResponse!.tags.toAspects(),
+          ),
         ),
       );
+    } else {
+      debugPrint('Error: Gemini response returned null');
     }
 
     setState(() {

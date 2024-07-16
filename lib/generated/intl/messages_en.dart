@@ -88,6 +88,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "There was an error when trying to logout. Please try again."),
         "fillAllFields": MessageLookupByLibrary.simpleMessage(
             "Please fill the following field/s:"),
+        "findMyTherapistButton":
+            MessageLookupByLibrary.simpleMessage("Find my therapist"),
         "findYourTherapistButton":
             MessageLookupByLibrary.simpleMessage("Find your therapist"),
         "forgotPasswordButton":
@@ -157,12 +159,15 @@ class MessageLookup extends MessageLookupByLibrary {
         "presential": MessageLookupByLibrary.simpleMessage("Presential"),
         "professionalCertificates":
             MessageLookupByLibrary.simpleMessage("Professional Certificates"),
+        "redoRequestButton":
+            MessageLookupByLibrary.simpleMessage("Redo request"),
         "registerAsTherapistButton":
             MessageLookupByLibrary.simpleMessage("Register as a therapist"),
         "remote": MessageLookupByLibrary.simpleMessage("Remote"),
         "requestTextFieldHintText": MessageLookupByLibrary.simpleMessage(
             "Enter your request here - Provide as much information as possible about your needs, challenges, and what you\'re looking for in a therapist.   \n\ne.g.:  \nHello, I am a 32-year-old individual looking for a therapist who can relate to my experiences and provide culturally sensitive therapy. I have faced difficulties with anxiety, low self-esteem, and have been finding it hard to socialize lately. I need someone who specializes in Cognitive Behavioral Therapy, and knowledge in astrology would be a plus. I would prefer a therapist of color and..."),
         "score": MessageLookupByLibrary.simpleMessage("Score"),
+        "seeResultsButton": MessageLookupByLibrary.simpleMessage("See results"),
         "sendButton": MessageLookupByLibrary.simpleMessage("Send"),
         "settingsButton": MessageLookupByLibrary.simpleMessage("Settings"),
         "settingsScreenTitle": MessageLookupByLibrary.simpleMessage("Settings"),

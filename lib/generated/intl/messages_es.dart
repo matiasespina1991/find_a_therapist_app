@@ -92,6 +92,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Hubo un error al intentar cerrar sesión. Inténtalo de nuevo."),
         "fillAllFields": MessageLookupByLibrary.simpleMessage(
             "Por favor completa lo/s siguiente/s campo/s:"),
+        "findMyTherapistButton":
+            MessageLookupByLibrary.simpleMessage("Encuentra mi terapeuta"),
         "findYourTherapistButton":
             MessageLookupByLibrary.simpleMessage("Encuentra tu terapeuta"),
         "forgotPasswordButton":
@@ -165,12 +167,16 @@ class MessageLookup extends MessageLookupByLibrary {
         "presential": MessageLookupByLibrary.simpleMessage("Presencial"),
         "professionalCertificates":
             MessageLookupByLibrary.simpleMessage("Certificados"),
+        "redoRequestButton":
+            MessageLookupByLibrary.simpleMessage("Rehacer solicitud"),
         "registerAsTherapistButton":
             MessageLookupByLibrary.simpleMessage("Registrarse como terapeuta"),
         "remote": MessageLookupByLibrary.simpleMessage("Remoto"),
         "requestTextFieldHintText": MessageLookupByLibrary.simpleMessage(
             "Escribe tu solicitud aquí - Proporciona tanta información como sea posible sobre tus necesidades, desafíos y lo que buscas en un terapeuta.  \n\np.ej:   \nHola, soy una persona de 32 años que busca un terapeuta que pueda relacionarse con mis experiencias y brindar terapia culturalmente sensible. He enfrentado dificultades con la ansiedad, baja autoestima y últimamente me ha sido difícil socializar. Necesito a alguien que se especialice en Terapia Cognitivo-Conductual, y que tenga conocimientos en astrología sería un plus. Preferiría un terapeuta de color y..."),
         "score": MessageLookupByLibrary.simpleMessage("Valoración"),
+        "seeResultsButton":
+            MessageLookupByLibrary.simpleMessage("Ver resultados"),
         "sendButton": MessageLookupByLibrary.simpleMessage("Enviar"),
         "settingsButton":
             MessageLookupByLibrary.simpleMessage("Configuraciones"),
