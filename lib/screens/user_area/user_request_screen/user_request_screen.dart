@@ -371,10 +371,16 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
               const SizedBox(height: 10),
               TextField(
                 onChanged: (value) async {
-                  final places = FlutterGooglePlacesSdk('my-key');
-                  final predictions =
+                  Locale locale = Localizations.localeOf(context);
+                  print(locale.languageCode);
+                  final places = FlutterGooglePlacesSdk(
+                      'AIzaSyBxk7_Ie3GXQGueETkWkSMenc2Yw9spiy8',
+                      locale: locale);
+                  FindAutocompletePredictionsResponse predictions =
                       await places.findAutocompletePredictions('Tel Aviv');
-                  print('Result: $predictions');
+                  for (var element in predictions.predictions) {
+                    print(element);
+                  }
                   // _requestController.text = value;
                 },
                 decoration: InputDecoration(
