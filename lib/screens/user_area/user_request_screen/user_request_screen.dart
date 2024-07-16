@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:async';
 
+import 'package:findatherapistapp/widgets/NotificationSnackbar/notification_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:findatherapistapp/widgets/LoadingCircle/loading_circle.dart';
@@ -243,7 +244,6 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
 
           if (_tagsResponse != null) ...[
             if (_tagsResponse!.error != null) ...[
-              const SizedBox(height: 15),
               Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
@@ -283,7 +283,8 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                     ],
                   ),
                 ),
-              )
+              ),
+              SizedBox(height: 12),
             ],
           ],
 
@@ -337,7 +338,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                           });
                         },
                         contentPadding:
-                            const EdgeInsets.only(left: 25, right: 10),
+                            const EdgeInsets.only(left: 24, right: 10),
                         shape: RoundedRectangleBorder(
                           side: BorderSide(
                             width: 2,
@@ -346,6 +347,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                           borderRadius: ThemeSettings.buttonsBorderRadius,
                         ),
                         title: Text(S.of(context).presential,
+                            overflow: TextOverflow.visible,
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium
@@ -419,6 +421,13 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
 
   Future<Object?> _sendUserRequest() async {
     if (isSendingRequest) return null;
+    if (_requestController.text.isEmpty) {
+      NotificationSnackbar.showSnackBar(
+          message: S.of(context).theRequestInputShouldNotBeEmpty,
+          variant: SnackbarVariant.info,
+          duration: 'short');
+      return null;
+    }
 
     setState(() {
       isSendingRequest = true;
@@ -430,6 +439,15 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
     setState(() {
       _tagsResponse = geminiResponse;
     });
+
+    log(geminiResponse.toJson().toString());
+
+    if (geminiResponse.error != null) {
+      setState(() {
+        isSendingRequest = false;
+      });
+      return null;
+    }
 
     if (mounted) {
       Navigator.push(
@@ -445,8 +463,6 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
     setState(() {
       isSendingRequest = false;
     });
-
-    log(geminiResponse.toJson().toString());
 
     return geminiResponse;
   }

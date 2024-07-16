@@ -211,6 +211,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "textButtonLabel": MessageLookupByLibrary.simpleMessage("Text Button"),
         "textFieldLabel":
             MessageLookupByLibrary.simpleMessage("Example TextField"),
+        "theRequestInputShouldNotBeEmpty": MessageLookupByLibrary.simpleMessage(
+            "The request input should not be empty."),
         "therapistAboutMe": MessageLookupByLibrary.simpleMessage("About me"),
         "therapistProfile":
             MessageLookupByLibrary.simpleMessage("Therapist Profile"),

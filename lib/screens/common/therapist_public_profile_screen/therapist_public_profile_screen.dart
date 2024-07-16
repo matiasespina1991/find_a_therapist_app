@@ -50,19 +50,26 @@ class _TherapistPublicProfileScreenState
             sourceLanguage: sourceLanguage, targetLanguage: targetLanguage);
 
         return AppScaffold(
+          scrollPhysics: const ClampingScrollPhysics(),
           actions: [
             if (Localizations.localeOf(context).languageCode.toLowerCase() !=
                 'en')
               IconButton(
                 style: ButtonStyle(
                   backgroundColor: WidgetStateProperty.all(
-                    (_themeProvider.themeMode == ThemeMode.light &&
-                            !translateToUserDefinedLanguage)
+                    (!translateToUserDefinedLanguage)
                         ? Colors.transparent
                         : (_themeProvider.themeMode == ThemeMode.dark &&
-                                !translateToUserDefinedLanguage)
-                            ? Colors.black.withOpacity(0.1)
-                            : Colors.white.withOpacity(0.1),
+                                translateToUserDefinedLanguage)
+                            ? Colors.white.withOpacity(0.09)
+                            : (_themeProvider.themeMode == ThemeMode.light &&
+                                    translateToUserDefinedLanguage)
+                                ? ThemeSettings
+                                    .appbarOnBackgroundColor.lightModePrimary
+                                    .withOpacity(0.2)
+                                : ThemeSettings
+                                    .appbarOnBackgroundColor.lightModePrimary
+                                    .withOpacity(0.2),
                   ),
                 ),
                 icon: const Icon(
@@ -71,7 +78,10 @@ class _TherapistPublicProfileScreenState
                 color: (_themeProvider.themeMode == ThemeMode.light &&
                         translateToUserDefinedLanguage)
                     ? Colors.white
-                    : ThemeSettings.appbarOnBackgroundColor.lightModePrimary,
+                    : (_themeProvider.themeMode == ThemeMode.light &&
+                            !translateToUserDefinedLanguage)
+                        ? ThemeSettings.appbarOnBackgroundColor.lightModePrimary
+                        : ThemeSettings.appbarOnBackgroundColor.darkModePrimary,
                 onPressed: () {
                   setState(() {
                     translateToUserDefinedLanguage =

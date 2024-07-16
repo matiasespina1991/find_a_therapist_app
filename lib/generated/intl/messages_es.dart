@@ -224,6 +224,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Botón de Texto"),
         "textFieldLabel":
             MessageLookupByLibrary.simpleMessage("Campo de Texto de Ejemplo"),
+        "theRequestInputShouldNotBeEmpty": MessageLookupByLibrary.simpleMessage(
+            "El cuadro del texto de solicitud no debe estar vacío."),
         "therapistAboutMe": MessageLookupByLibrary.simpleMessage("Sobre mí"),
         "therapistProfile":
             MessageLookupByLibrary.simpleMessage("Perfil de terapeuta"),

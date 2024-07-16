@@ -23,6 +23,7 @@ class ThemeAppBar extends StatelessWidget implements PreferredSizeWidget {
         ? ThemeSettings.appbarOnBackgroundColor.darkModePrimary
         : ThemeSettings.appbarOnBackgroundColor.lightModePrimary;
     return AppBar(
+      scrolledUnderElevation: 0.4,
       toolbarHeight: appBarHeight ?? kToolbarHeight,
       iconTheme: IconThemeData(color: iconColor),
 

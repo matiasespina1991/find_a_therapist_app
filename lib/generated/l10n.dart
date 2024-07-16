@@ -1040,6 +1040,16 @@ class S {
     );
   }
 
+  /// `The request input should not be empty.`
+  String get theRequestInputShouldNotBeEmpty {
+    return Intl.message(
+      'The request input should not be empty.',
+      name: 'theRequestInputShouldNotBeEmpty',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Tell us what you are looking for (Describe your issues and preferences in detail):`
   String get tellUsWhatYouAreLookingFor {
     return Intl.message(
