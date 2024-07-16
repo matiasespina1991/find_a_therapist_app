@@ -15,14 +15,14 @@ import '../../../generated/l10n.dart';
 import '../../../models/therapist_model.dart';
 import '../../../routes/routes.dart';
 
-class HomeScreen extends ConsumerStatefulWidget {
-  const HomeScreen({super.key});
+class WelcomeMainScreen extends ConsumerStatefulWidget {
+  const WelcomeMainScreen({super.key});
 
   @override
-  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<WelcomeMainScreen> createState() => _WelcomeMainScreenState();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> {
+class _WelcomeMainScreenState extends ConsumerState<WelcomeMainScreen> {
   bool useAppBar = AppGeneralSettings.useTopAppBar;
   ValueNotifier<bool> isDialOpen = ValueNotifier(false);
   bool exampleSwitchValue = false;
@@ -65,7 +65,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         style: Theme.of(context).textTheme.headlineSmall),
                     const SizedBox(height: 10),
                     Text(
-                        'The platform for finding the right therapist for you.',
+                        'Your AI-powered partner that helps you find the right therapist for you and your specific needs - worldwide!',
                         style: Theme.of(context).textTheme.bodyMedium),
                     const SizedBox(height: 20),
                     ElevatedButton(
@@ -84,13 +84,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     const SizedBox(height: 15),
                     OutlinedButton(
                         onPressed: () {
-                          consolidateTerms(
-                              'pet-therapy', ['pet-driven-therapy']);
+                          // consolidateTerms(
+                          //     'pet-therapy', ['pet-driven-therapy']);
                         },
                         style: ElevatedButton.styleFrom(
                           minimumSize: const Size(double.infinity, 47),
                         ),
-                        child: Text(S.of(context).applyAsTherapistButton)),
+                        child: Text(S.of(context).registerAsTherapistButton)),
                   ],
                 ),
               ),

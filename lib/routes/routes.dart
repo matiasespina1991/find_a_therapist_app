@@ -6,9 +6,10 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 
 import '../screens/common/all_therapists_screen/all_therapists_screen.dart';
-import '../screens/common/home_screen/home_screen.dart';
+
 import '../screens/common/login_screen/login_screen.dart';
 import '../screens/common/settings_screen/settings_screen.dart';
+import '../screens/common/welcome_main_screen/welcome_main_screen.dart';
 import '../screens/therapist_area/therapist_profile_screen.dart';
 import '../screens/user_area/user_profile_screen/user_profile_screen.dart';
 import '../screens/user_area/user_request_screen/user_request_screen.dart';
@@ -24,8 +25,8 @@ class Routes {
 
   static RouteConfig homeScreen = RouteConfig(
     path: '/',
-    name: 'Home Screen',
-    builder: (context) => const HomeScreen(),
+    name: 'Welcome Main Screen',
+    builder: (context) => const WelcomeMainScreen(),
   );
 
   static RouteConfig settingsScreen = RouteConfig(
@@ -82,7 +83,7 @@ class Routes {
   );
 
   static List<GoRoute> _generateRoutes() {
-    List<RouteConfig> allRoutes = [
+    List<RouteConfig> publicRoutes = [
       loginScreen,
       homeScreen,
       settingsScreen,
@@ -94,7 +95,7 @@ class Routes {
       debugScreen,
       allTherapistsScreen
     ];
-    return allRoutes
+    return publicRoutes
         .map((routeConfig) => GoRoute(
               path: routeConfig.path,
               builder: (context, state) => routeConfig.builder(context),

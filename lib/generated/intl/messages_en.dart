@@ -26,8 +26,6 @@ class MessageLookup extends MessageLookupByLibrary {
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "_locale": MessageLookupByLibrary.simpleMessage("en"),
         "allTherapists": MessageLookupByLibrary.simpleMessage("All therapists"),
-        "applyAsTherapistButton":
-            MessageLookupByLibrary.simpleMessage("Apply as therapist"),
         "back": MessageLookupByLibrary.simpleMessage("Back"),
         "backToInternetConnection":
             MessageLookupByLibrary.simpleMessage("You are back online"),
@@ -60,8 +58,6 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Example of Body "),
         "exampleBodySmallPrefix":
             MessageLookupByLibrary.simpleMessage("Example of Body "),
-        "exampleDescription": MessageLookupByLibrary.simpleMessage(
-            "This is a creative lorem ipsum example description for the Home screen. Feel free to modify it."),
         "exampleDisplayLargePrefix":
             MessageLookupByLibrary.simpleMessage("Example of Display "),
         "exampleDisplayMediumPrefix":
@@ -81,7 +77,6 @@ class MessageLookup extends MessageLookupByLibrary {
         "exampleLabelSmallPrefix":
             MessageLookupByLibrary.simpleMessage("Example of Label "),
         "exampleSwitch": MessageLookupByLibrary.simpleMessage("Example Switch"),
-        "exampleTitle": MessageLookupByLibrary.simpleMessage("Example Title"),
         "exampleTitleLargePrefix":
             MessageLookupByLibrary.simpleMessage("Example of Title "),
         "exampleTitleMediumPrefix":
@@ -162,9 +157,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "presential": MessageLookupByLibrary.simpleMessage("Presential"),
         "professionalCertificates":
             MessageLookupByLibrary.simpleMessage("Professional Certificates"),
+        "registerAsTherapistButton":
+            MessageLookupByLibrary.simpleMessage("Register as a therapist"),
         "remote": MessageLookupByLibrary.simpleMessage("Remote"),
         "requestTextFieldHintText": MessageLookupByLibrary.simpleMessage(
-            "Enter your request here. Give us as much information as possible."),
+            "Enter your request here - Provide as much information as possible about your needs, challenges, and what you\'re looking for in a therapist.   \n\ne.g.:  \nHello, I am a 32-year-old individual looking for a therapist who can relate to my experiences and provide culturally sensitive therapy. I have faced difficulties with anxiety, low self-esteem, and have been finding it hard to socialize lately. I need someone who specializes in Cognitive Behavioral Therapy, and knowledge in astrology would be a plus. I would prefer a therapist of color and..."),
         "score": MessageLookupByLibrary.simpleMessage("Score"),
         "sendButton": MessageLookupByLibrary.simpleMessage("Send"),
         "settingsButton": MessageLookupByLibrary.simpleMessage("Settings"),
@@ -201,7 +198,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "switchesSectionTitle":
             MessageLookupByLibrary.simpleMessage("Switches"),
         "tellUsWhatYouAreLookingFor": MessageLookupByLibrary.simpleMessage(
-            "Tell us what you are looking for"),
+            "Tell us what you are looking for (Describe your issues and preferences in detail):"),
         "textButtonLabel": MessageLookupByLibrary.simpleMessage("Text Button"),
         "textFieldLabel":
             MessageLookupByLibrary.simpleMessage("Example TextField"),
@@ -213,6 +210,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "unauthorizedAccessMessage": m0,
         "unknownErrorMessage": MessageLookupByLibrary.simpleMessage(
             "An error occurred while trying to process your request. We have reported the issue. Please try again later."),
+        "welcomeScreenSubtitleDescription": MessageLookupByLibrary.simpleMessage(
+            "Your AI-powered partner that helps you find the right therapist for you and your specific needs - worldwide!"),
         "welcomeToPrefix": MessageLookupByLibrary.simpleMessage("Welcome to "),
         "yes": MessageLookupByLibrary.simpleMessage("Yes"),
         "youAreCurrentlyOfflineMessage": MessageLookupByLibrary.simpleMessage(

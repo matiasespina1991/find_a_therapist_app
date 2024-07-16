@@ -32,8 +32,7 @@
    "signingInWithGoogleSnackbarMessage": "Signing in with Google...",
      "errorSigningInWithGoogleSnackbarMessage": "There was an error signing in with Google. Please try again or contact support.",
 "homeScreenTitle": "Home Screen",
-  "exampleTitle": "Example Title",
-  "exampleDescription": "This is a creative lorem ipsum example description for the Home screen. Feel free to modify it.",
+
   "buttonsSectionTitle": "Buttons",
   "elevatedButtonLabel": "Elevated Button",
   "textButtonLabel": "Text Button",
@@ -92,11 +91,12 @@
        "noInternetConnection": "No Internet Connection",
         "youAreCurrentlyOfflineMessage": "You are currently offline. Please check your internet connection.",
         "backToInternetConnection": "You are back online",
+        "welcomeScreenSubtitleDescription": "Your AI-powered partner that helps you find the right therapist for you and your specific needs - worldwide!",
       "findYourTherapistButton": "Find your therapist",
-      "applyAsTherapistButton": "Apply as therapist",
+      "registerAsTherapistButton": "Register as a therapist",
       "welcomeToPrefix": "Welcome to ",
-       "tellUsWhatYouAreLookingFor": "Tell us what you are looking for",
-       "requestTextFieldHintText": "Enter your request here. Give us as much information as possible.",
+       "tellUsWhatYouAreLookingFor": "Tell us what you are looking for (Describe your issues and preferences in detail):",
+       "requestTextFieldHintText": "Enter your request here - Provide as much information as possible about your needs, challenges, and what you're looking for in a therapist.   \n\ne.g.:  \nHello, I am a 32-year-old individual looking for a therapist who can relate to my experiences and provide culturally sensitive therapy. I have faced difficulties with anxiety, low self-esteem, and have been finding it hard to socialize lately. I need someone who specializes in Cognitive Behavioral Therapy, and knowledge in astrology would be a plus. I would prefer a therapist of color and...",
 
      "negativeAspectsTitle": "Negative aspects",
 

@@ -28,8 +28,6 @@ class MessageLookup extends MessageLookupByLibrary {
         "_locale": MessageLookupByLibrary.simpleMessage("de"),
         "allTherapists":
             MessageLookupByLibrary.simpleMessage("Alle Therapeuten"),
-        "applyAsTherapistButton":
-            MessageLookupByLibrary.simpleMessage("Als Therapeut bewerben"),
         "back": MessageLookupByLibrary.simpleMessage("Zurück"),
         "backToInternetConnection":
             MessageLookupByLibrary.simpleMessage("Sie sind wieder online"),
@@ -62,8 +60,6 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Beispiel für Body "),
         "exampleBodySmallPrefix":
             MessageLookupByLibrary.simpleMessage("Beispiel für Body "),
-        "exampleDescription": MessageLookupByLibrary.simpleMessage(
-            "Dies ist eine kreative Beispielbeschreibung für den Startbildschirm. Fühlen Sie sich frei, es zu ändern."),
         "exampleDisplayLargePrefix":
             MessageLookupByLibrary.simpleMessage("Beispiel für Display "),
         "exampleDisplayMediumPrefix":
@@ -84,7 +80,6 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Beispiel für Label "),
         "exampleSwitch":
             MessageLookupByLibrary.simpleMessage("Beispielschalter"),
-        "exampleTitle": MessageLookupByLibrary.simpleMessage("Beispieltitel"),
         "exampleTitleLargePrefix":
             MessageLookupByLibrary.simpleMessage("Beispiel für Title "),
         "exampleTitleMediumPrefix":
@@ -168,9 +163,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "presential": MessageLookupByLibrary.simpleMessage("Präsent"),
         "professionalCertificates":
             MessageLookupByLibrary.simpleMessage("Berufszertifikate"),
+        "registerAsTherapistButton":
+            MessageLookupByLibrary.simpleMessage("Als Therapeut registrieren"),
         "remote": MessageLookupByLibrary.simpleMessage("Remote"),
         "requestTextFieldHintText": MessageLookupByLibrary.simpleMessage(
-            "Geben Sie hier Ihre Anfrage ein. Geben Sie uns so viele Informationen wie möglich."),
+            "Geben Sie hier Ihre Anfrage ein - Geben Sie so viele Informationen wie möglich über Ihre Bedürfnisse, Herausforderungen und was Sie von einem Therapeuten erwarten.   \n  \nz.B.:\nHallo, ich bin eine 32-jährige Person und suche einen Therapeuten, der meine Erfahrungen nachvollziehen kann und kulturell sensible Therapie anbietet. Ich habe Schwierigkeiten mit Angstzuständen, geringem Selbstwertgefühl und finde es in letzter Zeit schwer, Kontakte zu knüpfen. Ich brauche jemanden, der auf kognitive Verhaltenstherapie spezialisiert ist, und Kenntnisse in Astrologie wären ein Plus. Ich würde einen farbigen Therapeuten bevorzugen und... "),
         "score": MessageLookupByLibrary.simpleMessage("Bewertung"),
         "sendButton": MessageLookupByLibrary.simpleMessage("Senden"),
         "settingsButton": MessageLookupByLibrary.simpleMessage("Einstellungen"),
@@ -208,8 +205,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Zu Hellmodus wechseln"),
         "switchesSectionTitle":
             MessageLookupByLibrary.simpleMessage("Schalter"),
-        "tellUsWhatYouAreLookingFor":
-            MessageLookupByLibrary.simpleMessage("Sag uns, wonach du suchst"),
+        "tellUsWhatYouAreLookingFor": MessageLookupByLibrary.simpleMessage(
+            "Sag uns, wonach du suchst (Beschreibe deine Probleme und Vorlieben im Detail):"),
         "textButtonLabel": MessageLookupByLibrary.simpleMessage("Text Taste"),
         "textFieldLabel":
             MessageLookupByLibrary.simpleMessage("Beispiel Textfeld"),
@@ -221,6 +218,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "unauthorizedAccessMessage": m0,
         "unknownErrorMessage": MessageLookupByLibrary.simpleMessage(
             "Es gab einen Fehler beim Versuch, Ihre Anfrage zu verarbeiten. Wir haben das Problem gemeldet. Bitte versuchen Sie es später erneut."),
+        "welcomeScreenSubtitleDescription": MessageLookupByLibrary.simpleMessage(
+            "Dein AI-Partner, der dir hilft, den richtigen Therapeuten für dich und deine spezifischen Bedürfnisse zu finden, egal wo auf der Welt!"),
         "welcomeToPrefix":
             MessageLookupByLibrary.simpleMessage("Willkommen bei "),
         "yes": MessageLookupByLibrary.simpleMessage("Ja"),

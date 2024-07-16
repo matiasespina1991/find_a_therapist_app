@@ -28,8 +28,6 @@ class MessageLookup extends MessageLookupByLibrary {
         "_locale": MessageLookupByLibrary.simpleMessage("es"),
         "allTherapists":
             MessageLookupByLibrary.simpleMessage("Todos los terapeutas"),
-        "applyAsTherapistButton":
-            MessageLookupByLibrary.simpleMessage("Aplicar como terapeuta"),
         "back": MessageLookupByLibrary.simpleMessage("Atrás"),
         "backToInternetConnection":
             MessageLookupByLibrary.simpleMessage("Estás de vuelta en línea"),
@@ -62,8 +60,6 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Ejemplo de Body "),
         "exampleBodySmallPrefix":
             MessageLookupByLibrary.simpleMessage("Ejemplo de Body "),
-        "exampleDescription": MessageLookupByLibrary.simpleMessage(
-            "Esta es una descripción creativa de ejemplo para la pantalla principal. Siéntete libre de modificarla."),
         "exampleDisplayLargePrefix":
             MessageLookupByLibrary.simpleMessage("Ejemplo de Display "),
         "exampleDisplayMediumPrefix":
@@ -84,8 +80,6 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Ejemplo de Label "),
         "exampleSwitch":
             MessageLookupByLibrary.simpleMessage("Interruptor de Ejemplo"),
-        "exampleTitle":
-            MessageLookupByLibrary.simpleMessage("Título de Ejemplo"),
         "exampleTitleLargePrefix":
             MessageLookupByLibrary.simpleMessage("Ejemplo de Title "),
         "exampleTitleMediumPrefix":
@@ -171,9 +165,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "presential": MessageLookupByLibrary.simpleMessage("Presencial"),
         "professionalCertificates":
             MessageLookupByLibrary.simpleMessage("Certificados"),
+        "registerAsTherapistButton":
+            MessageLookupByLibrary.simpleMessage("Registrarse como terapeuta"),
         "remote": MessageLookupByLibrary.simpleMessage("Remoto"),
         "requestTextFieldHintText": MessageLookupByLibrary.simpleMessage(
-            "Escribe tu solicitud aquí. Proporciona tanta información como sea posible."),
+            "Escribe tu solicitud aquí - Proporciona tanta información como sea posible sobre tus necesidades, desafíos y lo que buscas en un terapeuta.  \n\np.ej:   \nHola, soy una persona de 32 años que busca un terapeuta que pueda relacionarse con mis experiencias y brindar terapia culturalmente sensible. He enfrentado dificultades con la ansiedad, baja autoestima y últimamente me ha sido difícil socializar. Necesito a alguien que se especialice en Terapia Cognitivo-Conductual, y que tenga conocimientos en astrología sería un plus. Preferiría un terapeuta de color y..."),
         "score": MessageLookupByLibrary.simpleMessage("Valoración"),
         "sendButton": MessageLookupByLibrary.simpleMessage("Enviar"),
         "settingsButton":
@@ -213,7 +209,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "switchesSectionTitle":
             MessageLookupByLibrary.simpleMessage("Interruptores"),
         "tellUsWhatYouAreLookingFor": MessageLookupByLibrary.simpleMessage(
-            "Cuéntanos qué estás buscando"),
+            "Cuéntanos qué estás buscando (Describe los problemas que estés enfrentando y tus preferencias en detalle):"),
         "textButtonLabel":
             MessageLookupByLibrary.simpleMessage("Botón de Texto"),
         "textFieldLabel":

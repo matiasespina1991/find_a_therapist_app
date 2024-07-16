@@ -370,26 +370,6 @@ class S {
     );
   }
 
-  /// `Example Title`
-  String get exampleTitle {
-    return Intl.message(
-      'Example Title',
-      name: 'exampleTitle',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `This is a creative lorem ipsum example description for the Home screen. Feel free to modify it.`
-  String get exampleDescription {
-    return Intl.message(
-      'This is a creative lorem ipsum example description for the Home screen. Feel free to modify it.',
-      name: 'exampleDescription',
-      desc: '',
-      args: [],
-    );
-  }
-
   /// `Buttons`
   String get buttonsSectionTitle {
     return Intl.message(
@@ -970,6 +950,16 @@ class S {
     );
   }
 
+  /// `Your AI-powered partner that helps you find the right therapist for you and your specific needs - worldwide!`
+  String get welcomeScreenSubtitleDescription {
+    return Intl.message(
+      'Your AI-powered partner that helps you find the right therapist for you and your specific needs - worldwide!',
+      name: 'welcomeScreenSubtitleDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Find your therapist`
   String get findYourTherapistButton {
     return Intl.message(
@@ -980,11 +970,11 @@ class S {
     );
   }
 
-  /// `Apply as therapist`
-  String get applyAsTherapistButton {
+  /// `Register as a therapist`
+  String get registerAsTherapistButton {
     return Intl.message(
-      'Apply as therapist',
-      name: 'applyAsTherapistButton',
+      'Register as a therapist',
+      name: 'registerAsTherapistButton',
       desc: '',
       args: [],
     );
@@ -1000,20 +990,20 @@ class S {
     );
   }
 
-  /// `Tell us what you are looking for`
+  /// `Tell us what you are looking for (Describe your issues and preferences in detail):`
   String get tellUsWhatYouAreLookingFor {
     return Intl.message(
-      'Tell us what you are looking for',
+      'Tell us what you are looking for (Describe your issues and preferences in detail):',
       name: 'tellUsWhatYouAreLookingFor',
       desc: '',
       args: [],
     );
   }
 
-  /// `Enter your request here. Give us as much information as possible.`
+  /// `Enter your request here - Provide as much information as possible about your needs, challenges, and what you're looking for in a therapist.   \n\ne.g.:  \nHello, I am a 32-year-old individual looking for a therapist who can relate to my experiences and provide culturally sensitive therapy. I have faced difficulties with anxiety, low self-esteem, and have been finding it hard to socialize lately. I need someone who specializes in Cognitive Behavioral Therapy, and knowledge in astrology would be a plus. I would prefer a therapist of color and...`
   String get requestTextFieldHintText {
     return Intl.message(
-      'Enter your request here. Give us as much information as possible.',
+      'Enter your request here - Provide as much information as possible about your needs, challenges, and what you\'re looking for in a therapist.   \n\ne.g.:  \nHello, I am a 32-year-old individual looking for a therapist who can relate to my experiences and provide culturally sensitive therapy. I have faced difficulties with anxiety, low self-esteem, and have been finding it hard to socialize lately. I need someone who specializes in Cognitive Behavioral Therapy, and knowledge in astrology would be a plus. I would prefer a therapist of color and...',
       name: 'requestTextFieldHintText',
       desc: '',
       args: [],

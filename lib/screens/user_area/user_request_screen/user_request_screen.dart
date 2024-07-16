@@ -147,7 +147,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
           child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text('${S.of(context).tellUsWhatYouAreLookingFor}:',
+          Text('${S.of(context).tellUsWhatYouAreLookingFor}',
               style: Theme.of(context)
                   .textTheme
                   .titleMedium
