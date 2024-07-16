@@ -48,9 +48,33 @@ class TherapistModel {
   }
 }
 
+class Term {
+  String term;
+  bool public;
+
+  Term({
+    required this.term,
+    required this.public,
+  });
+
+  factory Term.fromJson(Map<String, dynamic> json) {
+    return Term(
+      term: json['term'],
+      public: json['public'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'term': term,
+      'public': public,
+    };
+  }
+}
+
 class Aspects {
-  List<String> positive;
-  List<String> negative;
+  List<Term> positive;
+  List<Term> negative;
 
   Aspects({
     required this.positive,
@@ -59,15 +83,19 @@ class Aspects {
 
   factory Aspects.fromJson(Map<String, dynamic> json) {
     return Aspects(
-      positive: List<String>.from(json['positive']),
-      negative: List<String>.from(json['negative']),
+      positive: (json['positive'] as List)
+          .map((item) => Term.fromJson(item))
+          .toList(),
+      negative: (json['negative'] as List)
+          .map((item) => Term.fromJson(item))
+          .toList(),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'positive': positive,
-      'negative': negative,
+      'positive': positive.map((term) => term.toJson()).toList(),
+      'negative': negative.map((term) => term.toJson()).toList(),
     };
   }
 }

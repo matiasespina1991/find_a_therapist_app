@@ -475,7 +475,7 @@ class _TherapistPublicProfileScreenState
                                                 BorderRadius.circular(5),
                                           ),
                                           child: Text(
-                                            '#$aspect',
+                                            '#${aspect.term}',
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .bodyMedium,
@@ -493,21 +493,27 @@ class _TherapistPublicProfileScreenState
                                       children:
                                           widget.therapist.aspects.positive.map(
                                         (aspect) {
-                                          return Container(
-                                            padding: const EdgeInsets.all(4),
-                                            decoration: BoxDecoration(
-                                              color: ThemeSettings.seedColor
-                                                  .withOpacity(0.17),
-                                              borderRadius:
-                                                  BorderRadius.circular(5),
-                                            ),
-                                            child: Text(
-                                              '#$aspect',
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyMedium,
-                                            ),
-                                          );
+                                          if (aspect.public == false) {
+                                            debugPrint(
+                                                'Aspect ${aspect.term} is private');
+                                            return SizedBox();
+                                          } else {
+                                            return Container(
+                                              padding: const EdgeInsets.all(4),
+                                              decoration: BoxDecoration(
+                                                color: ThemeSettings.seedColor
+                                                    .withOpacity(0.17),
+                                                borderRadius:
+                                                    BorderRadius.circular(5),
+                                              ),
+                                              child: Text(
+                                                '#${aspect.term}',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyMedium,
+                                              ),
+                                            );
+                                          }
                                         },
                                       ).toList(),
                                     ),

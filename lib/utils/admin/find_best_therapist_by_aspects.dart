@@ -15,7 +15,7 @@ Future<List<Map<String, dynamic>>> findBestTherapist(Aspects userAspects,
 
   try {
     for (var positive in userAspects.positive) {
-      List<String> relatedTerms = await getRelatedTerms(positive, version);
+      List<String> relatedTerms = await getRelatedTerms(positive.term, version);
 
       for (var term in relatedTerms) {
         DocumentSnapshot termDoc = await termsCollection.doc(term).get();
@@ -29,12 +29,12 @@ Future<List<Map<String, dynamic>>> findBestTherapist(Aspects userAspects,
                 therapist.therapistId,
                 (score) =>
                     score +
-                    (term == positive
+                    (term == positive.term
                         ? 1 / totalAspects * 100
                         : (relatedTerms.contains(term)
                             ? 0.5 / totalAspects * 100
                             : 0.0)),
-                ifAbsent: () => (term == positive
+                ifAbsent: () => (term == positive.term
                     ? 1 / totalAspects * 100
                     : (relatedTerms.contains(term)
                         ? 0.5 / totalAspects * 100
@@ -46,12 +46,12 @@ Future<List<Map<String, dynamic>>> findBestTherapist(Aspects userAspects,
                 therapist.therapistId,
                 (score) =>
                     score -
-                    (term == positive
+                    (term == positive.term
                         ? 1 / totalAspects * 100
                         : (relatedTerms.contains(term)
                             ? 0.5 / totalAspects * 100
                             : 0.0)),
-                ifAbsent: () => -(term == positive
+                ifAbsent: () => -(term == positive.term
                     ? 1 / totalAspects * 100
                     : (relatedTerms.contains(term)
                         ? 0.5 / totalAspects * 100
@@ -62,7 +62,7 @@ Future<List<Map<String, dynamic>>> findBestTherapist(Aspects userAspects,
     }
 
     for (var negative in userAspects.negative) {
-      List<String> relatedTerms = await getRelatedTerms(negative, version);
+      List<String> relatedTerms = await getRelatedTerms(negative.term, version);
 
       for (var term in relatedTerms) {
         DocumentSnapshot termDoc = await termsCollection.doc(term).get();
@@ -76,12 +76,12 @@ Future<List<Map<String, dynamic>>> findBestTherapist(Aspects userAspects,
                 therapist.therapistId,
                 (score) =>
                     score -
-                    (term == negative
+                    (term == negative.term
                         ? 1 / totalAspects * 100
                         : (relatedTerms.contains(term)
                             ? 0.5 / totalAspects * 100
                             : 0.0)),
-                ifAbsent: () => -(term == negative
+                ifAbsent: () => -(term == negative.term
                     ? 1 / totalAspects * 100
                     : (relatedTerms.contains(term)
                         ? 0.5 / totalAspects * 100
@@ -93,12 +93,12 @@ Future<List<Map<String, dynamic>>> findBestTherapist(Aspects userAspects,
                 therapist.therapistId,
                 (score) =>
                     score +
-                    (term == negative
+                    (term == negative.term
                         ? 1 / totalAspects * 100
                         : (relatedTerms.contains(term)
                             ? 0.5 / totalAspects * 100
                             : 0.0)),
-                ifAbsent: () => (term == negative
+                ifAbsent: () => (term == negative.term
                     ? 1 / totalAspects * 100
                     : (relatedTerms.contains(term)
                         ? 0.5 / totalAspects * 100

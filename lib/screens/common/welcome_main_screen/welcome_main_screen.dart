@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:findatherapistapp/app_settings/app_info.dart';
 import 'package:findatherapistapp/utils/admin/add_therapists_in_batch.dart';
 import 'package:findatherapistapp/utils/admin/consolidate_terms.dart';
+import 'package:findatherapistapp/utils/admin/update_all_therapists_aspects.dart';
 import 'package:findatherapistapp/utils/admin/update_terms_index_from_all_therapist.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -84,8 +85,7 @@ class _WelcomeMainScreenState extends ConsumerState<WelcomeMainScreen> {
                     const SizedBox(height: 15),
                     OutlinedButton(
                         onPressed: () {
-                          // consolidateTerms(
-                          //     'pet-therapy', ['pet-driven-therapy']);
+                          updateALLTherapistAspects();
                         },
                         style: ElevatedButton.styleFrom(
                           minimumSize: const Size(double.infinity, 47),

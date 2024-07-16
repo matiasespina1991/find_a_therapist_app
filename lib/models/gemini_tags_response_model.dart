@@ -52,8 +52,8 @@ class Tags {
 
   Aspects toAspects() {
     return Aspects(
-      positive: positive,
-      negative: negative,
+      positive: positive.map((term) => Term(term: term, public: true)).toList(),
+      negative: negative.map((term) => Term(term: term, public: true)).toList(),
     );
   }
 }

@@ -22,13 +22,13 @@ Future<void> updateTermsIndex() async {
       // Update positive aspects
       for (var positiveAspect in therapist.aspects.positive) {
         await _updateTermIndex(
-            firestore, positiveAspect, therapist.id, 'positive');
+            firestore, positiveAspect.term, therapist.id, 'positive');
       }
 
       // Update negative aspects
       for (var negativeAspect in therapist.aspects.negative) {
         await _updateTermIndex(
-            firestore, negativeAspect, therapist.id, 'negative');
+            firestore, negativeAspect.term, therapist.id, 'negative');
       }
 
       debugPrint('Updated terms index for therapist: ${therapist.id}');
