@@ -1,11 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:findatherapistapp/models/general_models.dart';
 import 'package:findatherapistapp/services/firestore_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:findatherapistapp/models/therapist_model.dart';
 import 'package:findatherapistapp/models/term_index_model.dart';
 
-Future<List<Map<String, dynamic>>> findBestTherapist(Aspects userAspects,
-    {String version = '3'}) async {
+Future<List<Map<String, dynamic>>> findBestTherapistByAspects(
+    {required Aspects userAspects,
+    required UserRequestFilters therapistFilters,
+    String version = '3'}) async {
   FirebaseFirestore firestore = FirestoreService.instance;
   CollectionReference termsCollection = firestore.collection('terms-index');
   CollectionReference therapistsCollection = firestore.collection('therapists');

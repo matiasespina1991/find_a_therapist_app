@@ -1,4 +1,5 @@
 import 'package:animate_do/animate_do.dart';
+import 'package:findatherapistapp/models/general_models.dart';
 import 'package:flutter/material.dart';
 import 'package:findatherapistapp/models/therapist_model.dart';
 import 'package:findatherapistapp/widgets/TherapistListCard/therapist_list_card.dart';
@@ -9,10 +10,12 @@ import '../../common/therapist_public_profile_screen/therapist_public_profile_sc
 
 class TherapistResultsScreen extends StatefulWidget {
   final List<Map<String, dynamic>> matchedTherapists;
+  final UserRequestFilters therapistFilters;
 
   const TherapistResultsScreen({
     super.key,
     required this.matchedTherapists,
+    required this.therapistFilters,
   });
 
   @override
@@ -21,6 +24,41 @@ class TherapistResultsScreen extends StatefulWidget {
 
 class _TherapistResultsScreenState extends State<TherapistResultsScreen> {
   final Set<int> _animatedIndexes = {};
+  late List<Map<String, dynamic>> _filteredTherapists;
+
+  @override
+  void initState() {
+    super.initState();
+    _applyFilters();
+  }
+
+  void _applyFilters() {
+    print(widget.therapistFilters.country);
+    _filteredTherapists = widget.matchedTherapists.where((match) {
+      final therapist = match['therapist'] as TherapistModel;
+      final meetingType = therapist.therapistInfo.meetingType;
+      final country = therapist.therapistInfo.location.country;
+
+      bool matchesRemote = widget.therapistFilters.remote && meetingType.remote;
+      bool matchesPresential =
+          widget.therapistFilters.presential && meetingType.presential;
+      bool matchesCountry = widget.therapistFilters.country == country;
+
+      if (widget.therapistFilters.remote &&
+          !widget.therapistFilters.presential) {
+        return matchesRemote;
+      } else if (!widget.therapistFilters.remote &&
+          widget.therapistFilters.presential) {
+        return matchesPresential && matchesCountry;
+      } else if (widget.therapistFilters.remote &&
+          widget.therapistFilters.presential) {
+        return ((matchesRemote && matchesCountry) ||
+            (matchesPresential && matchesCountry));
+      }
+
+      return false;
+    }).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,9 +71,9 @@ class _TherapistResultsScreenState extends State<TherapistResultsScreen> {
       body: ListView.builder(
         padding: const EdgeInsets.only(bottom: 75, top: 10),
         physics: const ClampingScrollPhysics(),
-        itemCount: widget.matchedTherapists.length,
+        itemCount: _filteredTherapists.length,
         itemBuilder: (context, index) {
-          final match = widget.matchedTherapists[index];
+          final match = _filteredTherapists[index];
           final therapist = match['therapist'] as TherapistModel;
           final matchScore = match['matchScore'] as double;
 

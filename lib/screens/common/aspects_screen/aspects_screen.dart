@@ -1,3 +1,4 @@
+import 'package:findatherapistapp/models/general_models.dart';
 import 'package:findatherapistapp/models/therapist_model.dart';
 import 'package:findatherapistapp/widgets/NotificationModal/notification_modal.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,9 @@ import '../../user_area/therapist_result_screen/therapist_result_screen.dart';
 
 class AspectsScreen extends ConsumerStatefulWidget {
   final Aspects aspects;
-  const AspectsScreen({required this.aspects, super.key});
+  final UserRequestFilters therapistFilters;
+  const AspectsScreen(
+      {required this.therapistFilters, required this.aspects, super.key});
 
   @override
   ConsumerState<AspectsScreen> createState() => _AspectsScreenState();
@@ -30,7 +33,9 @@ class _AspectsScreenState extends ConsumerState<AspectsScreen> {
         setState(() {
           _searchingForTherapists = true;
         });
-        final _matchedTherapists = await findBestTherapist(widget.aspects);
+        final _matchedTherapists = await findBestTherapistByAspects(
+            userAspects: widget.aspects,
+            therapistFilters: widget.therapistFilters);
 
         if (_matchedTherapists.isEmpty) {
           setState(() {
@@ -60,8 +65,9 @@ class _AspectsScreenState extends ConsumerState<AspectsScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                TherapistResultsScreen(matchedTherapists: matchedTherapists),
+            builder: (context) => TherapistResultsScreen(
+                matchedTherapists: matchedTherapists,
+                therapistFilters: widget.therapistFilters),
           ),
         );
       }

@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:number_paginator/number_paginator.dart';
 import '../../../models/therapist_model.dart';
+import '../../../providers/providers_all.dart';
 import '../../../routes/routes.dart';
 import '../../../widgets/AppScaffold/app_scaffold.dart';
 import '../../../services/firestore_service.dart';
@@ -59,6 +60,7 @@ class _AllTherapistsScreenState extends ConsumerState<AllTherapistsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = ref.watch(themeProvider).themeMode == ThemeMode.dark;
     return AppScaffold(
       useTopAppBar: true,
       hideFloatingSpeedDialMenu: true,
@@ -142,8 +144,10 @@ class _AllTherapistsScreenState extends ConsumerState<AllTherapistsScreen> {
                   ),
                 ),
                 NumberPaginator(
-                  config: const NumberPaginatorUIConfig(
-                      buttonSelectedBackgroundColor: ThemeSettings.seedColor),
+                  config: NumberPaginatorUIConfig(
+                      buttonSelectedBackgroundColor: isDarkMode
+                          ? Colors.grey.shade800
+                          : Colors.grey.shade400),
                   numberPages: totalPages,
                   controller: _numberPaginatorController,
                   initialPage: currentPage,

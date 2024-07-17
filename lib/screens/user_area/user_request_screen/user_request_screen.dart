@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:async';
 
 import 'package:country_picker/country_picker.dart';
+import 'package:findatherapistapp/models/general_models.dart';
 import 'package:findatherapistapp/providers/locale_provider.dart';
 import 'package:findatherapistapp/widgets/NotificationSnackbar/notification_snackbar.dart';
 import 'package:flutter/material.dart';
@@ -35,9 +36,9 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
   bool _isImprovingTranscription = false;
   bool _isAutoWriting = false;
   Timer? _autoWriteTimer;
-  bool remoteChecked = true;
-  bool presentialChecked = true;
   TextEditingController controller = TextEditingController();
+  UserRequestFilters therapistFilters =
+      UserRequestFilters(remote: true, presential: true, country: 'US');
   List<Country> countries = [];
   String listenedText = '';
   CountryService countryService = CountryService();
@@ -344,9 +345,10 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                             dense: true,
                             onTap: () {
                               setState(() {
-                                if (!presentialChecked) return;
+                                if (!therapistFilters.presential) return;
 
-                                remoteChecked = !remoteChecked;
+                                therapistFilters.remote =
+                                    !therapistFilters.remote;
                               });
                             },
                             contentPadding:
@@ -368,7 +370,8 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                                     )),
                             trailing: IgnorePointer(
                               child: Checkbox(
-                                  value: remoteChecked, onChanged: (value) {}),
+                                  value: therapistFilters.remote,
+                                  onChanged: (value) {}),
                             )),
                       ),
                       const SizedBox(width: 10),
@@ -377,8 +380,9 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                             dense: true,
                             onTap: () {
                               setState(() {
-                                if (!remoteChecked) return;
-                                presentialChecked = !presentialChecked;
+                                if (!therapistFilters.remote) return;
+                                therapistFilters.presential =
+                                    !therapistFilters.presential;
                               });
                             },
                             contentPadding:
@@ -399,7 +403,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                                     ?.copyWith(fontSize: 15)),
                             trailing: IgnorePointer(
                               child: Checkbox(
-                                  value: presentialChecked,
+                                  value: therapistFilters.presential,
                                   onChanged: (value) {}),
                             )),
                       ),
@@ -407,7 +411,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                   ),
 
                   const SizedBox(height: 12),
-                  if (presentialChecked)
+                  if (therapistFilters.presential)
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -424,16 +428,17 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                           decoration: const InputDecoration(
                             border: OutlineInputBorder(),
                           ),
-                          value: 'Argentina',
-                          onChanged: (String? newValue) {
+                          value: therapistFilters.country,
+                          onChanged: (String? countrySelected) {
+                            if (countrySelected == null) return;
                             setState(() {
-                              // country = newValue!;
+                              therapistFilters.country = countrySelected;
                             });
                           },
                           items: countries
                               .map<DropdownMenuItem<String>>((Country value) {
                             return DropdownMenuItem<String>(
-                              value: value.name,
+                              value: value.countryCode,
                               child: Text(value.name),
                             );
                           }).toList(),
@@ -549,6 +554,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
         MaterialPageRoute(
           builder: (context) => AspectsScreen(
             aspects: geminiResponse.tags.toAspects(),
+            therapistFilters: therapistFilters,
           ),
         ),
       );
