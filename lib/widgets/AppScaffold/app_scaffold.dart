@@ -33,6 +33,7 @@ class AppScaffold extends ConsumerStatefulWidget {
   final bool ignoreGlobalPadding;
   final List<Widget>? actions;
   final bool? centerTitle;
+  final bool setFloatingSpeedDialToLoadingMode;
   const AppScaffold(
       {super.key,
       required this.body,
@@ -48,7 +49,8 @@ class AppScaffold extends ConsumerStatefulWidget {
       this.scaffoldPadding,
       this.ignoreGlobalPadding = false,
       this.actions,
-      this.centerTitle});
+      this.centerTitle,
+      this.setFloatingSpeedDialToLoadingMode = false});
 
   @override
   AppScaffoldState createState() => AppScaffoldState();
@@ -114,6 +116,7 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
           ],
         ),
         floatingActionButton: ThemeFloatingSpeedDialMenu(
+          loadingMode: widget.setFloatingSpeedDialToLoadingMode,
           hideFloatingSpeedDialMenu: widget.hideFloatingSpeedDialMenu,
           isDialOpenNotifier: ValueNotifier(false),
         ),

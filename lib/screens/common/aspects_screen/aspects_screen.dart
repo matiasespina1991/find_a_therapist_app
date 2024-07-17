@@ -83,75 +83,78 @@ class _AspectsScreenState extends ConsumerState<AspectsScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  fixedSize: const Size(170, 40),
-                ),
-                onPressed: () => context.pop(),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(S.of(context).redoRequestButton),
-                    const SizedBox(width: 8),
-                    const Icon(
-                      Icons.refresh_outlined,
-                      size: 16,
-                    ),
-                  ],
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () => context.pop(),
+                  style: ElevatedButton.styleFrom(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(S.of(context).redoRequestButton),
+                      const SizedBox(width: 8),
+                      const Icon(
+                        Icons.refresh_outlined,
+                        size: 16,
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              Stack(
-                children: [
-                  ElevatedButton(
+              const SizedBox(width: 10), // Add some space between the buttons
+              Expanded(
+                child: Stack(
+                  children: [
+                    ElevatedButton(
                       onPressed: _searchingForTherapists
                           ? null
                           : _pressedFindATherapist,
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 0),
+                      ),
                       child: Stack(
                         alignment: Alignment.center,
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Visibility(
-                                visible: (_searchingForTherapists ||
-                                        _therapistsSearchDone)
-                                    ? false
-                                    : true,
-                                maintainState: true,
-                                maintainAnimation: true,
-                                maintainSize: true,
-                                maintainSemantics: true,
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: [
-                                    Text(S.of(context).findMyTherapistButton),
-                                    const SizedBox(width: 8),
-                                    const Icon(
-                                      Icons.send_outlined,
-                                      size: 16,
-                                    ),
-                                  ],
+                          Visibility(
+                            visible: !_searchingForTherapists &&
+                                !_therapistsSearchDone,
+                            maintainState: true,
+                            maintainAnimation: true,
+                            maintainSize: true,
+                            maintainSemantics: true,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    S.of(context).findMyTherapistButton,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              if (_therapistsSearchDone)
-                                Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: [
-                                    Text(S.of(context).seeResultsButton),
-                                    const SizedBox(width: 8),
-                                    const Icon(
-                                      Icons.send_outlined,
-                                      size: 16,
-                                    ),
-                                  ],
+                                const SizedBox(width: 8),
+                                const Icon(
+                                  Icons.send_outlined,
+                                  size: 16,
                                 ),
-                            ],
+                              ],
+                            ),
                           ),
+                          if (_therapistsSearchDone)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(S.of(context).seeResultsButton),
+                                const SizedBox(width: 8),
+                                const Icon(
+                                  Icons.send_outlined,
+                                  size: 16,
+                                ),
+                              ],
+                            ),
                           if (_searchingForTherapists)
                             Center(
                               child: SizedBox(
@@ -165,8 +168,10 @@ class _AspectsScreenState extends ConsumerState<AspectsScreen> {
                               ),
                             ),
                         ],
-                      )),
-                ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

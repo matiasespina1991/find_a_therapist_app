@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:async';
 
 import 'package:country_picker/country_picker.dart';
+import 'package:findatherapistapp/providers/locale_provider.dart';
 import 'package:findatherapistapp/widgets/NotificationSnackbar/notification_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -40,6 +41,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
   List<Country> countries = [];
   String listenedText = '';
   CountryService countryService = CountryService();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -72,18 +74,23 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
       _isAutoWriting = true;
     });
 
-    final localeService = ref.read(localeProvider);
+    final LocaleProvider localeService = ref.read(localeProvider);
 
     final newText = await _geminiService.generateAutoWriteText(
         language: localeService.locale.languageCode);
     int charIndex = 0;
+    int blockSize = 1;
 
     _autoWriteTimer = Timer.periodic(const Duration(milliseconds: 20), (timer) {
       if (_isAutoWriting && charIndex < newText.length) {
         setState(() {
-          _requestController.text += newText[charIndex];
+          int nextIndex = charIndex + blockSize;
+          if (nextIndex > newText.length) {
+            nextIndex = newText.length;
+          }
+          _requestController.text += newText.substring(charIndex, nextIndex);
+          charIndex = nextIndex;
         });
-        charIndex++;
       } else {
         _stopAutoWrite();
       }
@@ -150,6 +157,8 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
     final bool isDarkMode =
         ref.watch(themeProvider).themeMode == ThemeMode.dark;
     return AppScaffold(
+      setFloatingSpeedDialToLoadingMode:
+          isSendingRequest || _isAutoWriting || _isImprovingTranscription,
       scrollPhysics: const ClampingScrollPhysics(),
       useTopAppBar: true,
       isProtected: true,
@@ -167,14 +176,15 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
           Stack(
             children: [
               TextField(
+                scrollController: _scrollController,
                 controller: _requestController,
                 decoration: InputDecoration(
                   hintText: S.of(context).requestTextFieldHintText,
                   border: const OutlineInputBorder(),
                 ),
                 maxLines: 18,
-                enabled: !isSendingRequest ||
-                    !_isImprovingTranscription ||
+                enabled: !isSendingRequest &&
+                    !_isImprovingTranscription &&
                     !_isAutoWriting,
               ),
 
@@ -201,21 +211,23 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                         ],
                         shape: BoxShape.circle,
                       ),
-                      child: isSendingRequest
-                          ? const SizedBox()
-                          : Icon(
-                              _isAutoWriting
-                                  ? Icons.auto_awesome
-                                  : Icons.auto_awesome_outlined,
-                              color: _isAutoWriting && !isDarkMode
-                                  ? Colors.yellow
-                                  : isDarkMode && _isAutoWriting
-                                      ? Colors.white
-                                      : isDarkMode && !_isAutoWriting
-                                          ? Colors.white.withOpacity(0.7)
-                                          : Colors.black.withOpacity(0.7),
-                              size: 28,
-                            ),
+                      child: Icon(
+                        _isAutoWriting
+                            ? Icons.auto_awesome
+                            : Icons.auto_awesome_outlined,
+                        color: (isSendingRequest && !isDarkMode)
+                            ? Colors.black54
+                            : (isSendingRequest && isDarkMode)
+                                ? Colors.white24
+                                : (_isAutoWriting && !isDarkMode
+                                    ? Colors.yellow
+                                    : isDarkMode && _isAutoWriting
+                                        ? Colors.white
+                                        : isDarkMode && !_isAutoWriting
+                                            ? Colors.white.withOpacity(0.7)
+                                            : Colors.black.withOpacity(0.7)),
+                        size: 28,
+                      ),
                     )),
               ),
 
@@ -225,26 +237,30 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                 bottom: 13,
                 child: InkWell(
                     borderRadius: BorderRadius.circular(50),
-                    onTap: _isListening ? _stopListening : _startListening,
+                    onTap: isSendingRequest
+                        ? null
+                        : (_isListening ? _stopListening : _startListening),
                     child: Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: _isListening ? Colors.red : Colors.transparent,
                         shape: BoxShape.circle,
                       ),
-                      child: isSendingRequest
-                          ? const SizedBox()
-                          : Icon(
-                              _isListening ? Icons.mic : Icons.mic_none,
-                              color: _isListening && !isDarkMode
-                                  ? Colors.white
-                                  : isDarkMode && _isListening
-                                      ? Colors.white
-                                      : isDarkMode && !_isListening
-                                          ? Colors.white.withOpacity(0.7)
-                                          : Colors.black.withOpacity(0.7),
-                              size: 30,
-                            ),
+                      child: Icon(
+                        _isListening ? Icons.mic : Icons.mic_none,
+                        color: (isSendingRequest && !isDarkMode)
+                            ? Colors.black54
+                            : (isSendingRequest && isDarkMode)
+                                ? Colors.white24
+                                : (_isListening && !isDarkMode
+                                    ? Colors.white
+                                    : isDarkMode && _isListening
+                                        ? Colors.white
+                                        : isDarkMode && !_isListening
+                                            ? Colors.white.withOpacity(0.7)
+                                            : Colors.black.withOpacity(0.7)),
+                        size: 30,
+                      ),
                     )),
               ),
             ],
@@ -451,7 +467,9 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(120, ThemeSettings.buttonsHeight),
                   ),
-                  onPressed: isSendingRequest ? null : _sendUserRequest,
+                  onPressed: isSendingRequest || _isAutoWriting
+                      ? null
+                      : _sendUserRequest,
                   child: isSendingRequest ||
                           _isImprovingTranscription ||
                           _isAutoWriting

@@ -1,4 +1,5 @@
 import 'package:findatherapistapp/app_settings/theme_settings.dart';
+import 'package:findatherapistapp/widgets/LoadingCircle/loading_circle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -12,11 +13,13 @@ import '../../routes/routes.dart';
 class ThemeFloatingSpeedDialMenu extends ConsumerStatefulWidget {
   final bool hideFloatingSpeedDialMenu;
   final ValueNotifier<bool> isDialOpenNotifier;
+  final bool loadingMode;
 
   const ThemeFloatingSpeedDialMenu({
     super.key,
     required this.hideFloatingSpeedDialMenu,
     required this.isDialOpenNotifier,
+    this.loadingMode = false,
   });
 
   @override
@@ -98,6 +101,15 @@ class _ThemeFloatingSpeedDialMenuState
       onClose: () {
         widget.isDialOpenNotifier.value = false;
       },
+      child: widget.loadingMode!
+          ? Padding(
+              padding: EdgeInsets.all(11.0),
+              child: LoadingCircle(
+                color:
+                    isDarkMode ? Colors.black : Colors.white.withOpacity(0.8),
+              ),
+            )
+          : null,
     );
   }
 }
