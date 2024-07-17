@@ -175,17 +175,24 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
           const SizedBox(height: 20),
           Stack(
             children: [
-              TextField(
-                scrollController: _scrollController,
-                controller: _requestController,
-                decoration: InputDecoration(
-                  hintText: S.of(context).requestTextFieldHintText,
-                  border: const OutlineInputBorder(),
+              Scrollbar(
+                // trackVisibility: true,
+                thumbVisibility: true,
+                thickness: 5,
+                controller: _scrollController,
+                child: TextField(
+                  scrollPhysics: const ClampingScrollPhysics(),
+                  // scrollController: _scrollController,
+                  controller: _requestController,
+                  decoration: InputDecoration(
+                    hintText: S.of(context).requestTextFieldHintText,
+                    border: const OutlineInputBorder(),
+                  ),
+                  maxLines: 18,
+                  enabled: !isSendingRequest &&
+                      !_isImprovingTranscription &&
+                      !_isAutoWriting,
                 ),
-                maxLines: 18,
-                enabled: !isSendingRequest &&
-                    !_isImprovingTranscription &&
-                    !_isAutoWriting,
               ),
 
               /// Auto Writting Icon

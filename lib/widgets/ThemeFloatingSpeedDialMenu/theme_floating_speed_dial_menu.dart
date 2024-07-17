@@ -77,7 +77,7 @@ class _ThemeFloatingSpeedDialMenuState
           },
         ),
         SpeedDialChild(
-          child: Icon(
+          child: const Icon(
             Icons.list_alt,
           ),
           label: S.of(context).allTherapists,

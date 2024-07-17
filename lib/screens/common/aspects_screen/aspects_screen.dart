@@ -93,7 +93,13 @@ class _AspectsScreenState extends ConsumerState<AspectsScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(S.of(context).redoRequestButton),
+                      Flexible(
+                        child: Text(
+                          S.of(context).redoRequestButton,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                      ),
                       const SizedBox(width: 8),
                       const Icon(
                         Icons.refresh_outlined,
