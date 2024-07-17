@@ -239,6 +239,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Hubo un error al intentar procesar su solicitud. Hemos reportado el problema. Por favor, inténtelo nuevamente más tarde."),
         "userProfile":
             MessageLookupByLibrary.simpleMessage("Perfil de usuario"),
+        "welcomeScreenSubtitleDescription": MessageLookupByLibrary.simpleMessage(
+            "Tu asistente AI que te ayuda a encontrar el terapeuta adecuado para ti y tus necesidades específicas - ¡en cualquier parte del mundo!"),
         "welcomeToPrefix":
             MessageLookupByLibrary.simpleMessage("Bienvenido a "),
         "worldwide": MessageLookupByLibrary.simpleMessage("Todo el mundo"),

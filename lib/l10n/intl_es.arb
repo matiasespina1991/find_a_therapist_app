@@ -92,6 +92,8 @@
           "youAreCurrentlyOfflineMessage": "Actualmente estás sin conexión a Internet.",
           "backToInternetConnection": "Estás de vuelta en línea",
           "findYourTherapistButton": "Encuentra tu terapeuta",
+
+          "welcomeScreenSubtitleDescription": "Tu asistente AI que te ayuda a encontrar el terapeuta adecuado para ti y tus necesidades específicas - ¡en cualquier parte del mundo!",
           "registerAsTherapistButton": "Registrarse como terapeuta",
           "welcomeToPrefix": "Bienvenido a ",
           "aspectsDetectedByAi": "Aspectos detectados por la IA:",

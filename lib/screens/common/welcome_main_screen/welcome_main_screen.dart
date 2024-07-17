@@ -55,7 +55,7 @@ class _WelcomeMainScreenState extends ConsumerState<WelcomeMainScreen> {
               ),
             ),
             const SizedBox(
-              height: 197,
+              height: 194,
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 27),
@@ -75,13 +75,12 @@ class _WelcomeMainScreenState extends ConsumerState<WelcomeMainScreen> {
                               '${S.of(context).welcomeToPrefix}${AppInfo.appName}!',
                               style: Theme.of(context).textTheme.headlineSmall),
                           const SizedBox(height: 10),
-                          Text(
-                              'Your AI-powered partner that helps you find the right therapist for you and your specific needs - worldwide!',
+                          Text(S.of(context).welcomeScreenSubtitleDescription,
                               style: Theme.of(context).textTheme.bodyMedium),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 13),
                     FadeInUp(
                       curve: Curves.decelerate,
                       duration: const Duration(milliseconds: 1000),
