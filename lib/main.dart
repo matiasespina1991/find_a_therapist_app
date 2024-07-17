@@ -43,10 +43,21 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final themeNotifier = ref.watch(themeProvider);
     final localeNotifier = ref.watch(localeProvider);
+    final isDarkMode = themeNotifier.themeMode == ThemeMode.dark;
 
     return SkeletonizerConfig(
-      data: const SkeletonizerConfigData(
-          effect: ShimmerEffect(),
+      data: SkeletonizerConfigData(
+          effect: ShimmerEffect(
+            baseColor: isDarkMode
+                ? ThemeSettings.seedColor.withOpacity(0.1)
+                : Colors.grey[300]!, // Color base del shimmer
+            highlightColor: isDarkMode
+                ? Colors.grey.withOpacity(0.25)
+                : Colors.grey[100]!, // Color de resaltado del shimmer
+            duration: const Duration(milliseconds: 2500),
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
           enableSwitchAnimation: true,
           containersColor: ThemeSettings.forceSeedColor
               ? ThemeSettings.seedColor

@@ -27,7 +27,12 @@ class ThemeAppBar extends ConsumerWidget implements PreferredSizeWidget {
         : ThemeSettings.appbarOnBackgroundColor.lightModePrimary;
 
     return AppBar(
-      scrolledUnderElevation: 0.4,
+      elevation: 3,
+      backgroundColor: isDarkMode
+          ? ThemeSettings.appbarBackgroundColor.darkModePrimary
+          : ThemeSettings.appbarBackgroundColor.lightModePrimary,
+      shadowColor: Colors.black.withOpacity(0.1),
+      scrolledUnderElevation: 4.0,
       toolbarHeight: appBarHeight ?? kToolbarHeight,
       iconTheme: IconThemeData(color: iconColor),
       centerTitle: centerTitle,

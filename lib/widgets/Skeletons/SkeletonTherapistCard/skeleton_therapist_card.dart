@@ -12,9 +12,10 @@ class SkeletonTherapistCard extends StatelessWidget {
     return Skeletonizer(
       ignoreContainers: true,
       child: Container(
-        height: 145,
+        height: 135,
         margin: const EdgeInsets.symmetric(
-          vertical: ThemeSettings.cardVerticalSpacing,
+          vertical: ThemeSettings.cardVerticalSpacing + 2,
+          horizontal: 6,
         ),
         decoration: BoxDecoration(
           borderRadius: ThemeSettings.cardBorderRadius,
@@ -31,12 +32,12 @@ class SkeletonTherapistCard extends StatelessWidget {
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(15),
+          padding: const EdgeInsets.all(16),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const CircleAvatar(
-                radius: 40,
+                radius: 43,
                 backgroundImage: CachedNetworkImageProvider(
                   'https://via.placeholder.com/150',
                 ),
@@ -52,19 +53,19 @@ class SkeletonTherapistCard extends StatelessWidget {
                       width: 220,
                       color: Colors.grey[300],
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 12),
                     Container(
                       height: 15,
                       width: 80,
                       color: Colors.grey[300],
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 12),
                     Container(
                       height: 11,
                       width: 200,
                       color: Colors.grey[300],
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 12),
                     Container(
                       height: 11,
                       width: 200,

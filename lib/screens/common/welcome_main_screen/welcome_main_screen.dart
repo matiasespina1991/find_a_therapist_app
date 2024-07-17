@@ -103,7 +103,7 @@ class _WelcomeMainScreenState extends ConsumerState<WelcomeMainScreen> {
                           const SizedBox(height: 15),
                           OutlinedButton(
                               onPressed: () {
-                                updateALLTherapistAspects();
+                                // updateALLTherapistAspects();
                               },
                               style: ElevatedButton.styleFrom(
                                 minimumSize: const Size(double.infinity, 47),

@@ -83,8 +83,8 @@ class MainTheme {
         backgroundColor: ThemeSettings.forceSeedColor
             ? colorScheme.primary
             : (brightness == Brightness.light
-                ? ThemeSettings.appBarBackgroundColor.lightModePrimary
-                : ThemeSettings.appBarBackgroundColor.darkModePrimary),
+                ? ThemeSettings.appbarBackgroundColor.lightModePrimary
+                : ThemeSettings.appbarBackgroundColor.darkModePrimary),
       ),
       chipTheme: ChipDecorationTheme.chipTheme(brightness, colorScheme),
       cardTheme: base.cardTheme.copyWith(
