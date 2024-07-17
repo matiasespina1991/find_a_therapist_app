@@ -1,9 +1,9 @@
 import 'dart:developer';
 import 'dart:async';
 
+import 'package:country_picker/country_picker.dart';
 import 'package:findatherapistapp/widgets/NotificationSnackbar/notification_snackbar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_places_sdk/flutter_google_places_sdk.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:findatherapistapp/widgets/LoadingCircle/loading_circle.dart';
 import 'package:findatherapistapp/services/gemini_service.dart';
@@ -37,13 +37,20 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
   Timer? _autoWriteTimer;
   bool remoteChecked = true;
   bool presentialChecked = true;
-
+  TextEditingController controller = TextEditingController();
+  List<Country> countries = [];
   String listenedText = '';
+  CountryService countryService = CountryService();
 
   @override
   void initState() {
     super.initState();
     _initializeSpeech();
+    List<Country> allCountries = countryService.getAll();
+
+    setState(() {
+      countries = allCountries;
+    });
   }
 
   void _initializeSpeech() async {
@@ -285,7 +292,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
             ],
           ],
 
@@ -296,11 +303,12 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                 '${S.of(context).meetingType}:',
                 style: Theme.of(context).textTheme.titleMedium,
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Row(
                 children: [
                   Expanded(
                     child: ListTile(
+                        dense: true,
                         onTap: () {
                           setState(() {
                             if (!presentialChecked) return;
@@ -312,7 +320,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                             const EdgeInsets.only(left: 25, right: 10),
                         shape: RoundedRectangleBorder(
                           side: BorderSide(
-                            width: 2,
+                            width: 1.5,
                             color: Theme.of(context).dividerColor,
                           ),
                           borderRadius: ThemeSettings.buttonsBorderRadius,
@@ -332,6 +340,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                   const SizedBox(width: 10),
                   Expanded(
                     child: ListTile(
+                        dense: true,
                         onTap: () {
                           setState(() {
                             if (!remoteChecked) return;
@@ -342,7 +351,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                             const EdgeInsets.only(left: 24, right: 10),
                         shape: RoundedRectangleBorder(
                           side: BorderSide(
-                            width: 2,
+                            width: 1.5,
                             color: Theme.of(context).dividerColor,
                           ),
                           borderRadius: ThemeSettings.buttonsBorderRadius,
@@ -361,33 +370,62 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                 ],
               ),
 
-              /// add country and city input in a column
-              // const SizedBox(height: 20),
-              Text(
-                // '${S.of(context).country}:',
-                'Country:',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                onChanged: (value) async {
-                  Locale locale = Localizations.localeOf(context);
-                  print(locale.languageCode);
-                  final places = FlutterGooglePlacesSdk(
-                      'AIzaSyBxk7_Ie3GXQGueETkWkSMenc2Yw9spiy8',
-                      locale: locale);
-                  FindAutocompletePredictionsResponse predictions =
-                      await places.findAutocompletePredictions('Tel Aviv');
-                  for (var element in predictions.predictions) {
-                    print(element);
-                  }
-                  // _requestController.text = value;
-                },
-                decoration: InputDecoration(
-                  // hintText: S.of(context).country,
-                  border: OutlineInputBorder(),
+              const SizedBox(height: 12),
+              if (presentialChecked)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      // '${S.of(context).country}:',
+                      'Country:',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 12),
+
+                    ///Create an input field for the country with a dropdown
+                    DropdownButtonFormField<String>(
+                      isExpanded: true,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                      ),
+                      value: 'Argentina',
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          // country = newValue!;
+                        });
+                      },
+                      items: countries
+                          .map<DropdownMenuItem<String>>((Country value) {
+                        return DropdownMenuItem<String>(
+                          value: value.name,
+                          child: Text(value.name),
+                        );
+                      }).toList(),
+                    ),
+
+                    /// Insert Google Places AutoComplete Text Field
+                    const SizedBox(height: 12),
+                  ],
                 ),
-              ),
+
+              // TextField(
+              //   onChanged: (value) async {
+              //     Locale locale = Localizations.localeOf(context);
+              //     print(locale.languageCode);
+              //     final places = FlutterGooglePlacesSdk(
+              //         'AIzaSyBxk7_Ie3GXQGueETkWkSMenc2Yw9spiy8',
+              //         locale: locale);
+              //     FindAutocompletePredictionsResponse predictions =
+              //         await places.findAutocompletePredictions('Tel Aviv');
+              //     for (var element in predictions.predictions) {
+              //       print(element);
+              //     }
+              //   },
+              //   decoration: InputDecoration(
+              //     // hintText: S.of(context).country,
+              //     border: OutlineInputBorder(),
+              //   ),
+              // ),
               // const SizedBox(height: 20),
               // Text(
               //   '${S.of(context).city}:',

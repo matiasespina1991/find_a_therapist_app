@@ -227,6 +227,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "welcomeScreenSubtitleDescription": MessageLookupByLibrary.simpleMessage(
             "Your AI-powered partner that helps you find the right therapist for you and your specific needs - worldwide!"),
         "welcomeToPrefix": MessageLookupByLibrary.simpleMessage("Welcome to "),
+        "worldwide": MessageLookupByLibrary.simpleMessage("Worldwide"),
         "yes": MessageLookupByLibrary.simpleMessage("Yes"),
         "youAreCurrentlyOfflineMessage": MessageLookupByLibrary.simpleMessage(
             "You are currently offline. Please check your internet connection."),

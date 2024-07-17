@@ -107,6 +107,7 @@
            "meetingType": "Treffen",
               "remote": "Remote",
                 "presential": "Präsent",
+                 "worldwide": "Weltweit",
                 "redoRequestButton": "Anfrage wiederholen",
                 "findMyTherapistButton": "Finde meinen Therapeuten",
                 "seeResultsButton": "Ergebnisse anzeigen",

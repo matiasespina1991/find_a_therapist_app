@@ -237,6 +237,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Dein AI-Partner, der dir hilft, den richtigen Therapeuten für dich und deine spezifischen Bedürfnisse zu finden, egal wo auf der Welt!"),
         "welcomeToPrefix":
             MessageLookupByLibrary.simpleMessage("Willkommen bei "),
+        "worldwide": MessageLookupByLibrary.simpleMessage("Weltweit"),
         "yes": MessageLookupByLibrary.simpleMessage("Ja"),
         "youAreCurrentlyOfflineMessage": MessageLookupByLibrary.simpleMessage(
             "Sie sind derzeit offline. Bitte überprüfen Sie Ihre Internetverbindung."),

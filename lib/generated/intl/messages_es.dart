@@ -240,6 +240,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Perfil de usuario"),
         "welcomeToPrefix":
             MessageLookupByLibrary.simpleMessage("Bienvenido a "),
+        "worldwide": MessageLookupByLibrary.simpleMessage("Todo el mundo"),
         "yes": MessageLookupByLibrary.simpleMessage("Sí"),
         "youAreCurrentlyOfflineMessage": MessageLookupByLibrary.simpleMessage(
             "Actualmente estás sin conexión a Internet."),

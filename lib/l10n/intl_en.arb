@@ -106,6 +106,7 @@
        "meetingType": "Meeting type",
          "remote": "Remote",
             "presential": "Presential",
+        "worldwide": "Worldwide",
        "redoRequestButton": "Redo request",
        "findMyTherapistButton": "Find my therapist",
        "seeResultsButton": "See results",

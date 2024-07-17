@@ -1100,6 +1100,16 @@ class S {
     );
   }
 
+  /// `Worldwide`
+  String get worldwide {
+    return Intl.message(
+      'Worldwide',
+      name: 'worldwide',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Redo request`
   String get redoRequestButton {
     return Intl.message(

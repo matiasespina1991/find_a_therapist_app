@@ -106,6 +106,7 @@
           "meetingType": "Modalidad de Encuentro",
             "remote": "Remoto",
             "presential": "Presencial",
+            "worldwide": "Todo el mundo",
            "negativeAspectsTitle": "Aspectos Negativos",
           "negativeAspectsDescription": "Lo que no deseas que trate u ofrezca tu terapeuta",
           "positiveAspectsTitle": "Aspectos Positivos",
