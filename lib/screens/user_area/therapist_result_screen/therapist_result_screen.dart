@@ -42,7 +42,9 @@ class _TherapistResultsScreenState extends State<TherapistResultsScreen> {
       bool matchesRemote = widget.therapistFilters.remote && meetingType.remote;
       bool matchesPresential =
           widget.therapistFilters.presential && meetingType.presential;
-      bool matchesCountry = widget.therapistFilters.country == country;
+      bool matchesCountry = widget.therapistFilters.country == null
+          ? true
+          : (widget.therapistFilters.country == country);
 
       if (widget.therapistFilters.remote &&
           !widget.therapistFilters.presential) {

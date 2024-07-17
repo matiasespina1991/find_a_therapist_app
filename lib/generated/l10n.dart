@@ -1130,6 +1130,26 @@ class S {
     );
   }
 
+  /// `Select a country`
+  String get selectACountry {
+    return Intl.message(
+      'Select a country',
+      name: 'selectACountry',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Location`
+  String get location {
+    return Intl.message(
+      'Location',
+      name: 'location',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Country`
   String get country {
     return Intl.message(

@@ -6,6 +6,7 @@ import 'package:findatherapistapp/models/general_models.dart';
 import 'package:findatherapistapp/providers/locale_provider.dart';
 import 'package:findatherapistapp/widgets/NotificationSnackbar/notification_snackbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:findatherapistapp/widgets/LoadingCircle/loading_circle.dart';
 import 'package:findatherapistapp/services/gemini_service.dart';
@@ -36,23 +37,31 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
   bool _isImprovingTranscription = false;
   bool _isAutoWriting = false;
   Timer? _autoWriteTimer;
-  TextEditingController controller = TextEditingController();
-  UserRequestFilters therapistFilters =
-      UserRequestFilters(remote: true, presential: true, country: 'US');
+  TextEditingController countryInputController = TextEditingController();
+  String defaultCountry = 'AU';
+  late UserRequestFilters therapistFilters;
+
   List<Country> countries = [];
   String listenedText = '';
-  CountryService countryService = CountryService();
+
   final ScrollController _scrollController = ScrollController();
+
+  CountryService countryService = CountryService();
 
   @override
   void initState() {
     super.initState();
     _initializeSpeech();
+    therapistFilters = UserRequestFilters(
+        remote: true, presential: true, country: defaultCountry);
     List<Country> allCountries = countryService.getAll();
 
     setState(() {
       countries = allCountries;
     });
+
+    countryInputController.text =
+        '  ${countryService.findByCode(therapistFilters.country)?.name}';
   }
 
   void _initializeSpeech() async {
@@ -178,13 +187,11 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
               Stack(
                 children: [
                   Scrollbar(
-                    // trackVisibility: true,
                     thumbVisibility: true,
                     thickness: 5,
                     controller: _scrollController,
                     child: TextField(
                       scrollPhysics: const ClampingScrollPhysics(),
-                      // scrollController: _scrollController,
                       controller: _requestController,
                       decoration: InputDecoration(
                         hintText: S.of(context).requestTextFieldHintText,
@@ -292,9 +299,6 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(12.0),
-
-                      /// add warning icon big and centered
-
                       child: Column(
                         children: [
                           const SizedBox(height: 10),
@@ -409,76 +413,125 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 12),
-                  if (therapistFilters.presential)
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '${S.of(context).country}:',
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        const SizedBox(height: 12),
-
-                        DropdownButtonFormField<String>(
-                          alignment: Alignment.topCenter,
-                          menuMaxHeight: 300,
-                          isExpanded: true,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            '${S.of(context).location}:',
+                            style: Theme.of(context).textTheme.titleMedium,
                           ),
-                          value: therapistFilters.country,
-                          onChanged: (String? countrySelected) {
-                            if (countrySelected == null) return;
-                            setState(() {
-                              therapistFilters.country = countrySelected;
-                            });
-                          },
-                          items: countries
-                              .map<DropdownMenuItem<String>>((Country value) {
-                            return DropdownMenuItem<String>(
-                              value: value.countryCode,
-                              child: Text(value.name),
+                          Expanded(
+                            child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Checkbox(
+                                      value: therapistFilters.country == null
+                                          ? true
+                                          : false,
+                                      onChanged: (bool) {
+                                        setState(() {
+                                          if (therapistFilters.country ==
+                                              null) {
+                                            therapistFilters.country =
+                                                defaultCountry;
+                                          } else {
+                                            therapistFilters.country = null;
+                                          }
+                                        });
+                                      }),
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        if (therapistFilters.country != null) {
+                                          therapistFilters.country = null;
+                                        } else {
+                                          therapistFilters.country =
+                                              defaultCountry;
+                                        }
+                                      });
+                                    },
+                                    child: Text(
+                                        S.of(context).worldwide + '  🌐',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium
+                                            ?.copyWith(fontSize: 15)),
+                                  ),
+                                ]),
+                          ),
+                        ],
+                      ),
+                      Visibility(
+                        visible: therapistFilters.country != null,
+                        child: GestureDetector(
+                          onTap: () {
+                            showCountryPicker(
+                              context: context,
+                              showPhoneCode: false,
+                              onSelect: (Country country) {
+                                setState(() {
+                                  therapistFilters.country =
+                                      country.countryCode;
+
+                                  countryInputController.text =
+                                      '  ${country.name}';
+                                  defaultCountry = country.countryCode;
+                                });
+                              },
                             );
-                          }).toList(),
+                          },
+                          child: AbsorbPointer(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                TextField(
+                                  textAlignVertical: TextAlignVertical.top,
+                                  // textAlignVertical: TextAlignVertical.center,
+                                  decoration: InputDecoration(
+                                    contentPadding: const EdgeInsets.only(
+                                        left: 15,
+                                        right: 10,
+                                        top: 10,
+                                        bottom: 12),
+                                    // isDense: true,
+                                    isCollapsed: true,
+                                    hintText:
+                                        '< ${S.of(context).selectACountry} >',
+                                    hintStyle: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(),
+                                    border: const OutlineInputBorder(),
+                                    prefixStyle: const TextStyle(
+                                      fontSize: 0,
+                                    ),
+                                    prefix: Text(
+                                      (therapistFilters.country?.isNotEmpty ??
+                                              false)
+                                          ? '${countryService.findByCode(therapistFilters.country)?.flagEmoji}'
+                                          : '',
+                                      style: const TextStyle(
+                                        fontSize: 22,
+                                      ),
+                                    ),
+                                  ),
+
+                                  /// add the flag emoji to the country name input
+
+                                  controller: countryInputController,
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-
-                        /// Insert Google Places AutoComplete Text Field
-                        const SizedBox(height: 12),
-                      ],
-                    ),
-
-                  // TextField(
-                  //   onChanged: (value) async {
-                  //     Locale locale = Localizations.localeOf(context);
-                  //     print(locale.languageCode);
-                  //     final places = FlutterGooglePlacesSdk(
-                  //         'AIzaSyBxk7_Ie3GXQGueETkWkSMenc2Yw9spiy8',
-                  //         locale: locale);
-                  //     FindAutocompletePredictionsResponse predictions =
-                  //         await places.findAutocompletePredictions('Tel Aviv');
-                  //     for (var element in predictions.predictions) {
-                  //       print(element);
-                  //     }
-                  //   },
-                  //   decoration: InputDecoration(
-                  //     // hintText: S.of(context).country,
-                  //     border: OutlineInputBorder(),
-                  //   ),
-                  // ),
-                  // const SizedBox(height: 20),
-                  // Text(
-                  //   '${S.of(context).city}:',
-                  //   style: Theme.of(context).textTheme.titleMedium,
-                  // ),
-                  // const SizedBox(height: 10),
-                  // TextField(
-                  //   decoration: InputDecoration(
-                  //     hintText: S.of(context).city,
-                  //     border: const OutlineInputBorder(),
-                  //   ),
-                  // ),
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+                  ),
                 ],
               ),
               const SizedBox(height: 12),

@@ -123,6 +123,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "lightMode": MessageLookupByLibrary.simpleMessage("Modo claro"),
         "lightModeDarkMode":
             MessageLookupByLibrary.simpleMessage("Modo claro / modo oscuro"),
+        "location": MessageLookupByLibrary.simpleMessage("Ubicación"),
         "loginButton": MessageLookupByLibrary.simpleMessage("Iniciar sesión"),
         "loginErrorMessage": MessageLookupByLibrary.simpleMessage(
             "Error al iniciar sesión. Por favor, inténtelo de nuevo o contacte con el soporte."),
@@ -184,6 +185,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "score": MessageLookupByLibrary.simpleMessage("Valoración"),
         "seeResultsButton":
             MessageLookupByLibrary.simpleMessage("Ver resultados"),
+        "selectACountry":
+            MessageLookupByLibrary.simpleMessage("Selecciona un país"),
         "sendButton": MessageLookupByLibrary.simpleMessage("Enviar"),
         "sendingButton": MessageLookupByLibrary.simpleMessage("Enviando..."),
         "settingsButton":

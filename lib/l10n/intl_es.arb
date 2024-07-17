@@ -111,6 +111,8 @@
             "remote": "Remoto",
             "presential": "Presencial",
             "worldwide": "Todo el mundo",
+            "selectACountry": "Selecciona un país",
+            "location": "Ubicación",
             "country": "País",
            "negativeAspectsTitle": "Aspectos Negativos",
           "negativeAspectsDescription": "Lo que no deseas que trate u ofrezca tu terapeuta",

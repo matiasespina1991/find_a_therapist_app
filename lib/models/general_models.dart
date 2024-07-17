@@ -23,7 +23,7 @@ class LottieAnimationBackground {
 class UserRequestFilters {
   bool remote;
   bool presential;
-  String country;
+  String? country;
 
   UserRequestFilters({
     required this.remote,

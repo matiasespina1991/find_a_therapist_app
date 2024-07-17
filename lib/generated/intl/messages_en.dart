@@ -118,6 +118,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "lightMode": MessageLookupByLibrary.simpleMessage("Light Mode"),
         "lightModeDarkMode":
             MessageLookupByLibrary.simpleMessage("Light Mode/Dark Mode"),
+        "location": MessageLookupByLibrary.simpleMessage("Location"),
         "loginButton": MessageLookupByLibrary.simpleMessage("Login"),
         "loginErrorMessage": MessageLookupByLibrary.simpleMessage(
             "Error logging in. Please try again or contact support."),
@@ -175,6 +176,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Enter your request here - Provide as much information as possible about your needs, challenges, and what you\'re looking for in a therapist.   \n\ne.g.:  \nHello, I am a 32-year-old individual looking for a therapist who can relate to my experiences and provide culturally sensitive therapy. I have faced difficulties with anxiety, low self-esteem, and have been finding it hard to socialize lately. I need someone who specializes in Cognitive Behavioral Therapy, and knowledge in astrology would be a plus. I would prefer a therapist of color and..."),
         "score": MessageLookupByLibrary.simpleMessage("Score"),
         "seeResultsButton": MessageLookupByLibrary.simpleMessage("See results"),
+        "selectACountry":
+            MessageLookupByLibrary.simpleMessage("Select a country"),
         "sendButton": MessageLookupByLibrary.simpleMessage("Send"),
         "sendingButton": MessageLookupByLibrary.simpleMessage("Sending..."),
         "settingsButton": MessageLookupByLibrary.simpleMessage("Settings"),
