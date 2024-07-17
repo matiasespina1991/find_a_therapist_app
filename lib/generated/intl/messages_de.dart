@@ -45,6 +45,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "chipTwoLabel": MessageLookupByLibrary.simpleMessage("Chip Zwei"),
         "chipsSectionTitle": MessageLookupByLibrary.simpleMessage("Chips"),
         "continueButton": MessageLookupByLibrary.simpleMessage("Weiter"),
+        "country": MessageLookupByLibrary.simpleMessage("Land"),
         "darkMode": MessageLookupByLibrary.simpleMessage("Dunkelmodus"),
         "elevatedButtonLabel":
             MessageLookupByLibrary.simpleMessage("Erhöhte Taste"),

@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../generated/l10n.dart';
 import '../../models/therapist_model.dart';
-import '../../utils/ui/is_dark_mode.dart';
+import '../../providers/providers_all.dart';
 
-class AspectSection extends StatelessWidget {
+class AspectSection extends ConsumerWidget {
   final List<Term> positiveAspects;
   final List<Term> negativeAspects;
 
   const AspectSection({
-    Key? key,
+    super.key,
     required this.positiveAspects,
     required this.negativeAspects,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -27,7 +27,7 @@ class AspectSection extends StatelessWidget {
           style: Theme.of(context).textTheme.titleSmall,
         ),
         const SizedBox(height: 11.0),
-        _buildAspectChips(context, positiveAspects, Colors.green),
+        _buildAspectChips(context, positiveAspects, Colors.green, ref),
 
         const Divider(
           height: 70,
@@ -40,7 +40,7 @@ class AspectSection extends StatelessWidget {
           style: Theme.of(context).textTheme.titleSmall,
         ),
         const SizedBox(height: 11.0),
-        _buildAspectChips(context, negativeAspects, Colors.red),
+        _buildAspectChips(context, negativeAspects, Colors.red, ref),
         const SizedBox(height: 5),
       ],
     );
@@ -55,9 +55,10 @@ class AspectSection extends StatelessWidget {
     );
   }
 
-  Widget _buildAspectChips(
-      BuildContext context, List<Term> aspects, Color chipColor) {
-    final bool _isDarkMode = isDarkMode(context);
+  Widget _buildAspectChips(BuildContext context, List<Term> aspects,
+      Color chipColor, WidgetRef ref) {
+    final bool isDarkMode =
+        ref.watch(themeProvider).themeMode == ThemeMode.dark;
     return Wrap(
       spacing: 8.0,
       runSpacing: 4.0,
@@ -65,14 +66,14 @@ class AspectSection extends StatelessWidget {
           ? aspects
               .map((aspect) => Chip(
                     side: BorderSide(
-                        color: _isDarkMode ? chipColor : Colors.black12,
+                        color: isDarkMode ? chipColor : Colors.black12,
                         width: 1.0),
                     label: Text(aspect.term,
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              color: _isDarkMode ? chipColor : Colors.white,
+                              color: isDarkMode ? chipColor : Colors.white,
                             )),
                     backgroundColor:
-                        _isDarkMode ? Colors.transparent : chipColor,
+                        isDarkMode ? Colors.transparent : chipColor,
                   ))
               .toList()
           : [

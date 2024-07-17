@@ -9,7 +9,6 @@ import 'package:findatherapistapp/generated/l10n.dart';
 import '../../../app_settings/theme_settings.dart';
 import '../../../providers/providers_all.dart';
 import '../../../routes/routes.dart';
-import '../../../utils/ui/is_dark_mode.dart';
 import '../../../utils/validation/is_email_valid.dart';
 import '../../../widgets/AppScaffold/app_scaffold.dart';
 import '../../../widgets/NotificationModal/notification_modal.dart';
@@ -35,6 +34,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDarkMode =
+        ref.watch(themeProvider).themeMode == ThemeMode.dark;
+
     return AppScaffold(
       appBarTitle: S.of(context).loginScreenTitle,
       isProtected: false,
@@ -152,7 +154,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         Text(
                           S.of(context).lightMode,
                           style: TextStyle(
-                            fontWeight: isDarkMode(context)
+                            fontWeight: isDarkMode
                                 ? FontWeight.normal
                                 : FontWeight.bold,
                           ),
@@ -163,7 +165,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         Text(
                           S.of(context).darkMode,
                           style: TextStyle(
-                            fontWeight: isDarkMode(context)
+                            fontWeight: isDarkMode
                                 ? FontWeight.bold
                                 : FontWeight.normal,
                           ),
@@ -173,12 +175,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     const SizedBox(height: 5),
                     Switch(
                       thumbIcon: WidgetStateProperty.all(Icon(
-                        isDarkMode(context)
-                            ? Icons.dark_mode
-                            : Icons.light_mode,
+                        isDarkMode ? Icons.dark_mode : Icons.light_mode,
                         color: Colors.white,
                       )),
-                      value: isDarkMode(context),
+                      value: isDarkMode,
                       onChanged: (value) {
                         ref.read(themeProvider).toggleTheme(value);
                       },

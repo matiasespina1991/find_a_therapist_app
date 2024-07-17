@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../generated/l10n.dart';
 import '../../../providers/providers_all.dart';
-import '../../../utils/ui/is_dark_mode.dart';
 import '../../../widgets/AppScaffold/app_scaffold.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -15,6 +14,8 @@ class SettingsScreen extends ConsumerStatefulWidget {
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
+    final bool isDarkMode =
+        ref.watch(themeProvider).themeMode == ThemeMode.dark;
     return AppScaffold(
       centerTitle: true,
       useTopAppBar: true,
@@ -33,9 +34,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   Text(
                     S.of(context).lightMode,
                     style: TextStyle(
-                      fontWeight: isDarkMode(context)
-                          ? FontWeight.normal
-                          : FontWeight.bold,
+                      fontWeight:
+                          isDarkMode ? FontWeight.normal : FontWeight.bold,
                     ),
                   ),
                   const Text(
@@ -44,9 +44,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   Text(
                     S.of(context).darkMode,
                     style: TextStyle(
-                      fontWeight: isDarkMode(context)
-                          ? FontWeight.bold
-                          : FontWeight.normal,
+                      fontWeight:
+                          isDarkMode ? FontWeight.bold : FontWeight.normal,
                     ),
                   ),
                 ],
@@ -55,10 +54,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               Center(
                 child: Switch(
                   thumbIcon: WidgetStateProperty.all(Icon(
-                    isDarkMode(context) ? Icons.dark_mode : Icons.light_mode,
+                    isDarkMode ? Icons.dark_mode : Icons.light_mode,
                     color: Colors.white,
                   )),
-                  value: isDarkMode(context),
+                  value: isDarkMode,
                   onChanged: (value) {
                     ref.read(themeProvider).toggleTheme(value);
                   },

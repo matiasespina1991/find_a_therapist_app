@@ -12,7 +12,6 @@ import '../../../app_settings/theme_settings.dart';
 import '../../../models/gemini_tags_response_model.dart';
 import '../../../providers/providers_all.dart';
 import '../../../utils/debug/error_code_to_text.dart';
-import '../../../utils/ui/is_dark_mode.dart';
 import '../../../widgets/AppScaffold/app_scaffold.dart';
 import '../../../generated/l10n.dart';
 import '../../common/aspects_screen/aspects_screen.dart';
@@ -148,6 +147,8 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDarkMode =
+        ref.watch(themeProvider).themeMode == ThemeMode.dark;
     return AppScaffold(
       scrollPhysics: const ClampingScrollPhysics(),
       useTopAppBar: true,
@@ -187,7 +188,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: _isAutoWriting && isDarkMode(context)
+                        color: _isAutoWriting && isDarkMode
                             ? Colors.white24
                             : Colors.transparent,
                         boxShadow: [
@@ -206,11 +207,11 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                               _isAutoWriting
                                   ? Icons.auto_awesome
                                   : Icons.auto_awesome_outlined,
-                              color: _isAutoWriting && !isDarkMode(context)
+                              color: _isAutoWriting && !isDarkMode
                                   ? Colors.yellow
-                                  : isDarkMode(context) && _isAutoWriting
+                                  : isDarkMode && _isAutoWriting
                                       ? Colors.white
-                                      : isDarkMode(context) && !_isAutoWriting
+                                      : isDarkMode && !_isAutoWriting
                                           ? Colors.white.withOpacity(0.7)
                                           : Colors.black.withOpacity(0.7),
                               size: 28,
@@ -235,11 +236,11 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                           ? const SizedBox()
                           : Icon(
                               _isListening ? Icons.mic : Icons.mic_none,
-                              color: _isListening && !isDarkMode(context)
+                              color: _isListening && !isDarkMode
                                   ? Colors.white
-                                  : isDarkMode(context) && _isListening
+                                  : isDarkMode && _isListening
                                       ? Colors.white
-                                      : isDarkMode(context) && !_isListening
+                                      : isDarkMode && !_isListening
                                           ? Colors.white.withOpacity(0.7)
                                           : Colors.black.withOpacity(0.7),
                               size: 30,
@@ -320,8 +321,8 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                             const EdgeInsets.only(left: 25, right: 10),
                         shape: RoundedRectangleBorder(
                           side: BorderSide(
-                            width: 1.5,
-                            color: Theme.of(context).dividerColor,
+                            width: 1,
+                            color: isDarkMode ? Colors.white : Colors.black87,
                           ),
                           borderRadius: ThemeSettings.buttonsBorderRadius,
                         ),
@@ -351,8 +352,8 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                             const EdgeInsets.only(left: 24, right: 10),
                         shape: RoundedRectangleBorder(
                           side: BorderSide(
-                            width: 1.5,
-                            color: Theme.of(context).dividerColor,
+                            width: 1,
+                            color: isDarkMode ? Colors.white : Colors.black87,
                           ),
                           borderRadius: ThemeSettings.buttonsBorderRadius,
                         ),
@@ -376,14 +377,14 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      // '${S.of(context).country}:',
-                      'Country:',
+                      '${S.of(context).country}:',
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 12),
 
-                    ///Create an input field for the country with a dropdown
                     DropdownButtonFormField<String>(
+                      alignment: Alignment.topCenter,
+                      menuMaxHeight: 300,
                       isExpanded: true,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
@@ -458,7 +459,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                           height: 20,
                           width: 20,
                           child: LoadingCircle(
-                            color: isDarkMode(context)
+                            color: isDarkMode
                                 ? Colors.white.withOpacity(0.8)
                                 : Colors.white.withOpacity(0.8),
                           ),

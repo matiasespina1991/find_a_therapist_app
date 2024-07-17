@@ -107,6 +107,7 @@
          "remote": "Remote",
             "presential": "Presential",
         "worldwide": "Worldwide",
+        "country": "Country",
        "redoRequestButton": "Redo request",
        "findMyTherapistButton": "Find my therapist",
        "seeResultsButton": "See results",

@@ -7,7 +7,6 @@ import 'package:lottie/lottie.dart';
 import 'package:findatherapistapp/app_settings/app_general_settings.dart';
 import 'package:findatherapistapp/app_settings/auth_config.dart';
 import 'package:findatherapistapp/providers/providers_all.dart';
-import 'package:findatherapistapp/utils/ui/is_dark_mode.dart';
 import 'package:findatherapistapp/widgets/NotificationModal/notification_modal.dart';
 import 'package:findatherapistapp/widgets/NotificationSnackbar/notification_snackbar.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -185,8 +184,9 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
   }
 
   LottieAnimationBackground? getLottieAnimation() {
-    final themeIsDark = isDarkMode(context);
-    if (themeIsDark && widget.backgroundAnimationDarkMode != null) {
+    final bool isDarkMode =
+        ref.watch(themeProvider).themeMode == ThemeMode.dark;
+    if (isDarkMode && widget.backgroundAnimationDarkMode != null) {
       return widget.backgroundAnimationDarkMode;
     }
     return widget.backgroundAnimation;

@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../generated/l10n.dart';
 import '../../../utils/admin/find_best_therapist_by_aspects.dart';
-import '../../../utils/ui/is_dark_mode.dart';
+
 import '../../../widgets/AppScaffold/app_scaffold.dart';
 import '../../../widgets/AspectSection/aspect_section.dart';
 import '../../../widgets/LoadingCircle/loading_circle.dart';
@@ -72,6 +72,7 @@ class _AspectsScreenState extends ConsumerState<AspectsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return AppScaffold(
       useTopAppBar: true,
       appBarTitle: S.of(context).aspectsDetectedByAi,
@@ -157,7 +158,7 @@ class _AspectsScreenState extends ConsumerState<AspectsScreen> {
                                 width: 30,
                                 height: 30,
                                 child: LoadingCircle(
-                                  color: isDarkMode(context)
+                                  color: isDarkMode
                                       ? Colors.white.withOpacity(0.8)
                                       : Colors.white.withOpacity(0.8),
                                 ),
