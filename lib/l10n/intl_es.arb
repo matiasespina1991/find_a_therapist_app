@@ -8,6 +8,7 @@
   "loginButton": "Iniciar sesión",
   "logoutButton": "Cerrar sesión",
   "sendButton": "Enviar",
+  "sendingButton": "Enviando...",
    "cancelButton": "Cancelar",
     "forgotPasswordButton": "¿Olvidaste tu contraseña?",
 
@@ -97,6 +98,7 @@
           "registerAsTherapistButton": "Registrarse como terapeuta",
           "welcomeToPrefix": "Bienvenido a ",
           "aspectsDetectedByAi": "Aspectos detectados por la IA:",
+           "findingMatches": "Buscando coincidencias...",
           "matchedTherapists": "Match de terapeutas:",
           "userProfile": "Perfil de usuario",
             "therapistProfile": "Perfil de terapeuta",

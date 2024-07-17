@@ -490,19 +490,21 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                       onPressed: isSendingRequest || _isAutoWriting
                           ? null
                           : _sendUserRequest,
-                      child: isSendingRequest ||
-                              _isImprovingTranscription ||
-                              _isAutoWriting
-                          ? SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: LoadingCircle(
-                                color: isDarkMode
-                                    ? Colors.white.withOpacity(0.8)
-                                    : Colors.white.withOpacity(0.8),
-                              ),
-                            )
-                          : Text(S.of(context).sendButton)),
+                      child: isSendingRequest
+                          ? Text(S.of(context).sendingButton)
+                          : _isListening ||
+                                  _isImprovingTranscription ||
+                                  _isAutoWriting
+                              ? SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: LoadingCircle(
+                                    color: isDarkMode
+                                        ? Colors.white.withOpacity(0.8)
+                                        : Colors.white.withOpacity(0.8),
+                                  ),
+                                )
+                              : Text(S.of(context).sendButton)),
                 ],
               ),
               const SizedBox(height: 90),

@@ -150,6 +150,16 @@ class S {
     );
   }
 
+  /// `Sending...`
+  String get sendingButton {
+    return Intl.message(
+      'Sending...',
+      name: 'sendingButton',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Cancel`
   String get cancelButton {
     return Intl.message(
@@ -995,6 +1005,16 @@ class S {
     return Intl.message(
       'Aspects detected by AI:',
       name: 'aspectsDetectedByAi',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Finding matches...`
+  String get findingMatches {
+    return Intl.message(
+      'Finding matches...',
+      name: 'findingMatches',
       desc: '',
       args: [],
     );

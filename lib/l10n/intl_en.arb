@@ -10,6 +10,7 @@
   "settingsButton": "Settings",
 
    "sendButton": "Send",
+    "sendingButton": "Sending...",
     "cancelButton": "Cancel",
     "forgotPasswordButton": "Forgot your password?",
   "signingInMessage": "Signing in...",
@@ -96,6 +97,7 @@
       "registerAsTherapistButton": "Register as a therapist",
       "welcomeToPrefix": "Welcome to ",
       "aspectsDetectedByAi": "Aspects detected by AI:",
+      "findingMatches": "Finding matches...",
       "matchedTherapists": "Matched therapists:",
       "userProfile": "User Profile",
         "therapistProfile": "Therapist Profile",

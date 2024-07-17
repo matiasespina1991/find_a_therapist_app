@@ -9,6 +9,7 @@
   "logoutButton": "Abmelden",
   "settingsButton": "Einstellungen",
   "sendButton": "Senden",
+   "sendingButton": "Senden...",
    "cancelButton": "Abbrechen",
    "forgotPasswordButton": "Passwort vergessen?",
 
@@ -97,6 +98,7 @@
          "registerAsTherapistButton": "Als Therapeut registrieren",
          "welcomeToPrefix": "Willkommen bei ",
          "aspectsDetectedByAi": "Aspekte, die von AI erkannt wurden:",
+          "findingMatches": "Suche...",
          "matchedTherapists": "Matched Therapeuten:",
          "userProfile": "Benutzerprofil",
             "therapistProfile": "Therapeutenprofil",

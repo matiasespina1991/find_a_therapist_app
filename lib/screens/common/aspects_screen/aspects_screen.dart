@@ -74,6 +74,8 @@ class _AspectsScreenState extends ConsumerState<AspectsScreen> {
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return AppScaffold(
+      setFloatingSpeedDialToLoadingMode: _searchingForTherapists,
+      scrollPhysics: const ClampingScrollPhysics(),
       useTopAppBar: true,
       appBarTitle: S.of(context).aspectsDetectedByAi,
       isProtected: true,
@@ -125,8 +127,7 @@ class _AspectsScreenState extends ConsumerState<AspectsScreen> {
                         alignment: Alignment.center,
                         children: [
                           Visibility(
-                            visible: !_searchingForTherapists &&
-                                !_therapistsSearchDone,
+                            visible: !_therapistsSearchDone,
                             maintainState: true,
                             maintainAnimation: true,
                             maintainSize: true,
@@ -134,13 +135,22 @@ class _AspectsScreenState extends ConsumerState<AspectsScreen> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Flexible(
-                                  child: Text(
-                                    S.of(context).findMyTherapistButton,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
+                                if (_searchingForTherapists)
+                                  Flexible(
+                                    child: Text(
+                                      S.of(context).findingMatches,
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
                                   ),
-                                ),
+                                if (!_searchingForTherapists)
+                                  Flexible(
+                                    child: Text(
+                                      S.of(context).findMyTherapistButton,
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
+                                  ),
                                 const SizedBox(width: 8),
                                 const Icon(
                                   Icons.send_outlined,
@@ -160,18 +170,6 @@ class _AspectsScreenState extends ConsumerState<AspectsScreen> {
                                   size: 16,
                                 ),
                               ],
-                            ),
-                          if (_searchingForTherapists)
-                            Center(
-                              child: SizedBox(
-                                width: 30,
-                                height: 30,
-                                child: LoadingCircle(
-                                  color: isDarkMode
-                                      ? Colors.white.withOpacity(0.8)
-                                      : Colors.white.withOpacity(0.8),
-                                ),
-                              ),
                             ),
                         ],
                       ),

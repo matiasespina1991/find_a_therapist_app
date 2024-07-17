@@ -95,6 +95,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Find my therapist"),
         "findYourTherapistButton":
             MessageLookupByLibrary.simpleMessage("Find your therapist"),
+        "findingMatches":
+            MessageLookupByLibrary.simpleMessage("Finding matches..."),
         "forgotPasswordButton":
             MessageLookupByLibrary.simpleMessage("Forgot your password?"),
         "generativeAiErrorMessage": MessageLookupByLibrary.simpleMessage(
@@ -174,6 +176,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "score": MessageLookupByLibrary.simpleMessage("Score"),
         "seeResultsButton": MessageLookupByLibrary.simpleMessage("See results"),
         "sendButton": MessageLookupByLibrary.simpleMessage("Send"),
+        "sendingButton": MessageLookupByLibrary.simpleMessage("Sending..."),
         "settingsButton": MessageLookupByLibrary.simpleMessage("Settings"),
         "settingsScreenTitle": MessageLookupByLibrary.simpleMessage("Settings"),
         "signInWithGoogleButtonLabel":
