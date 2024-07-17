@@ -5,6 +5,7 @@ import 'package:country_picker/country_picker.dart';
 import 'package:findatherapistapp/models/general_models.dart';
 import 'package:findatherapistapp/providers/locale_provider.dart';
 import 'package:findatherapistapp/widgets/NotificationSnackbar/notification_snackbar.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,6 +39,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
   bool _isAutoWriting = false;
   Timer? _autoWriteTimer;
   TextEditingController countryInputController = TextEditingController();
+  TextEditingController stateProvinceInputController = TextEditingController();
   String defaultCountry = 'AU';
   late UserRequestFilters therapistFilters;
 
@@ -59,6 +61,8 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
     setState(() {
       countries = allCountries;
     });
+
+    stateProvinceInputController.text = '';
 
     countryInputController.text =
         '  ${countryService.findByCode(therapistFilters.country)?.name}';
@@ -454,7 +458,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                                       });
                                     },
                                     child: Text(
-                                        S.of(context).worldwide + '  🌐',
+                                        '${S.of(context).worldwide}  🌐',
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodyMedium
@@ -489,9 +493,8 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 TextField(
-                                  textAlignVertical: TextAlignVertical.top,
-                                  // textAlignVertical: TextAlignVertical.center,
                                   decoration: InputDecoration(
+                                    label: Text(S.of(context).country),
                                     contentPadding: const EdgeInsets.only(
                                         left: 15,
                                         right: 10,
@@ -519,10 +522,54 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                                       ),
                                     ),
                                   ),
-
-                                  /// add the flag emoji to the country name input
-
                                   controller: countryInputController,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 22),
+                      Visibility(
+                        visible: therapistFilters.country != null,
+                        child: GestureDetector(
+                          onTap: () {},
+                          child: AbsorbPointer(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                TextField(
+                                  decoration: InputDecoration(
+                                    label: Text(S.of(context).stateProvince),
+                                    contentPadding: const EdgeInsets.only(
+                                        left: 15,
+                                        right: 10,
+                                        top: 10,
+                                        bottom: 12),
+                                    // isDense: true,
+                                    isCollapsed: true,
+                                    hintText:
+                                        '< ${S.of(context).selectACountry} >',
+                                    hintStyle: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(),
+                                    border: const OutlineInputBorder(),
+                                    prefixStyle: const TextStyle(
+                                      fontSize: 0,
+                                    ),
+                                    prefix: Text(
+                                      (therapistFilters.country?.isNotEmpty ??
+                                              false)
+                                          ? '${countryService.findByCode(therapistFilters.country)?.flagEmoji}'
+                                          : '',
+                                      style: const TextStyle(
+                                        fontSize: 22,
+                                      ),
+                                    ),
+                                  ),
+                                  controller: stateProvinceInputController,
                                 ),
                               ],
                             ),

@@ -1160,6 +1160,26 @@ class S {
     );
   }
 
+  /// `State/Province`
+  String get stateProvince {
+    return Intl.message(
+      'State/Province',
+      name: 'stateProvince',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `City`
+  String get city {
+    return Intl.message(
+      'City',
+      name: 'city',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Redo request`
   String get redoRequestButton {
     return Intl.message(

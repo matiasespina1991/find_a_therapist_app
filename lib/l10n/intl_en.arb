@@ -112,6 +112,8 @@
         "selectACountry": "Select a country",
         "location": "Location",
         "country": "Country",
+        "stateProvince": "State/Province",
+        "city": "City",
        "redoRequestButton": "Redo request",
        "findMyTherapistButton": "Find my therapist",
        "seeResultsButton": "See results",

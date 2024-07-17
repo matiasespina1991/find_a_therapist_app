@@ -42,6 +42,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "chipThreeLabel": MessageLookupByLibrary.simpleMessage("Chip Three"),
         "chipTwoLabel": MessageLookupByLibrary.simpleMessage("Chip Two"),
         "chipsSectionTitle": MessageLookupByLibrary.simpleMessage("Chips"),
+        "city": MessageLookupByLibrary.simpleMessage("City"),
         "continueButton": MessageLookupByLibrary.simpleMessage("Continue"),
         "country": MessageLookupByLibrary.simpleMessage("Country"),
         "darkMode": MessageLookupByLibrary.simpleMessage("Dark Mode"),
@@ -191,6 +192,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "sliderValueLabel":
             MessageLookupByLibrary.simpleMessage("Slider Value"),
         "slidersSectionTitle": MessageLookupByLibrary.simpleMessage("Sliders"),
+        "stateProvince": MessageLookupByLibrary.simpleMessage("State/Province"),
         "stepOneContent": MessageLookupByLibrary.simpleMessage(
             "This is the content for step one."),
         "stepOneTitle": MessageLookupByLibrary.simpleMessage("Step One"),

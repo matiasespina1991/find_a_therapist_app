@@ -103,6 +103,8 @@
          "userProfile": "Benutzerprofil",
             "therapistProfile": "Therapeutenprofil",
             "location": "Ort",
+            "stateProvince": "Bundesland/Provinz",
+            "city": "Stadt",
          "yourRequest": "Ihre Anfrage",
            "tellUsWhatYouAreLookingFor": "Sag uns, wonach du suchst (Beschreibe deine Probleme und Vorlieben im Detail):",
               "theRequestInputShouldNotBeEmpty": "Die Eingabe sollte nicht leer sein.",

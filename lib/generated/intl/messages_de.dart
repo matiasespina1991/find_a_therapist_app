@@ -44,6 +44,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "chipThreeLabel": MessageLookupByLibrary.simpleMessage("Chip Drei"),
         "chipTwoLabel": MessageLookupByLibrary.simpleMessage("Chip Zwei"),
         "chipsSectionTitle": MessageLookupByLibrary.simpleMessage("Chips"),
+        "city": MessageLookupByLibrary.simpleMessage("Stadt"),
         "continueButton": MessageLookupByLibrary.simpleMessage("Weiter"),
         "country": MessageLookupByLibrary.simpleMessage("Land"),
         "darkMode": MessageLookupByLibrary.simpleMessage("Dunkelmodus"),
@@ -199,6 +200,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Schiebereglerwert"),
         "slidersSectionTitle":
             MessageLookupByLibrary.simpleMessage("Schieberegler"),
+        "stateProvince":
+            MessageLookupByLibrary.simpleMessage("Bundesland/Provinz"),
         "stepOneContent": MessageLookupByLibrary.simpleMessage(
             "Dies ist der Inhalt für Schritt eins."),
         "stepOneTitle": MessageLookupByLibrary.simpleMessage("Schritt Eins"),

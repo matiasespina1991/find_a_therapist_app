@@ -114,6 +114,8 @@
             "selectACountry": "Selecciona un país",
             "location": "Ubicación",
             "country": "País",
+            "stateProvince": "Estado/Provincia",
+            "city": "Ciudad",
            "negativeAspectsTitle": "Aspectos Negativos",
           "negativeAspectsDescription": "Lo que no deseas que trate u ofrezca tu terapeuta",
           "positiveAspectsTitle": "Aspectos Positivos",

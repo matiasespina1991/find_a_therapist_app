@@ -44,6 +44,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "chipThreeLabel": MessageLookupByLibrary.simpleMessage("Chip Tres"),
         "chipTwoLabel": MessageLookupByLibrary.simpleMessage("Chip Dos"),
         "chipsSectionTitle": MessageLookupByLibrary.simpleMessage("Chips"),
+        "city": MessageLookupByLibrary.simpleMessage("Ciudad"),
         "continueButton": MessageLookupByLibrary.simpleMessage("Continuar"),
         "country": MessageLookupByLibrary.simpleMessage("País"),
         "darkMode": MessageLookupByLibrary.simpleMessage("Modo oscuro"),
@@ -204,6 +205,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Valor del Deslizador"),
         "slidersSectionTitle":
             MessageLookupByLibrary.simpleMessage("Deslizadores"),
+        "stateProvince":
+            MessageLookupByLibrary.simpleMessage("Estado/Provincia"),
         "stepOneContent": MessageLookupByLibrary.simpleMessage(
             "Este es el contenido del paso uno."),
         "stepOneTitle": MessageLookupByLibrary.simpleMessage("Paso Uno"),
