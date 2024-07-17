@@ -48,7 +48,7 @@ class _TherapistResultsScreenState extends State<TherapistResultsScreen> {
 
       if (widget.therapistFilters.remote &&
           !widget.therapistFilters.presential) {
-        return matchesRemote;
+        return matchesRemote && matchesCountry;
       } else if (!widget.therapistFilters.remote &&
           widget.therapistFilters.presential) {
         return matchesPresential && matchesCountry;

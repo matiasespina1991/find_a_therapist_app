@@ -26,6 +26,7 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "_locale": MessageLookupByLibrary.simpleMessage("es"),
+        "all": MessageLookupByLibrary.simpleMessage("Todos"),
         "allTherapists":
             MessageLookupByLibrary.simpleMessage("Todos los terapeutas"),
         "aspectsDetectedByAi": MessageLookupByLibrary.simpleMessage(
@@ -186,8 +187,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "score": MessageLookupByLibrary.simpleMessage("Valoración"),
         "seeResultsButton":
             MessageLookupByLibrary.simpleMessage("Ver resultados"),
+        "selectACity":
+            MessageLookupByLibrary.simpleMessage("Selecciona una ciudad"),
         "selectACountry":
             MessageLookupByLibrary.simpleMessage("Selecciona un país"),
+        "selectAStateProvince": MessageLookupByLibrary.simpleMessage(
+            "Selecciona un estado/provincia"),
         "sendButton": MessageLookupByLibrary.simpleMessage("Enviar"),
         "sendingButton": MessageLookupByLibrary.simpleMessage("Enviando..."),
         "settingsButton":

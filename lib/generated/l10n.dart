@@ -1140,6 +1140,36 @@ class S {
     );
   }
 
+  /// `Select a state/province`
+  String get selectAStateProvince {
+    return Intl.message(
+      'Select a state/province',
+      name: 'selectAStateProvince',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select a city`
+  String get selectACity {
+    return Intl.message(
+      'Select a city',
+      name: 'selectACity',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `All`
+  String get all {
+    return Intl.message(
+      'All',
+      name: 'all',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Location`
   String get location {
     return Intl.message(

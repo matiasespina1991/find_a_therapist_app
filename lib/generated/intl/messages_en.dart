@@ -25,6 +25,7 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "_locale": MessageLookupByLibrary.simpleMessage("en"),
+        "all": MessageLookupByLibrary.simpleMessage("All"),
         "allTherapists": MessageLookupByLibrary.simpleMessage("All therapists"),
         "aspectsDetectedByAi":
             MessageLookupByLibrary.simpleMessage("Aspects detected by AI:"),
@@ -177,8 +178,11 @@ class MessageLookup extends MessageLookupByLibrary {
             "Enter your request here - Provide as much information as possible about your needs, challenges, and what you\'re looking for in a therapist.   \n\ne.g.:  \nHello, I am a 32-year-old individual looking for a therapist who can relate to my experiences and provide culturally sensitive therapy. I have faced difficulties with anxiety, low self-esteem, and have been finding it hard to socialize lately. I need someone who specializes in Cognitive Behavioral Therapy, and knowledge in astrology would be a plus. I would prefer a therapist of color and..."),
         "score": MessageLookupByLibrary.simpleMessage("Score"),
         "seeResultsButton": MessageLookupByLibrary.simpleMessage("See results"),
+        "selectACity": MessageLookupByLibrary.simpleMessage("Select a city"),
         "selectACountry":
             MessageLookupByLibrary.simpleMessage("Select a country"),
+        "selectAStateProvince":
+            MessageLookupByLibrary.simpleMessage("Select a state/province"),
         "sendButton": MessageLookupByLibrary.simpleMessage("Send"),
         "sendingButton": MessageLookupByLibrary.simpleMessage("Sending..."),
         "settingsButton": MessageLookupByLibrary.simpleMessage("Settings"),
