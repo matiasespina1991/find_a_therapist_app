@@ -109,7 +109,10 @@ class _ThemeFloatingSpeedDialMenuState
                     isDarkMode ? Colors.black : Colors.white.withOpacity(0.8),
               ),
             )
-          : null,
+          : Icon(
+              Icons.tune,
+              size: 30,
+            ),
     );
   }
 }
