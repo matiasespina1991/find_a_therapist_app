@@ -153,6 +153,7 @@ dependencies:
   firebase_auth: ^5.1.1
 #  # Cloud Firestore is a flexible, scalable database for mobile, web, and server development from Firebase and Google Cloud Platform.
   cloud_firestore: ^5.1.0
+  csc_picker: ^0.2.7
   #  # Firebase Database is a Flutter plugin to use the Firebase Realtime Database API and allow storing and syncing data with a NoSQL cloud database.
 #  firebase_database: ^11.0.1
 #  # Firebase Storage is a Flutter plugin to use the Firebase Cloud Storage API and allow uploading, downloading, and deleting files in the cloud.
