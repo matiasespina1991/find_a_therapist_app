@@ -1,3 +1,4 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:findatherapistapp/app_settings/theme_settings.dart';
 import 'package:findatherapistapp/widgets/LoadingCircle/loading_circle.dart';
 import 'package:flutter/material.dart';

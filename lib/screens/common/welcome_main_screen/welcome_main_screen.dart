@@ -1,3 +1,4 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:findatherapistapp/app_settings/app_info.dart';
 import 'package:findatherapistapp/utils/admin/update_all_therapists_aspects.dart';
 import 'package:flutter/material.dart';
@@ -41,11 +42,17 @@ class _WelcomeMainScreenState extends ConsumerState<WelcomeMainScreen> {
             const SizedBox(
               height: 48,
             ),
-            Lottie.asset(
-              'lib/assets/lottie_animations/animation2.json',
-              width: double.infinity,
-              height: 190,
-              fit: BoxFit.cover,
+            FadeInUp(
+              from: 20,
+              curve: Curves.decelerate,
+              delay: const Duration(milliseconds: 2500),
+              duration: const Duration(milliseconds: 900),
+              child: Lottie.asset(
+                'lib/assets/lottie_animations/animation2.json',
+                width: double.infinity,
+                height: 190,
+                fit: BoxFit.cover,
+              ),
             ),
             const SizedBox(
               height: 197,
@@ -57,35 +64,56 @@ class _WelcomeMainScreenState extends ConsumerState<WelcomeMainScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('${S.of(context).welcomeToPrefix}${AppInfo.appName}!',
-                        style: Theme.of(context).textTheme.headlineSmall),
+                    FadeInUp(
+                      curve: Curves.decelerate,
+                      duration: const Duration(milliseconds: 1000),
+                      delay: const Duration(milliseconds: 2000),
+                      from: 10,
+                      child: Column(
+                        children: [
+                          Text(
+                              '${S.of(context).welcomeToPrefix}${AppInfo.appName}!',
+                              style: Theme.of(context).textTheme.headlineSmall),
+                          const SizedBox(height: 10),
+                          Text(
+                              'Your AI-powered partner that helps you find the right therapist for you and your specific needs - worldwide!',
+                              style: Theme.of(context).textTheme.bodyMedium),
+                        ],
+                      ),
+                    ),
                     const SizedBox(height: 10),
-                    Text(
-                        'Your AI-powered partner that helps you find the right therapist for you and your specific needs - worldwide!',
-                        style: Theme.of(context).textTheme.bodyMedium),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                        onPressed: () {
-                          context.push(Routes.userRequestScreen.path);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: const Size(double.infinity, 47),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(S.of(context).findYourTherapistButton),
-                          ],
-                        )),
-                    const SizedBox(height: 15),
-                    OutlinedButton(
-                        onPressed: () {
-                          updateALLTherapistAspects();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: const Size(double.infinity, 47),
-                        ),
-                        child: Text(S.of(context).registerAsTherapistButton)),
+                    FadeInUp(
+                      curve: Curves.decelerate,
+                      duration: const Duration(milliseconds: 1000),
+                      from: 20,
+                      child: Column(
+                        children: [
+                          ElevatedButton(
+                              onPressed: () {
+                                context.push(Routes.userRequestScreen.path);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: const Size(double.infinity, 47),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(S.of(context).findYourTherapistButton),
+                                ],
+                              )),
+                          const SizedBox(height: 15),
+                          OutlinedButton(
+                              onPressed: () {
+                                updateALLTherapistAspects();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: const Size(double.infinity, 47),
+                              ),
+                              child: Text(
+                                  S.of(context).registerAsTherapistButton)),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
