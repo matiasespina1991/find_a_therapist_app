@@ -8,6 +8,7 @@ import 'package:findatherapistapp/widgets/NotificationSnackbar/notification_snac
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localized_locales/flutter_localized_locales.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:findatherapistapp/widgets/LoadingCircle/loading_circle.dart';
 import 'package:findatherapistapp/services/gemini_service.dart';
@@ -31,6 +32,7 @@ class UserRequestScreen extends ConsumerStatefulWidget {
 
 class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
   final TextEditingController _requestController = TextEditingController();
+  final TextEditingController _languageController = TextEditingController();
   String _requestLastText = '';
   final GeminiService _geminiService = GeminiService();
   final SpeechToTextService _speechService = SpeechToTextService();
@@ -52,10 +54,23 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
 
   CountryService countryService = CountryService();
 
+  List<String> selectedLanguages = ['English'];
+
+  final List<String> languages = [
+    'en',
+    'es',
+    'de',
+  ];
+
   @override
   void initState() {
     super.initState();
     _initializeSpeech();
+
+    Locale currentLocale = ref.read(localeProvider).locale;
+
+    selectedLanguages = [currentLocale.languageCode];
+
     therapistFilters = UserRequestFilters(
         remote: true,
         presential: true,
@@ -75,6 +90,18 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
       countryInputController.text =
           '  ${countryService.findByCode(therapistFilters.location.country)?.name}';
     }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _languageController.text = _getLocalizedLanguageNames(selectedLanguages);
+  }
+
+  String _getLocalizedLanguageNames(List<String> languageCodes) {
+    return languageCodes
+        .map((code) => LocaleNames.of(context)!.nameOf(code) ?? code)
+        .join(', ');
   }
 
   void _initializeSpeech() async {
@@ -277,7 +304,28 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 16),
+
+                  /// Preferred Language Input
+                  Text(
+                    '${S.of(context).preferredLanguage}:',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 10),
+                  GestureDetector(
+                    onTap: () => _showLanguageSelectionModal(context),
+                    child: AbsorbPointer(
+                      child: TextField(
+                        controller: _languageController,
+                        decoration: const InputDecoration(
+                          hintText: 'Select preferred language(s)',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 10),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -451,8 +499,10 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 12),
                 ],
               ),
+
               const SizedBox(height: 12),
               Text(S.of(context).tellUsWhatYouAreLookingFor,
                   style: Theme.of(context)
@@ -460,6 +510,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                       .titleMedium
                       ?.copyWith(fontSize: 17)),
               const SizedBox(height: 20),
+
               Stack(
                 children: [
                   Scrollbar(
@@ -642,6 +693,44 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
               const SizedBox(height: 90),
             ],
           )),
+    );
+  }
+
+  void _showLanguageSelectionModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: languages.map((String language) {
+                  return CheckboxListTile(
+                    title: Text(
+                        LocaleNames.of(context)!.nameOf(language) ?? language),
+                    value: selectedLanguages.contains(language),
+                    onChanged: (bool? value) {
+                      setState(() {
+                        if (value == true) {
+                          selectedLanguages.add(language);
+                        } else {
+                          if (selectedLanguages.length > 1) {
+                            selectedLanguages.remove(language);
+                          }
+                        }
+                      });
+                      _languageController.text =
+                          _getLocalizedLanguageNames(selectedLanguages);
+                    },
+                  );
+                }).toList(),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 

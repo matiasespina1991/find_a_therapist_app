@@ -166,6 +166,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "What you expect your therapist to treat"),
         "positiveAspectsTitle":
             MessageLookupByLibrary.simpleMessage("Positive aspects"),
+        "preferredLanguage":
+            MessageLookupByLibrary.simpleMessage("Preferred language/s"),
         "presential": MessageLookupByLibrary.simpleMessage("Presential"),
         "professionalCertificates":
             MessageLookupByLibrary.simpleMessage("Professional Certificates"),

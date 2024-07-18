@@ -1210,6 +1210,16 @@ class S {
     );
   }
 
+  /// `Preferred language/s`
+  String get preferredLanguage {
+    return Intl.message(
+      'Preferred language/s',
+      name: 'preferredLanguage',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Redo request`
   String get redoRequestButton {
     return Intl.message(

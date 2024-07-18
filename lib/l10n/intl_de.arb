@@ -116,6 +116,7 @@
                  "selectACountry": "Wählen Sie ein Land",
                     "selectAStateProvince": "Wählen Sie ein Bundesland/Provinz",
                     "selectACity": "Wählen Sie eine Stadt",
+                    "preferredLanguage": "Bevorzugte Sprache/n",
                 "redoRequestButton": "Anfrage wiederholen",
                 "findMyTherapistButton": "Finde meinen Therapeuten",
                 "seeResultsButton": "Ergebnisse anzeigen",

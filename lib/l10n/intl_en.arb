@@ -115,8 +115,10 @@
         "all": "All",
         "location": "Location",
         "country": "Country",
+
         "stateProvince": "State/Province",
         "city": "City",
+        "preferredLanguage": "Preferred language/s",
        "redoRequestButton": "Redo request",
        "findMyTherapistButton": "Find my therapist",
        "seeResultsButton": "See results",
