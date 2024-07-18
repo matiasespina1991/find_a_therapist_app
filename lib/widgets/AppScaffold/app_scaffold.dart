@@ -34,6 +34,7 @@ class AppScaffold extends ConsumerStatefulWidget {
   final List<Widget>? actions;
   final bool? centerTitle;
   final bool setFloatingSpeedDialToLoadingMode;
+  final Function()? backButton;
   const AppScaffold(
       {super.key,
       required this.body,
@@ -50,7 +51,8 @@ class AppScaffold extends ConsumerStatefulWidget {
       this.ignoreGlobalPadding = false,
       this.actions,
       this.centerTitle,
-      this.setFloatingSpeedDialToLoadingMode = false});
+      this.setFloatingSpeedDialToLoadingMode = false,
+      this.backButton});
 
   @override
   AppScaffoldState createState() => AppScaffoldState();
@@ -101,6 +103,7 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
       child: Scaffold(
         appBar: (AppGeneralSettings.useTopAppBar || widget.useTopAppBar)
             ? ThemeAppBar(
+                backButton: widget.backButton,
                 appBarHeight: ThemeSettings.appBarHeight,
                 centerTitle: widget.centerTitle,
                 actions: widget.actions,

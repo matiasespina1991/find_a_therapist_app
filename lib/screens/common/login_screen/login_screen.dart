@@ -343,7 +343,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               variant: SnackbarVariant.success,
               duration: SnackbarDuration.short,
               delay: 1);
-          context.go(Routes.homeScreen.path);
+          context.go(Routes.welcomeMainScreen.path);
         }
 
         if (mounted) {
@@ -407,7 +407,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 duration: SnackbarDuration.short,
                 delay: 1,
               );
-              context.go(Routes.homeScreen.path);
+              context.go(Routes.welcomeMainScreen.path);
             },
           );
         }

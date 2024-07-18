@@ -67,8 +67,8 @@ class ThemeSettings {
     darkModePrimary: Color(0xFF121212),
   );
 
-  static const ThemeColors appbarBackgroundColor = ThemeColors(
-    lightModePrimary: Colors.black12,
+  static ThemeColors appbarBackgroundColor = const ThemeColors(
+    lightModePrimary: Color(0xFFEEEEEE),
     darkModePrimary: Color(0xFF121212),
   );
 

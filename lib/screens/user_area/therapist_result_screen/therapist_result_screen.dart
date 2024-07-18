@@ -33,7 +33,6 @@ class _TherapistResultsScreenState extends State<TherapistResultsScreen> {
   }
 
   void _applyFilters() {
-    print(widget.therapistFilters.country);
     _filteredTherapists = widget.matchedTherapists.where((match) {
       final therapist = match['therapist'] as TherapistModel;
       final meetingType = therapist.therapistInfo.meetingType;
@@ -42,9 +41,9 @@ class _TherapistResultsScreenState extends State<TherapistResultsScreen> {
       bool matchesRemote = widget.therapistFilters.remote && meetingType.remote;
       bool matchesPresential =
           widget.therapistFilters.presential && meetingType.presential;
-      bool matchesCountry = widget.therapistFilters.country == null
+      bool matchesCountry = widget.therapistFilters.location.enabled == false
           ? true
-          : (widget.therapistFilters.country == country);
+          : (widget.therapistFilters.location.country == country);
 
       if (widget.therapistFilters.remote &&
           !widget.therapistFilters.presential) {

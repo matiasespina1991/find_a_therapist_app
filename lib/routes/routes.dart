@@ -23,7 +23,7 @@ class Routes {
     builder: (context) => const LoginScreen(),
   );
 
-  static RouteConfig homeScreen = RouteConfig(
+  static RouteConfig welcomeMainScreen = RouteConfig(
     path: '/',
     name: 'Welcome Main Screen',
     builder: (context) => const WelcomeMainScreen(),
@@ -85,7 +85,7 @@ class Routes {
   static List<GoRoute> _generateRoutes() {
     List<RouteConfig> publicRoutes = [
       loginScreen,
-      homeScreen,
+      welcomeMainScreen,
       settingsScreen,
       userProfileScreen,
       userRequestScreen,

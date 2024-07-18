@@ -11,9 +11,11 @@ class ThemeAppBar extends ConsumerWidget implements PreferredSizeWidget {
     this.title,
     this.actions,
     this.centerTitle = true,
+    this.backButton,
   });
 
   final double? appBarHeight;
+  final Function()? backButton;
   final String? title;
   final List<Widget>? actions;
   final bool? centerTitle;
@@ -27,7 +29,13 @@ class ThemeAppBar extends ConsumerWidget implements PreferredSizeWidget {
         : ThemeSettings.appbarOnBackgroundColor.lightModePrimary;
 
     return AppBar(
-      elevation: 3,
+      leading: backButton != null
+          ? IconButton(
+              icon: Icon(Icons.arrow_back_ios, color: iconColor),
+              onPressed: backButton,
+            )
+          : null,
+      elevation: 2,
       backgroundColor: isDarkMode
           ? ThemeSettings.appbarBackgroundColor.darkModePrimary
           : ThemeSettings.appbarBackgroundColor.lightModePrimary,

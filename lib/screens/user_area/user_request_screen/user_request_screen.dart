@@ -12,9 +12,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:findatherapistapp/widgets/LoadingCircle/loading_circle.dart';
 import 'package:findatherapistapp/services/gemini_service.dart';
 import 'package:findatherapistapp/services/speech_to_text_service.dart';
+import 'package:go_router/go_router.dart';
 import '../../../app_settings/theme_settings.dart';
 import '../../../models/gemini_tags_response_model.dart';
 import '../../../providers/providers_all.dart';
+import '../../../routes/routes.dart';
 import '../../../utils/debug/error_code_to_text.dart';
 import '../../../widgets/AppScaffold/app_scaffold.dart';
 import '../../../generated/l10n.dart';
@@ -40,7 +42,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
   Timer? _autoWriteTimer;
   TextEditingController countryInputController = TextEditingController();
   TextEditingController stateProvinceInputController = TextEditingController();
-  String defaultCountry = 'AU';
+  String? defaultCountry = null;
   late UserRequestFilters therapistFilters;
 
   List<Country> countries = [];
@@ -55,7 +57,10 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
     super.initState();
     _initializeSpeech();
     therapistFilters = UserRequestFilters(
-        remote: true, presential: true, country: defaultCountry);
+        remote: true,
+        presential: true,
+        location: LocationFilters(
+            enabled: true, country: 'AU', state: null, city: null));
     List<Country> allCountries = countryService.getAll();
 
     setState(() {
@@ -64,8 +69,12 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
 
     stateProvinceInputController.text = '';
 
-    countryInputController.text =
-        '  ${countryService.findByCode(therapistFilters.country)?.name}';
+    if (therapistFilters.location.country == null) {
+      countryInputController.text = '< Select a country >';
+    } else {
+      countryInputController.text =
+          '  ${countryService.findByCode(therapistFilters.location.country)?.name}';
+    }
   }
 
   void _initializeSpeech() async {
@@ -171,6 +180,13 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
     final bool isDarkMode =
         ref.watch(themeProvider).themeMode == ThemeMode.dark;
     return AppScaffold(
+      backButton: () {
+        if (Navigator.canPop(context)) {
+          Navigator.pop(context);
+        } else {
+          context.go(Routes.welcomeMainScreen.path);
+        }
+      },
       setFloatingSpeedDialToLoadingMode:
           isSendingRequest || _isAutoWriting || _isImprovingTranscription,
       scrollPhysics: const ClampingScrollPhysics(),
@@ -276,29 +292,19 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   Checkbox(
-                                      value: therapistFilters.country == null
-                                          ? true
-                                          : false,
+                                      value: !therapistFilters.location.enabled,
                                       onChanged: (bool) {
                                         setState(() {
-                                          if (therapistFilters.country ==
-                                              null) {
-                                            therapistFilters.country =
-                                                defaultCountry;
-                                          } else {
-                                            therapistFilters.country = null;
-                                          }
+                                          therapistFilters.location.enabled =
+                                              !therapistFilters
+                                                  .location.enabled;
                                         });
                                       }),
                                   GestureDetector(
                                     onTap: () {
                                       setState(() {
-                                        if (therapistFilters.country != null) {
-                                          therapistFilters.country = null;
-                                        } else {
-                                          therapistFilters.country =
-                                              defaultCountry;
-                                        }
+                                        therapistFilters.location.enabled =
+                                            !therapistFilters.location.enabled;
                                       });
                                     },
                                     child: Text(
@@ -315,7 +321,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
 
                       /// Country Input
                       Visibility(
-                        visible: therapistFilters.country != null,
+                        visible: therapistFilters.location.enabled,
                         child: GestureDetector(
                           onTap: () {
                             showCountryPicker(
@@ -323,7 +329,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                               showPhoneCode: false,
                               onSelect: (Country country) {
                                 setState(() {
-                                  therapistFilters.country =
+                                  therapistFilters.location.country =
                                       country.countryCode;
 
                                   countryInputController.text =
@@ -360,9 +366,8 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                                       fontSize: 0,
                                     ),
                                     prefix: Text(
-                                      (therapistFilters.country?.isNotEmpty ??
-                                              false)
-                                          ? '${countryService.findByCode(therapistFilters.country)?.flagEmoji}'
+                                      therapistFilters.location.enabled
+                                          ? '${countryService.findByCode(therapistFilters.location.country)?.flagEmoji}'
                                           : '',
                                       style: const TextStyle(
                                         fontSize: 22,
@@ -379,7 +384,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
 
                       /// State/Province Input
                       Visibility(
-                        visible: therapistFilters.country != null,
+                        visible: therapistFilters.location.enabled,
                         child: GestureDetector(
                           onTap: () {},
                           child: AbsorbPointer(
@@ -413,7 +418,8 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
 
                       /// City Input
                       Visibility(
-                        visible: therapistFilters.country != null,
+                        visible: therapistFilters.location.enabled &&
+                            therapistFilters.location.state != null,
                         child: GestureDetector(
                           onTap: () {},
                           child: AbsorbPointer(
