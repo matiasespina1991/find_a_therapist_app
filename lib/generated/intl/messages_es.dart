@@ -107,6 +107,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("¿Olvidaste tu contraseña?"),
         "generativeAiErrorMessage": MessageLookupByLibrary.simpleMessage(
             "Ocurrió un error al intentar procesar su solicitud. Hemos reportado el problema. Por favor, inténtelo nuevamente más tarde."),
+        "goToNextStep":
+            MessageLookupByLibrary.simpleMessage("Ir al siguiente paso"),
         "gotIt": MessageLookupByLibrary.simpleMessage("Entendido"),
         "homeScreenTitle":
             MessageLookupByLibrary.simpleMessage("Pantalla Principal"),
@@ -159,6 +161,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Hubo un error al intentar procesar su solicitud. Hemos reportado el problema. Por favor, inténtelo nuevamente más tarde."),
         "noTextFoundInResponseMessage": MessageLookupByLibrary.simpleMessage(
             "Hubo un error al intentar procesar su solicitud. Hemos reportado el problema. Por favor, inténtelo nuevamente más tarde."),
+        "noTherapistsFoundDescription": MessageLookupByLibrary.simpleMessage(
+            "Por favor, inténtalo de nuevo modificando tu solicitud o probando diferentes filtros."),
         "notFound": MessageLookupByLibrary.simpleMessage("No se encontraron."),
         "ohNoSomethingWentWrong":
             MessageLookupByLibrary.simpleMessage("Oh no, algo salió mal!"),
@@ -195,6 +199,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Selecciona un país"),
         "selectAStateProvince": MessageLookupByLibrary.simpleMessage(
             "Selecciona un estado/provincia"),
+        "selectPreferredLanguage": MessageLookupByLibrary.simpleMessage(
+            "Selecciona el/los idioma/s preferido/s"),
         "sendButton": MessageLookupByLibrary.simpleMessage("Enviar"),
         "sendingButton": MessageLookupByLibrary.simpleMessage("Enviando..."),
         "settingsButton":

@@ -63,59 +63,91 @@ class _TherapistResultsScreenState extends State<TherapistResultsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print(_filteredTherapists.length);
+
     return AppScaffold(
       centerTitle: true,
       useTopAppBar: true,
       showScreenTitleInAppBar: true,
       ignoreGlobalPadding: true,
       scrollPhysics: const NeverScrollableScrollPhysics(),
-      body: ListView.builder(
-        padding: const EdgeInsets.only(bottom: 75, top: 10),
-        physics: const ClampingScrollPhysics(),
-        itemCount: _filteredTherapists.length,
-        itemBuilder: (context, index) {
-          final match = _filteredTherapists[index];
-          final therapist = match['therapist'] as TherapistModel;
-          final matchScore = match['matchScore'] as double;
+      body: _filteredTherapists.isEmpty
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.search_off,
+                      size: 80,
+                      color: Colors.grey,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      S.of(context).noTherapistsFound,
+                      style: const TextStyle(fontSize: 22, color: Colors.grey),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      S.of(context).noTherapistsFoundDescription,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          : ListView.builder(
+              padding: const EdgeInsets.only(bottom: 75, top: 10),
+              physics: const ClampingScrollPhysics(),
+              itemCount: _filteredTherapists.length,
+              itemBuilder: (context, index) {
+                final match = _filteredTherapists[index];
+                final therapist = match['therapist'] as TherapistModel;
+                final matchScore = match['matchScore'] as double;
 
-          bool shouldAnimate = !_animatedIndexes.contains(index);
+                bool shouldAnimate = !_animatedIndexes.contains(index);
 
-          // Set a threshold for how many items should have staggered animations
-          const int staggeredAnimationThreshold = 6;
+                // Set a threshold for how many items should have staggered animations
+                const int staggeredAnimationThreshold = 6;
 
-          return shouldAnimate
-              ? (index < staggeredAnimationThreshold
-                  ? FadeInUp(
-                      curve: Curves.decelerate,
-                      from: 10,
-                      delay: Duration(milliseconds: 300 * index),
-                      child: _buildTherapistCard(therapist, matchScore, index),
-                      controller: (controller) {
-                        controller.addStatusListener((status) {
-                          if (status == AnimationStatus.completed) {
-                            setState(() {
-                              _animatedIndexes.add(index);
-                            });
-                          }
-                        });
-                      },
-                    )
-                  : FadeIn(
-                      child: _buildTherapistCard(therapist, matchScore, index),
-                      duration: Duration(milliseconds: 200),
-                      controller: (controller) {
-                        controller.addStatusListener((status) {
-                          if (status == AnimationStatus.completed) {
-                            setState(() {
-                              _animatedIndexes.add(index);
-                            });
-                          }
-                        });
-                      },
-                    ))
-              : _buildTherapistCard(therapist, matchScore, index);
-        },
-      ),
+                return shouldAnimate
+                    ? (index < staggeredAnimationThreshold
+                        ? FadeInUp(
+                            curve: Curves.decelerate,
+                            from: 10,
+                            delay: Duration(milliseconds: 300 * index),
+                            child: _buildTherapistCard(
+                                therapist, matchScore, index),
+                            controller: (controller) {
+                              controller.addStatusListener((status) {
+                                if (status == AnimationStatus.completed) {
+                                  setState(() {
+                                    _animatedIndexes.add(index);
+                                  });
+                                }
+                              });
+                            },
+                          )
+                        : FadeIn(
+                            duration: const Duration(milliseconds: 200),
+                            controller: (controller) {
+                              controller.addStatusListener((status) {
+                                if (status == AnimationStatus.completed) {
+                                  setState(() {
+                                    _animatedIndexes.add(index);
+                                  });
+                                }
+                              });
+                            },
+                            child: _buildTherapistCard(
+                                therapist, matchScore, index),
+                          ))
+                    : _buildTherapistCard(therapist, matchScore, index);
+              },
+            ),
       appBarTitle: S.of(context).matchedTherapists,
       isProtected: true,
     );

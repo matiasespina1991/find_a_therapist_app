@@ -103,6 +103,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Forgot your password?"),
         "generativeAiErrorMessage": MessageLookupByLibrary.simpleMessage(
             "An error occurred while trying to process your request. We have reported the issue. Please try again later."),
+        "goToNextStep": MessageLookupByLibrary.simpleMessage("Go to next step"),
         "gotIt": MessageLookupByLibrary.simpleMessage("Got it"),
         "homeScreenTitle": MessageLookupByLibrary.simpleMessage("Home Screen"),
         "inputsSectionTitle": MessageLookupByLibrary.simpleMessage("Inputs"),
@@ -151,6 +152,10 @@ class MessageLookup extends MessageLookupByLibrary {
             "There was an error trying to process your request. We have reported the issue. Please try again later."),
         "noTextFoundInResponseMessage": MessageLookupByLibrary.simpleMessage(
             "There was an error trying to process your request. We have reported the issue. Please try again later."),
+        "noTherapistsFound": MessageLookupByLibrary.simpleMessage(
+            "Sorry, no therapists found matching your criteria."),
+        "noTherapistsFoundDescription": MessageLookupByLibrary.simpleMessage(
+            "Please try again changing your request or selecting different filters."),
         "notFound": MessageLookupByLibrary.simpleMessage("Not found."),
         "ohNoSomethingWentWrong": MessageLookupByLibrary.simpleMessage(
             "Oh no, Something went wrong!"),
@@ -185,6 +190,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Select a country"),
         "selectAStateProvince":
             MessageLookupByLibrary.simpleMessage("Select a state/province"),
+        "selectPreferredLanguage":
+            MessageLookupByLibrary.simpleMessage("Select preferred language/s"),
         "sendButton": MessageLookupByLibrary.simpleMessage("Send"),
         "sendingButton": MessageLookupByLibrary.simpleMessage("Sending..."),
         "settingsButton": MessageLookupByLibrary.simpleMessage("Settings"),

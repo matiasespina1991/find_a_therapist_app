@@ -106,6 +106,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Passwort vergessen?"),
         "generativeAiErrorMessage": MessageLookupByLibrary.simpleMessage(
             "Es gab einen Fehler beim Versuch, Ihre Anfrage zu verarbeiten. Wir haben das Problem gemeldet. Bitte versuchen Sie es später erneut."),
+        "goToNextStep":
+            MessageLookupByLibrary.simpleMessage("Zum nächsten Schritt gehen"),
         "gotIt": MessageLookupByLibrary.simpleMessage("Verstanden"),
         "homeScreenTitle":
             MessageLookupByLibrary.simpleMessage("Startbildschirm"),
@@ -156,6 +158,10 @@ class MessageLookup extends MessageLookupByLibrary {
             "Es gab einen Fehler beim Versuch, Ihre Anfrage zu verarbeiten. Wir haben das Problem gemeldet. Bitte versuchen Sie es später erneut."),
         "noTextFoundInResponseMessage": MessageLookupByLibrary.simpleMessage(
             "Es gab einen Fehler beim Versuch, Ihre Anfrage zu verarbeiten. Wir haben das Problem gemeldet. Bitte versuchen Sie es später erneut."),
+        "noTherapistsFound":
+            MessageLookupByLibrary.simpleMessage("Keine Therapeuten gefunden"),
+        "noTherapistsFoundDescription": MessageLookupByLibrary.simpleMessage(
+            "Bitte versuchen Sie es erneut, indem Sie Ihre Anfrage ändern oder andere Filter auswählen."),
         "notFound": MessageLookupByLibrary.simpleMessage("Nicht gefunden."),
         "ohNoSomethingWentWrong": MessageLookupByLibrary.simpleMessage(
             "Oh nein, etwas ist schief gelaufen!"),
@@ -192,6 +198,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Wählen Sie ein Land"),
         "selectAStateProvince": MessageLookupByLibrary.simpleMessage(
             "Wählen Sie ein Bundesland/Provinz"),
+        "selectPreferredLanguage": MessageLookupByLibrary.simpleMessage(
+            "Wählen Sie bevorzugte Sprache/n"),
         "sendButton": MessageLookupByLibrary.simpleMessage("Senden"),
         "sendingButton": MessageLookupByLibrary.simpleMessage("Senden..."),
         "settingsButton": MessageLookupByLibrary.simpleMessage("Einstellungen"),

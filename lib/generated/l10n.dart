@@ -1220,6 +1220,46 @@ class S {
     );
   }
 
+  /// `Select preferred language/s`
+  String get selectPreferredLanguage {
+    return Intl.message(
+      'Select preferred language/s',
+      name: 'selectPreferredLanguage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Go to next step`
+  String get goToNextStep {
+    return Intl.message(
+      'Go to next step',
+      name: 'goToNextStep',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sorry, no therapists found matching your criteria.`
+  String get noTherapistsFound {
+    return Intl.message(
+      'Sorry, no therapists found matching your criteria.',
+      name: 'noTherapistsFound',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please try again changing your request or selecting different filters.`
+  String get noTherapistsFoundDescription {
+    return Intl.message(
+      'Please try again changing your request or selecting different filters.',
+      name: 'noTherapistsFoundDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Redo request`
   String get redoRequestButton {
     return Intl.message(

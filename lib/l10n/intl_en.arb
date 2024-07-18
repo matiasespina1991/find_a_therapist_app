@@ -119,6 +119,12 @@
         "stateProvince": "State/Province",
         "city": "City",
         "preferredLanguage": "Preferred language/s",
+        "selectPreferredLanguage": "Select preferred language/s",
+        "goToNextStep": "Go to next step",
+        "noTherapistsFound": "Sorry, no therapists found matching your criteria.",
+        "noTherapistsFoundDescription": "Please try again changing your request or selecting different filters.",
+
+
        "redoRequestButton": "Redo request",
        "findMyTherapistButton": "Find my therapist",
        "seeResultsButton": "See results",

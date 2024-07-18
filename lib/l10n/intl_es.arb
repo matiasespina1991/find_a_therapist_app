@@ -120,6 +120,12 @@
             "stateProvince": "Estado/Provincia",
             "city": "Ciudad",
             "preferredLanguage": "Idioma/s preferido/s",
+            "selectPreferredLanguage": "Selecciona el/los idioma/s preferido/s",
+                   "noTherapistsFounds": "Lo sentimos, no se encontraron terapeutas que coincidan con tus criterios.",
+              "noTherapistsFoundDescription": "Por favor, inténtalo de nuevo modificando tu solicitud o probando diferentes filtros.",
+
+
+        "goToNextStep": "Ir al siguiente paso",
            "negativeAspectsTitle": "Aspectos Negativos",
           "negativeAspectsDescription": "Lo que no deseas que trate u ofrezca tu terapeuta",
           "positiveAspectsTitle": "Aspectos Positivos",

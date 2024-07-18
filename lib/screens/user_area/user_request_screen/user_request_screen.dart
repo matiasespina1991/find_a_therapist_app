@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:country_picker/country_picker.dart';
 import 'package:findatherapistapp/models/general_models.dart';
 import 'package:findatherapistapp/providers/locale_provider.dart';
+import 'package:findatherapistapp/utils/admin/to_capital_case.dart';
 import 'package:findatherapistapp/widgets/NotificationSnackbar/notification_snackbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -50,17 +51,21 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
   List<Country> countries = [];
   String listenedText = '';
 
-  final ScrollController _scrollController = ScrollController();
+  // final ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollControllerPage1 = ScrollController();
+  final ScrollController _scrollControllerPage2 = ScrollController();
 
   CountryService countryService = CountryService();
 
-  List<String> selectedLanguages = ['English'];
+  List<String> selectedLanguages = ['en'];
 
   final List<String> languages = [
     'en',
     'es',
     'de',
   ];
+
+  final PageController _pageController = PageController();
 
   @override
   void initState() {
@@ -100,7 +105,9 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
 
   String _getLocalizedLanguageNames(List<String> languageCodes) {
     return languageCodes
-        .map((code) => LocaleNames.of(context)!.nameOf(code) ?? code)
+        .map((code) => LocaleNames.of(context)!.nameOf(code) != null
+            ? toCapitalCase(LocaleNames.of(context)!.nameOf(code)!)
+            : code)
         .join(', ');
   }
 
@@ -113,6 +120,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
     _speechService.stopListening();
     _requestController.dispose();
     _autoWriteTimer?.cancel();
+    _pageController.dispose();
     super.dispose();
   }
 
@@ -207,492 +215,543 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
     final bool isDarkMode =
         ref.watch(themeProvider).themeMode == ThemeMode.dark;
     return AppScaffold(
+      scrollPhysics: const NeverScrollableScrollPhysics(),
+      actions: [
+        // if (_pageController.hasClients && _pageController.page != 1)
+        //   IconButton(
+        //     icon: const Icon(Icons.arrow_forward_ios),
+        //     onPressed: () {
+        //       _pageController.nextPage(
+        //         duration: const Duration(milliseconds: 300),
+        //         curve: Curves.easeInOut,
+        //       );
+        //     },
+        //   ),
+      ],
       backButton: () {
-        if (Navigator.canPop(context)) {
-          Navigator.pop(context);
+        if (_pageController.hasClients && _pageController.page == 0) {
+          if (Navigator.canPop(context)) {
+            Navigator.pop(context);
+          } else {
+            context.go(Routes.welcomeMainScreen.path);
+          }
         } else {
-          context.go(Routes.welcomeMainScreen.path);
+          _pageController.previousPage(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+          );
         }
       },
       setFloatingSpeedDialToLoadingMode:
           isSendingRequest || _isAutoWriting || _isImprovingTranscription,
-      scrollPhysics: const ClampingScrollPhysics(),
+      // scrollPhysics: const ClampingScrollPhysics(),
       useTopAppBar: true,
       isProtected: true,
       appBarTitle: S.of(context).yourRequest,
-      body: SingleChildScrollView(
-          controller: _scrollController,
-          child: Column(
+      body: Column(
+        children: [
+          Expanded(
+            child: PageView(
+              controller: _pageController,
+              physics: const ClampingScrollPhysics(),
+              children: [
+                _buildFirstPage(context, isDarkMode),
+                _buildSecondPage(context, isDarkMode),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFirstPage(BuildContext context, bool isDarkMode) {
+    return SingleChildScrollView(
+      controller: _scrollControllerPage1,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
+            children: [
+              Text(
+                '${S.of(context).meetingType}:',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: ListTile(
+                        dense: true,
+                        onTap: () {
+                          setState(() {
+                            if (!therapistFilters.presential) return;
+
+                            therapistFilters.remote = !therapistFilters.remote;
+                          });
+                        },
+                        contentPadding:
+                            const EdgeInsets.only(left: 25, right: 10),
+                        shape: RoundedRectangleBorder(
+                          side: BorderSide(
+                            width: 1,
+                            color: isDarkMode ? Colors.white : Colors.black87,
+                          ),
+                          borderRadius: ThemeSettings.buttonsBorderRadius,
+                        ),
+                        title: Text(S.of(context).remote,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  fontSize: 15,
+                                )),
+                        trailing: IgnorePointer(
+                          child: Checkbox(
+                              value: therapistFilters.remote,
+                              onChanged: (value) {}),
+                        )),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: ListTile(
+                        dense: true,
+                        onTap: () {
+                          setState(() {
+                            if (!therapistFilters.remote) return;
+                            therapistFilters.presential =
+                                !therapistFilters.presential;
+                          });
+                        },
+                        contentPadding:
+                            const EdgeInsets.only(left: 24, right: 10),
+                        shape: RoundedRectangleBorder(
+                          side: BorderSide(
+                            width: 1,
+                            color: isDarkMode ? Colors.white : Colors.black87,
+                          ),
+                          borderRadius: ThemeSettings.buttonsBorderRadius,
+                        ),
+                        title: Text(S.of(context).presential,
+                            overflow: TextOverflow.visible,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(fontSize: 15)),
+                        trailing: IgnorePointer(
+                          child: Checkbox(
+                              value: therapistFilters.presential,
+                              onChanged: (value) {}),
+                        )),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+
+              /// Preferred Language Input
+              Text(
+                '${S.of(context).preferredLanguage}:',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 10),
+              GestureDetector(
+                onTap: () => _showLanguageSelectionModal(context),
+                child: AbsorbPointer(
+                  child: TextField(
+                    controller: _languageController,
+                    decoration: InputDecoration(
+                      hintText: S.of(context).selectPreferredLanguage,
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 10),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    '${S.of(context).meetingType}:',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 10),
                   Row(
                     children: [
+                      Text(
+                        '${S.of(context).location}:',
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
                       Expanded(
-                        child: ListTile(
-                            dense: true,
-                            onTap: () {
-                              setState(() {
-                                if (!therapistFilters.presential) return;
-
-                                therapistFilters.remote =
-                                    !therapistFilters.remote;
-                              });
-                            },
-                            contentPadding:
-                                const EdgeInsets.only(left: 25, right: 10),
-                            shape: RoundedRectangleBorder(
-                              side: BorderSide(
-                                width: 1,
-                                color:
-                                    isDarkMode ? Colors.white : Colors.black87,
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Checkbox(
+                                  value: !therapistFilters.location.enabled,
+                                  onChanged: (bool) {
+                                    setState(() {
+                                      therapistFilters.location.enabled =
+                                          !therapistFilters.location.enabled;
+                                    });
+                                  }),
+                              GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    therapistFilters.location.enabled =
+                                        !therapistFilters.location.enabled;
+                                  });
+                                },
+                                child: Text('${S.of(context).worldwide}  🌐',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(fontSize: 15)),
                               ),
-                              borderRadius: ThemeSettings.buttonsBorderRadius,
-                            ),
-                            title: Text(S.of(context).remote,
-                                style: Theme.of(context)
+                            ]),
+                      ),
+                    ],
+                  ),
+
+                  /// Country Input
+                  Visibility(
+                    visible: therapistFilters.location.enabled,
+                    child: GestureDetector(
+                      onTap: () {
+                        showCountryPicker(
+                          context: context,
+                          showPhoneCode: false,
+                          onSelect: (Country country) {
+                            setState(() {
+                              therapistFilters.location.country =
+                                  country.countryCode;
+
+                              countryInputController.text = '  ${country.name}';
+                              defaultCountry = country.countryCode;
+                            });
+                          },
+                        );
+                      },
+                      child: AbsorbPointer(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 4),
+                            TextField(
+                              decoration: InputDecoration(
+                                label: Text(S.of(context).country),
+                                contentPadding: const EdgeInsets.only(
+                                    left: 15, right: 10, top: 11, bottom: 13),
+                                // isDense: true,
+                                isCollapsed: true,
+                                hintText: '< ${S.of(context).selectACountry} >',
+                                hintStyle: Theme.of(context)
                                     .textTheme
-                                    .bodyMedium
+                                    .titleMedium
+                                    ?.copyWith(),
+                                border: const OutlineInputBorder(),
+                                prefixStyle: const TextStyle(
+                                  fontSize: 0,
+                                ),
+                                prefix: Text(
+                                  therapistFilters.location.enabled
+                                      ? '${countryService.findByCode(therapistFilters.location.country)?.flagEmoji}'
+                                      : '',
+                                  style: const TextStyle(
+                                    fontSize: 22,
+                                  ),
+                                ),
+                              ),
+                              controller: countryInputController,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 8),
+
+                  /// State/Province Input
+                  Visibility(
+                    visible: therapistFilters.location.enabled,
+                    child: GestureDetector(
+                      onTap: () {},
+                      child: AbsorbPointer(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 15),
+                            TextField(
+                              textAlign: TextAlign.center,
+                              decoration: InputDecoration(
+                                floatingLabelBehavior:
+                                    FloatingLabelBehavior.always,
+                                label: Text(S.of(context).stateProvince),
+                                hintText: '< ${S.of(context).all} >',
+                                hintStyle: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium
                                     ?.copyWith(
                                       fontSize: 15,
-                                    )),
-                            trailing: IgnorePointer(
-                              child: Checkbox(
-                                  value: therapistFilters.remote,
-                                  onChanged: (value) {}),
-                            )),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: ListTile(
-                            dense: true,
-                            onTap: () {
-                              setState(() {
-                                if (!therapistFilters.remote) return;
-                                therapistFilters.presential =
-                                    !therapistFilters.presential;
-                              });
-                            },
-                            contentPadding:
-                                const EdgeInsets.only(left: 24, right: 10),
-                            shape: RoundedRectangleBorder(
-                              side: BorderSide(
-                                width: 1,
-                                color:
-                                    isDarkMode ? Colors.white : Colors.black87,
+                                    ),
+                                border: const OutlineInputBorder(),
                               ),
-                              borderRadius: ThemeSettings.buttonsBorderRadius,
+                              controller: stateProvinceInputController,
                             ),
-                            title: Text(S.of(context).presential,
-                                overflow: TextOverflow.visible,
-                                style: Theme.of(context)
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  /// City Input
+                  Visibility(
+                    visible: therapistFilters.location.enabled &&
+                        therapistFilters.location.state != null,
+                    child: GestureDetector(
+                      onTap: () {},
+                      child: AbsorbPointer(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 15),
+                            TextField(
+                              textAlign: TextAlign.center,
+                              decoration: InputDecoration(
+                                floatingLabelBehavior:
+                                    FloatingLabelBehavior.always,
+                                label: Text(S.of(context).city),
+                                hintText: '< ${S.of(context).all} >',
+                                hintStyle: Theme.of(context)
                                     .textTheme
-                                    .bodyMedium
-                                    ?.copyWith(fontSize: 15)),
-                            trailing: IgnorePointer(
-                              child: Checkbox(
-                                  value: therapistFilters.presential,
-                                  onChanged: (value) {}),
-                            )),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-
-                  /// Preferred Language Input
-                  Text(
-                    '${S.of(context).preferredLanguage}:',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 10),
-                  GestureDetector(
-                    onTap: () => _showLanguageSelectionModal(context),
-                    child: AbsorbPointer(
-                      child: TextField(
-                        controller: _languageController,
-                        decoration: const InputDecoration(
-                          hintText: 'Select preferred language(s)',
-                          border: OutlineInputBorder(),
+                                    .titleMedium
+                                    ?.copyWith(fontSize: 15),
+                                border: const OutlineInputBorder(),
+                              ),
+                              controller: stateProvinceInputController,
+                            ),
+                            const SizedBox(height: 12),
+                          ],
                         ),
                       ),
                     ),
                   ),
-
-                  const SizedBox(height: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            '${S.of(context).location}:',
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                          Expanded(
-                            child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Checkbox(
-                                      value: !therapistFilters.location.enabled,
-                                      onChanged: (bool) {
-                                        setState(() {
-                                          therapistFilters.location.enabled =
-                                              !therapistFilters
-                                                  .location.enabled;
-                                        });
-                                      }),
-                                  GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        therapistFilters.location.enabled =
-                                            !therapistFilters.location.enabled;
-                                      });
-                                    },
-                                    child: Text(
-                                        '${S.of(context).worldwide}  🌐',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium
-                                            ?.copyWith(fontSize: 15)),
-                                  ),
-                                ]),
-                          ),
-                        ],
-                      ),
-
-                      /// Country Input
-                      Visibility(
-                        visible: therapistFilters.location.enabled,
-                        child: GestureDetector(
-                          onTap: () {
-                            showCountryPicker(
-                              context: context,
-                              showPhoneCode: false,
-                              onSelect: (Country country) {
-                                setState(() {
-                                  therapistFilters.location.country =
-                                      country.countryCode;
-
-                                  countryInputController.text =
-                                      '  ${country.name}';
-                                  defaultCountry = country.countryCode;
-                                });
-                              },
-                            );
-                          },
-                          child: AbsorbPointer(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(height: 4),
-                                TextField(
-                                  decoration: InputDecoration(
-                                    label: Text(S.of(context).country),
-                                    contentPadding: const EdgeInsets.only(
-                                        left: 15,
-                                        right: 10,
-                                        top: 11,
-                                        bottom: 13),
-                                    // isDense: true,
-                                    isCollapsed: true,
-                                    hintText:
-                                        '< ${S.of(context).selectACountry} >',
-                                    hintStyle: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium
-                                        ?.copyWith(),
-                                    border: const OutlineInputBorder(),
-                                    prefixStyle: const TextStyle(
-                                      fontSize: 0,
-                                    ),
-                                    prefix: Text(
-                                      therapistFilters.location.enabled
-                                          ? '${countryService.findByCode(therapistFilters.location.country)?.flagEmoji}'
-                                          : '',
-                                      style: const TextStyle(
-                                        fontSize: 22,
-                                      ),
-                                    ),
-                                  ),
-                                  controller: countryInputController,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      /// State/Province Input
-                      Visibility(
-                        visible: therapistFilters.location.enabled,
-                        child: GestureDetector(
-                          onTap: () {},
-                          child: AbsorbPointer(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(height: 15),
-                                TextField(
-                                  textAlign: TextAlign.center,
-                                  decoration: InputDecoration(
-                                    floatingLabelBehavior:
-                                        FloatingLabelBehavior.always,
-                                    label: Text(S.of(context).stateProvince),
-                                    hintText: '< ${S.of(context).all} >',
-                                    hintStyle: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium
-                                        ?.copyWith(
-                                          fontSize: 15,
-                                        ),
-                                    border: const OutlineInputBorder(),
-                                  ),
-                                  controller: stateProvinceInputController,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      /// City Input
-                      Visibility(
-                        visible: therapistFilters.location.enabled &&
-                            therapistFilters.location.state != null,
-                        child: GestureDetector(
-                          onTap: () {},
-                          child: AbsorbPointer(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(height: 15),
-                                TextField(
-                                  textAlign: TextAlign.center,
-                                  decoration: InputDecoration(
-                                    floatingLabelBehavior:
-                                        FloatingLabelBehavior.always,
-                                    label: Text(S.of(context).city),
-                                    hintText: '< ${S.of(context).all} >',
-                                    hintStyle: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium
-                                        ?.copyWith(fontSize: 15),
-                                    border: const OutlineInputBorder(),
-                                  ),
-                                  controller: stateProvinceInputController,
-                                ),
-                                const SizedBox(height: 12),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
                 ],
               ),
-
               const SizedBox(height: 12),
-              Text(S.of(context).tellUsWhatYouAreLookingFor,
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleMedium
-                      ?.copyWith(fontSize: 17)),
-              const SizedBox(height: 20),
+            ],
+          ),
+          const SizedBox(height: 20),
 
-              Stack(
-                children: [
-                  Scrollbar(
-                    thumbVisibility: true,
-                    thickness: 5,
-                    controller: _scrollController,
-                    child: TextField(
-                      scrollPhysics: const ClampingScrollPhysics(),
-                      controller: _requestController,
-                      decoration: InputDecoration(
-                        hintText: S.of(context).requestTextFieldHintText,
-                        border: const OutlineInputBorder(),
-                      ),
-                      maxLines: 18,
-                      enabled: !isSendingRequest &&
-                          !_isImprovingTranscription &&
-                          !_isAutoWriting,
-                    ),
-                  ),
-
-                  /// Auto Writting Icon
-                  Positioned(
-                    right: 58,
-                    bottom: 13,
-                    child: InkWell(
-                        borderRadius: BorderRadius.circular(50),
-                        onTap:
-                            _isAutoWriting ? _stopAutoWrite : _startAutoWrite,
-                        child: Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: _isAutoWriting && isDarkMode
-                                ? Colors.white24
-                                : Colors.transparent,
-                            boxShadow: [
-                              if (_isAutoWriting)
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
-                                  blurRadius: 0,
-                                  spreadRadius: 0,
-                                ),
-                            ],
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            _isAutoWriting
-                                ? Icons.auto_awesome
-                                : Icons.auto_awesome_outlined,
-                            color: (isSendingRequest && !isDarkMode)
-                                ? Colors.black54
-                                : (isSendingRequest && isDarkMode)
-                                    ? Colors.white24
-                                    : (_isAutoWriting && !isDarkMode
-                                        ? Colors.yellow
-                                        : isDarkMode && _isAutoWriting
-                                            ? Colors.white
-                                            : isDarkMode && !_isAutoWriting
-                                                ? Colors.white.withOpacity(0.7)
-                                                : Colors.black
-                                                    .withOpacity(0.7)),
-                            size: 28,
-                          ),
-                        )),
-                  ),
-
-                  /// Record Icon
-                  Positioned(
-                    right: 13,
-                    bottom: 13,
-                    child: InkWell(
-                        borderRadius: BorderRadius.circular(50),
-                        onTap: isSendingRequest
-                            ? null
-                            : (_isListening ? _stopListening : _startListening),
-                        child: Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color:
-                                _isListening ? Colors.red : Colors.transparent,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            _isListening ? Icons.mic : Icons.mic_none,
-                            color: (isSendingRequest && !isDarkMode)
-                                ? Colors.black54
-                                : (isSendingRequest && isDarkMode)
-                                    ? Colors.white24
-                                    : (_isListening && !isDarkMode
-                                        ? Colors.white
-                                        : isDarkMode && _isListening
-                                            ? Colors.white
-                                            : isDarkMode && !_isListening
-                                                ? Colors.white.withOpacity(0.7)
-                                                : Colors.black
-                                                    .withOpacity(0.7)),
-                            size: 30,
-                          ),
-                        )),
-                  ),
-                ],
+          /// Next Button
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(120, ThemeSettings.buttonsHeight),
+                ),
+                onPressed: () {
+                  _pageController.nextPage(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                  );
+                },
+                child: Text(S.of(context).goToNextStep),
               ),
-              const SizedBox(height: 15),
+            ],
+          ),
+          const SizedBox(height: 90),
+        ],
+      ),
+    );
+  }
 
-              if (_tagsResponse != null) ...[
-                if (_tagsResponse!.error != null) ...[
-                  Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: ThemeSettings.errorColor.shade50,
-                      border: Border.all(
-                        color: ThemeSettings.errorColor,
+  Widget _buildSecondPage(BuildContext context, bool isDarkMode) {
+    return SingleChildScrollView(
+      controller: _scrollControllerPage2,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          const SizedBox(height: 12),
+          Text(S.of(context).tellUsWhatYouAreLookingFor,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(fontSize: 17)),
+          const SizedBox(height: 20),
+
+          Stack(
+            children: [
+              Scrollbar(
+                thumbVisibility: true,
+                thickness: 5,
+                controller: _scrollControllerPage2,
+                child: TextField(
+                  scrollPhysics: const ClampingScrollPhysics(),
+                  controller: _requestController,
+                  decoration: InputDecoration(
+                    hintText: S.of(context).requestTextFieldHintText,
+                    border: const OutlineInputBorder(),
+                  ),
+                  maxLines: 18,
+                  enabled: !isSendingRequest &&
+                      !_isImprovingTranscription &&
+                      !_isAutoWriting,
+                ),
+              ),
+
+              /// Auto Writting Icon
+              Positioned(
+                right: 58,
+                bottom: 13,
+                child: InkWell(
+                    borderRadius: BorderRadius.circular(50),
+                    onTap: _isAutoWriting ? _stopAutoWrite : _startAutoWrite,
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: _isAutoWriting && isDarkMode
+                            ? Colors.white24
+                            : Colors.transparent,
+                        boxShadow: [
+                          if (_isAutoWriting)
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              blurRadius: 0,
+                              spreadRadius: 0,
+                            ),
+                        ],
+                        shape: BoxShape.circle,
                       ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Column(
-                        children: [
-                          const SizedBox(height: 10),
-                          const Icon(Icons.warning,
-                              color: Colors.red, size: 40),
-                          const SizedBox(height: 10),
-                          Text(
-                            S.of(context).ohNoSomethingWentWrong,
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context)
-                                .textTheme
-                                .headlineSmall
-                                ?.copyWith(
+                      child: Icon(
+                        _isAutoWriting
+                            ? Icons.auto_awesome
+                            : Icons.auto_awesome_outlined,
+                        color: (isSendingRequest && !isDarkMode)
+                            ? Colors.black54
+                            : (isSendingRequest && isDarkMode)
+                                ? Colors.white24
+                                : (_isAutoWriting && !isDarkMode
+                                    ? Colors.yellow
+                                    : isDarkMode && _isAutoWriting
+                                        ? Colors.white
+                                        : isDarkMode && !_isAutoWriting
+                                            ? Colors.white.withOpacity(0.7)
+                                            : Colors.black.withOpacity(0.7)),
+                        size: 28,
+                      ),
+                    )),
+              ),
+
+              /// Record Icon
+              Positioned(
+                right: 13,
+                bottom: 13,
+                child: InkWell(
+                    borderRadius: BorderRadius.circular(50),
+                    onTap: isSendingRequest
+                        ? null
+                        : (_isListening ? _stopListening : _startListening),
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: _isListening ? Colors.red : Colors.transparent,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        _isListening ? Icons.mic : Icons.mic_none,
+                        color: (isSendingRequest && !isDarkMode)
+                            ? Colors.black54
+                            : (isSendingRequest && isDarkMode)
+                                ? Colors.white24
+                                : (_isListening && !isDarkMode
+                                    ? Colors.white
+                                    : isDarkMode && _isListening
+                                        ? Colors.white
+                                        : isDarkMode && !_isListening
+                                            ? Colors.white.withOpacity(0.7)
+                                            : Colors.black.withOpacity(0.7)),
+                        size: 30,
+                      ),
+                    )),
+              ),
+            ],
+          ),
+          const SizedBox(height: 15),
+
+          if (_tagsResponse != null) ...[
+            if (_tagsResponse!.error != null) ...[
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: ThemeSettings.errorColor.shade50,
+                  border: Border.all(
+                    color: ThemeSettings.errorColor,
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 10),
+                      const Icon(Icons.warning, color: Colors.red, size: 40),
+                      const SizedBox(height: 10),
+                      Text(
+                        S.of(context).ohNoSomethingWentWrong,
+                        textAlign: TextAlign.center,
+                        style:
+                            Theme.of(context).textTheme.headlineSmall?.copyWith(
                                   color: ThemeSettings.errorColor,
                                 ),
-                          ),
-                          const SizedBox(height: 10),
-                          Text(
-                            ErrorCodeToText.getGeminiErrorMessage(
-                                _tagsResponse!.error!, context),
-                            textAlign: TextAlign.center,
-                            style:
-                                Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                      color: ThemeSettings.errorColor,
-                                    ),
-                          ),
-                          const SizedBox(height: 10),
-                        ],
                       ),
-                    ),
+                      const SizedBox(height: 10),
+                      Text(
+                        ErrorCodeToText.getGeminiErrorMessage(
+                            _tagsResponse!.error!, context),
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              color: ThemeSettings.errorColor,
+                            ),
+                      ),
+                      const SizedBox(height: 10),
+                    ],
                   ),
-                  const SizedBox(height: 12),
-                ],
-              ],
-
-              /// Send Button
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        minimumSize:
-                            const Size(120, ThemeSettings.buttonsHeight),
-                      ),
-                      onPressed: isSendingRequest || _isAutoWriting
-                          ? null
-                          : _sendUserRequest,
-                      child: isSendingRequest
-                          ? Text(S.of(context).sendingButton)
-                          : _isListening ||
-                                  _isImprovingTranscription ||
-                                  _isAutoWriting
-                              ? SizedBox(
-                                  height: 20,
-                                  width: 20,
-                                  child: LoadingCircle(
-                                    color: isDarkMode
-                                        ? Colors.white.withOpacity(0.8)
-                                        : Colors.white.withOpacity(0.8),
-                                  ),
-                                )
-                              : Text(S.of(context).sendButton)),
-                ],
+                ),
               ),
-              const SizedBox(height: 90),
+              const SizedBox(height: 12),
             ],
-          )),
+          ],
+
+          /// Send Button
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(120, ThemeSettings.buttonsHeight),
+                  ),
+                  onPressed: isSendingRequest || _isAutoWriting
+                      ? null
+                      : _sendUserRequest,
+                  child: isSendingRequest
+                      ? Text(S.of(context).sendingButton)
+                      : _isListening ||
+                              _isImprovingTranscription ||
+                              _isAutoWriting
+                          ? SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: LoadingCircle(
+                                color: isDarkMode
+                                    ? Colors.white.withOpacity(0.8)
+                                    : Colors.white.withOpacity(0.8),
+                              ),
+                            )
+                          : Text(S.of(context).sendButton)),
+            ],
+          ),
+          const SizedBox(height: 90),
+        ],
+      ),
     );
   }
 
@@ -706,18 +765,21 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
-                children: languages.map((String language) {
+                children: languages.map((String languageCode) {
                   return CheckboxListTile(
                     title: Text(
-                        LocaleNames.of(context)!.nameOf(language) ?? language),
-                    value: selectedLanguages.contains(language),
+                        LocaleNames.of(context)!.nameOf(languageCode) != null
+                            ? toCapitalCase(
+                                LocaleNames.of(context)!.nameOf(languageCode)!)
+                            : languageCode),
+                    value: selectedLanguages.contains(languageCode),
                     onChanged: (bool? value) {
                       setState(() {
                         if (value == true) {
-                          selectedLanguages.add(language);
+                          selectedLanguages.add(languageCode);
                         } else {
                           if (selectedLanguages.length > 1) {
-                            selectedLanguages.remove(language);
+                            selectedLanguages.remove(languageCode);
                           }
                         }
                       });
