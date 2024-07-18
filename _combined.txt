@@ -22,8 +22,11 @@
 │   │   ├── app_icons
 │   │   │   ├── logo1.png
 │   │   │   ├── logo2.jpg
+│   │   │   ├── logo3.png
 │   │   │   ├── lupe1.png
 │   │   │   └── lupe2.webp
+│   │   ├── app_logo
+│   │   │   └── logo.png
 │   │   ├── icons
 │   │   │   ├── gold-plan-badge.png
 │   │   │   └── verified-badge.png
@@ -83,7 +86,7 @@
 │   │   │   ├── therapist_public_profile_screen
 │   │   │   └── welcome_main_screen
 │   │   ├── therapist_area
-│   │   │   └── therapist_profile_screen.dart
+│   │   │   └── therapist_personal_profile_screen
 │   │   └── user_area
 │   │       ├── therapist_result_screen
 │   │       ├── user_profile_screen
@@ -118,7 +121,6 @@
 │   │   │   ├── log_configurations.dart
 │   │   │   └── notify_that_app_is_runing_in_debug_mode.dart
 │   │   ├── ui
-│   │   │   └── is_dark_mode.dart
 │   │   └── validation
 │   │       └── is_email_valid.dart
 │   └── widgets
@@ -126,6 +128,8 @@
 │       │   └── app_scaffold.dart
 │       ├── AspectSection
 │       │   └── aspect_section.dart
+│       ├── GooglePlacesAutocompleteTextField
+│       │   └── google_place_autocomplete_text_field.dart
 │       ├── LoadingCircle
 │       │   └── loading_circle.dart
 │       ├── NotificationModal
@@ -147,7 +151,7 @@
 ├── rename_imports.sh
 └── template_app.iml
 
-53 directories, 95 files
+56 directories, 96 files
 ///// pubspec.yaml /////
 name: findatherapistapp
 description: "An app to easily find the perfect therapist."
@@ -187,6 +191,21 @@ dependencies:
   speech_to_text: ^6.6.0
   # Country Picker is a Flutter plugin for selecting countries in a Flutter app.
   country_picker: ^2.0.26
+  # Intl is a Flutter plugin for internationalization in a Flutter app.
+  intl: any
+  # Flutter Localized Locales is a Flutter plugin for using localized locales in a Flutter app.
+  flutter_localized_locales: ^2.0.5
+  # Expandable is a Flutter plugin for creating expandable widgets in a Flutter app.
+  expandable: ^5.0.1
+  # Google Mklit Translation is a Flutter plugin for translating text in a Flutter app.
+  google_mlkit_translation: ^0.11.0
+  # Number Paginator is a Flutter plugin for creating number paginators in a Flutter app.
+  number_paginator: ^0.4.1
+  # Google Places Autocomplete Text Field is a Flutter plugin for using Google Places Autocomplete in a Flutter app.
+  google_places_autocomplete_text_field: ^0.1.3
+  # Animated Do is a Flutter plugin for creating animations in a Flutter app.
+  animate_do: ^3.3.4
+
 
 
 #  # -----------------  GENERAL PACKAGES  -----------------
@@ -289,6 +308,8 @@ dependencies:
   firebase_auth: ^5.1.1
 #  # Cloud Firestore is a flexible, scalable database for mobile, web, and server development from Firebase and Google Cloud Platform.
   cloud_firestore: ^5.1.0
+  csc_picker: ^0.2.7
+  country_state_city: ^0.1.6
   #  # Firebase Database is a Flutter plugin to use the Firebase Realtime Database API and allow storing and syncing data with a NoSQL cloud database.
 #  firebase_database: ^11.0.1
 #  # Firebase Storage is a Flutter plugin to use the Firebase Cloud Storage API and allow uploading, downloading, and deleting files in the cloud.
@@ -306,11 +327,6 @@ dependencies:
 #  # Firebase Remote Config is a Flutter plugin to use the Firebase Remote Config API and allow fetching remote configuration values from Firebase.
 #  firebase_remote_config: ^5.0.1
 
-  intl: any
-  flutter_localized_locales: ^2.0.5
-  expandable: ^5.0.1
-  google_mlkit_translation: ^0.11.0
-  number_paginator: ^0.4.1
 
 dev_dependencies:
   flutter_test:
@@ -322,7 +338,7 @@ dev_dependencies:
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "lib/assets/app_icons/logo2.png"
+  image_path: "lib/assets/app_icons/logo3.png"
   min_sdk_android: 23
 
 
@@ -340,6 +356,8 @@ flutter:
     - lib/assets/lottie_animations/
     - lib/assets/images/
     - lib/assets/icons/
+    - lib/assets/app_icons/
+    - lib/assets/app_logo/
 
 
   # fonts:
@@ -373,9 +391,9 @@ class DebugConfig {
   static const bool debugMode = true;
   static const String debugDatabaseId = 'debug-database';
   static const bool showDebugPrints = false;
-  static RouteConfig debugScreen = Routes.debugScreen;
+  static RouteConfig debugScreen = Routes.userRequestScreen;
   static const forceDebugScreen =
-      false; // If true, the route set in debugScreen will be shown and screen protection will be ignored
+      true; // If true, the route set in debugScreen will be shown and screen protection will be ignored
   static const bool bypassLoginScreen =
       false; // If true, login screen will be skipped
   // static const bool alwaysAllowNavigation =
@@ -477,8 +495,8 @@ class ThemeSettings {
     darkModePrimary: Color(0xFF121212),
   );
 
-  static const ThemeColors appBarBackgroundColor = ThemeColors(
-    lightModePrimary: Colors.black12,
+  static ThemeColors appbarBackgroundColor = const ThemeColors(
+    lightModePrimary: Color(0xFFEEEEEE),
     darkModePrimary: Color(0xFF121212),
   );
 
@@ -692,8 +710,8 @@ class MainTheme {
         backgroundColor: ThemeSettings.forceSeedColor
             ? colorScheme.primary
             : (brightness == Brightness.light
-                ? ThemeSettings.appBarBackgroundColor.lightModePrimary
-                : ThemeSettings.appBarBackgroundColor.darkModePrimary),
+                ? ThemeSettings.appbarBackgroundColor.lightModePrimary
+                : ThemeSettings.appbarBackgroundColor.darkModePrimary),
       ),
       chipTheme: ChipDecorationTheme.chipTheme(brightness, colorScheme),
       cardTheme: base.cardTheme.copyWith(
@@ -773,7 +791,7 @@ import '../screens/common/all_therapists_screen/all_therapists_screen.dart';
 import '../screens/common/login_screen/login_screen.dart';
 import '../screens/common/settings_screen/settings_screen.dart';
 import '../screens/common/welcome_main_screen/welcome_main_screen.dart';
-import '../screens/therapist_area/therapist_profile_screen.dart';
+import '../screens/therapist_area/therapist_personal_profile_screen/therapist_personal_profile_screen.dart';
 import '../screens/user_area/user_profile_screen/user_profile_screen.dart';
 import '../screens/user_area/user_request_screen/user_request_screen.dart';
 
@@ -786,7 +804,7 @@ class Routes {
     builder: (context) => const LoginScreen(),
   );
 
-  static RouteConfig homeScreen = RouteConfig(
+  static RouteConfig welcomeMainScreen = RouteConfig(
     path: '/',
     name: 'Welcome Main Screen',
     builder: (context) => const WelcomeMainScreen(),
@@ -848,7 +866,7 @@ class Routes {
   static List<GoRoute> _generateRoutes() {
     List<RouteConfig> publicRoutes = [
       loginScreen,
-      homeScreen,
+      welcomeMainScreen,
       settingsScreen,
       userProfileScreen,
       userRequestScreen,
@@ -931,10 +949,21 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final themeNotifier = ref.watch(themeProvider);
     final localeNotifier = ref.watch(localeProvider);
+    final isDarkMode = themeNotifier.themeMode == ThemeMode.dark;
 
     return SkeletonizerConfig(
-      data: const SkeletonizerConfigData(
-          effect: ShimmerEffect(),
+      data: SkeletonizerConfigData(
+          effect: ShimmerEffect(
+            baseColor: isDarkMode
+                ? ThemeSettings.seedColor.withOpacity(0.1)
+                : Colors.grey[300]!, // Color base del shimmer
+            highlightColor: isDarkMode
+                ? Colors.grey.withOpacity(0.25)
+                : Colors.grey[100]!, // Color de resaltado del shimmer
+            duration: const Duration(milliseconds: 2500),
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
           enableSwitchAnimation: true,
           containersColor: ThemeSettings.forceSeedColor
               ? ThemeSettings.seedColor
@@ -1267,7 +1296,6 @@ import 'package:lottie/lottie.dart';
 import 'package:findatherapistapp/app_settings/app_general_settings.dart';
 import 'package:findatherapistapp/app_settings/auth_config.dart';
 import 'package:findatherapistapp/providers/providers_all.dart';
-import 'package:findatherapistapp/utils/ui/is_dark_mode.dart';
 import 'package:findatherapistapp/widgets/NotificationModal/notification_modal.dart';
 import 'package:findatherapistapp/widgets/NotificationSnackbar/notification_snackbar.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -1294,6 +1322,8 @@ class AppScaffold extends ConsumerStatefulWidget {
   final bool ignoreGlobalPadding;
   final List<Widget>? actions;
   final bool? centerTitle;
+  final bool setFloatingSpeedDialToLoadingMode;
+  final Function()? backButton;
   const AppScaffold(
       {super.key,
       required this.body,
@@ -1309,7 +1339,9 @@ class AppScaffold extends ConsumerStatefulWidget {
       this.scaffoldPadding,
       this.ignoreGlobalPadding = false,
       this.actions,
-      this.centerTitle});
+      this.centerTitle,
+      this.setFloatingSpeedDialToLoadingMode = false,
+      this.backButton});
 
   @override
   AppScaffoldState createState() => AppScaffoldState();
@@ -1360,6 +1392,7 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
       child: Scaffold(
         appBar: (AppGeneralSettings.useTopAppBar || widget.useTopAppBar)
             ? ThemeAppBar(
+                backButton: widget.backButton,
                 appBarHeight: ThemeSettings.appBarHeight,
                 centerTitle: widget.centerTitle,
                 actions: widget.actions,
@@ -1375,6 +1408,7 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
           ],
         ),
         floatingActionButton: ThemeFloatingSpeedDialMenu(
+          loadingMode: widget.setFloatingSpeedDialToLoadingMode,
           hideFloatingSpeedDialMenu: widget.hideFloatingSpeedDialMenu,
           isDialOpenNotifier: ValueNotifier(false),
         ),
@@ -1445,8 +1479,9 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
   }
 
   LottieAnimationBackground? getLottieAnimation() {
-    final themeIsDark = isDarkMode(context);
-    if (themeIsDark && widget.backgroundAnimationDarkMode != null) {
+    final bool isDarkMode =
+        ref.watch(themeProvider).themeMode == ThemeMode.dark;
+    if (isDarkMode && widget.backgroundAnimationDarkMode != null) {
       return widget.backgroundAnimationDarkMode;
     }
     return widget.backgroundAnimation;
@@ -1924,9 +1959,33 @@ class TherapistModel {
   }
 }
 
+class Term {
+  String term;
+  bool public;
+
+  Term({
+    required this.term,
+    required this.public,
+  });
+
+  factory Term.fromJson(Map<String, dynamic> json) {
+    return Term(
+      term: json['term'],
+      public: json['public'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'term': term,
+      'public': public,
+    };
+  }
+}
+
 class Aspects {
-  List<String> positive;
-  List<String> negative;
+  List<Term> positive;
+  List<Term> negative;
 
   Aspects({
     required this.positive,
@@ -1935,15 +1994,19 @@ class Aspects {
 
   factory Aspects.fromJson(Map<String, dynamic> json) {
     return Aspects(
-      positive: List<String>.from(json['positive']),
-      negative: List<String>.from(json['negative']),
+      positive: (json['positive'] as List)
+          .map((item) => Term.fromJson(item))
+          .toList(),
+      negative: (json['negative'] as List)
+          .map((item) => Term.fromJson(item))
+          .toList(),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'positive': positive,
-      'negative': negative,
+      'positive': positive.map((term) => term.toJson()).toList(),
+      'negative': negative.map((term) => term.toJson()).toList(),
     };
   }
 }
@@ -2278,492 +2341,10 @@ class TherapistIndex {
   }
 }
 
-///// lib/screens/admin/debug_screen/debug_screen.dart /////
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:findatherapistapp/widgets/Skeletons/SkeletonTherapistCard/skeleton_therapist_card.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:number_paginator/number_paginator.dart';
-import '../../../models/therapist_model.dart';
-import '../../../widgets/AppScaffold/app_scaffold.dart';
-import '../../../services/firestore_service.dart';
-import '../../../widgets/TherapistListCard/therapist_list_card.dart';
-import '../../common/therapist_public_profile_screen/therapist_public_profile_screen.dart';
-
-class DebugScreen extends ConsumerStatefulWidget {
-  const DebugScreen({super.key});
-
-  @override
-  ConsumerState<DebugScreen> createState() => _DebugScreenState();
-}
-
-class _DebugScreenState extends ConsumerState<DebugScreen> {
-  late Future<List<TherapistModel>> _futureTherapists;
-  int currentPage = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _futureTherapists = _fetchTherapists();
-  }
-
-  Future<List<TherapistModel>> _fetchTherapists() async {
-    try {
-      FirebaseFirestore firestore = FirestoreService.instance;
-      QuerySnapshot snapshot = await firestore.collection('therapists').get();
-      return snapshot.docs.map((doc) {
-        return TherapistModel.fromJson(
-          doc.data() as Map<String, dynamic>,
-          doc.id,
-        );
-      }).toList();
-    } catch (e) {
-      debugPrint('Failed to get therapists: $e');
-      return [];
-    }
-  }
-
-  Future<void> _refreshTherapists() async {
-    debugPrint('Refreshing therapists list...');
-    setState(() {
-      _futureTherapists = _fetchTherapists();
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AppScaffold(
-        scrollPhysics: const NeverScrollableScrollPhysics(),
-        ignoreGlobalPadding: true,
-        appBarTitle: 'Debug Screen',
-        isProtected: false,
-        body: FutureBuilder<List<TherapistModel>>(
-          future: _futureTherapists,
-          builder: (context, snapshot) {
-            if ((snapshot.connectionState == ConnectionState.waiting &&
-                (snapshot.data == null || snapshot.data!.isEmpty))) {
-              return SingleChildScrollView(
-                child: Column(
-                  children: List.generate(7, (index) {
-                    return const SkeletonTherapistCard();
-                  }),
-                ),
-              );
-            } else if (snapshot.hasError) {
-              return const Center(child: Text('Failed to load therapists'));
-            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const Center(child: Text('No therapists found'));
-            }
-
-            return RefreshIndicator(
-              onRefresh: _refreshTherapists,
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    ListView.builder(
-                      clipBehavior: Clip.antiAliasWithSaveLayer,
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: snapshot.data?.length,
-                      itemBuilder: (context, index) {
-                        final therapist = snapshot.data![index];
-
-                        if (index < currentPage * 7 ||
-                            index >= (currentPage + 1) * 7) return Container();
-
-                        return TherapistListCard(
-                          therapist: therapist,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    TherapistPublicProfileScreen(
-                                        therapist: therapist),
-                              ),
-                            );
-                          },
-                        );
-                      },
-                    ),
-                    NumberPaginator(
-                      numberPages: (snapshot.data!.length / 7).ceil(),
-                      onPageChange: (int index) {
-                        setState(() {
-                          currentPage = index;
-                        });
-                      },
-                    )
-                  ],
-                ),
-              ),
-            );
-          },
-        ));
-  }
-}
-
-///// lib/screens/user_area/user_request_screen/user_request_screen.dart /////
-import 'dart:developer';
-import 'dart:async';
-
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:findatherapistapp/widgets/LoadingCircle/loading_circle.dart';
-import 'package:findatherapistapp/services/gemini_service.dart';
-import 'package:findatherapistapp/services/speech_to_text_service.dart';
-import '../../../app_settings/theme_settings.dart';
-import '../../../models/gemini_tags_response_model.dart';
-import '../../../providers/providers_all.dart';
-import '../../../utils/debug/error_code_to_text.dart';
-import '../../../utils/ui/is_dark_mode.dart';
-import '../../../widgets/AppScaffold/app_scaffold.dart';
-import '../../../generated/l10n.dart';
-import '../../../utils/admin/find_best_therapist_by_aspects.dart';
-import '../../../widgets/AspectSection/aspect_section.dart';
-import '../../common/aspects_screen/aspects_screen.dart';
-import '../therapist_result_screen/therapist_result_screen.dart';
-
-class UserRequestScreen extends ConsumerStatefulWidget {
-  const UserRequestScreen({super.key});
-
-  @override
-  ConsumerState<UserRequestScreen> createState() => _UserRequestScreenState();
-}
-
-class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
-  final TextEditingController _requestController = TextEditingController();
-  String _requestLastText = '';
-  final GeminiService _geminiService = GeminiService();
-  final SpeechToTextService _speechService = SpeechToTextService();
-  GeminiTagsResponse? _tagsResponse;
-  bool isSendingRequest = false;
-  bool _isListening = false;
-  bool _isImprovingTranscription = false;
-  bool _isAutoWriting = false;
-  Timer? _autoWriteTimer;
-
-  String listenedText = '';
-
-  @override
-  void initState() {
-    super.initState();
-    _initializeSpeech();
-  }
-
-  void _initializeSpeech() async {
-    await _speechService.initialize();
-  }
-
-  @override
-  void dispose() {
-    _speechService.stopListening();
-    _requestController.dispose();
-    _autoWriteTimer?.cancel();
-    super.dispose();
-  }
-
-  void _startAutoWrite() async {
-    if (_isListening) {
-      _stopListening();
-    }
-    setState(() {
-      _isAutoWriting = true;
-    });
-
-    final localeService = ref.read(localeProvider);
-
-    final newText = await _geminiService.generateAutoWriteText(
-        language: localeService.locale.languageCode);
-    int charIndex = 0;
-
-    _autoWriteTimer = Timer.periodic(const Duration(milliseconds: 20), (timer) {
-      if (_isAutoWriting && charIndex < newText.length) {
-        setState(() {
-          _requestController.text += newText[charIndex];
-        });
-        charIndex++;
-      } else {
-        _stopAutoWrite();
-      }
-    });
-  }
-
-  void _stopAutoWrite() async {
-    setState(() {
-      _isAutoWriting = false;
-    });
-    _autoWriteTimer?.cancel();
-  }
-
-  void _startListening() async {
-    if (_isAutoWriting) {
-      _stopAutoWrite();
-    }
-
-    var localeService = ref.watch(localeProvider);
-
-    setState(() {
-      _isListening = true;
-      _requestLastText = _requestController.text;
-    });
-
-    _speechService.startListening(
-      localeId: localeService.locale.languageCode,
-      onResult: (text) {
-        setState(() {
-          listenedText = text;
-          _requestController.text = _requestLastText + text;
-        });
-      },
-    );
-    setState(() {
-      listenedText = '';
-    });
-  }
-
-  void _stopListening() async {
-    _speechService.stopListening();
-    setState(() => _isListening = false);
-
-    if (_requestController.text.isNotEmpty && listenedText.length > 0) {
-      await _improveTranscription(_requestController.text);
-    }
-  }
-
-  Future<void> _improveTranscription(String text) async {
-    setState(() {
-      _isImprovingTranscription = true;
-    });
-
-    final improvedText = await _geminiService.improveTranscription(text);
-    setState(() {
-      _requestController.text = improvedText;
-      _isImprovingTranscription = false;
-      _requestLastText = improvedText;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AppScaffold(
-      useTopAppBar: true,
-      isProtected: true,
-      showScreenTitleInAppBar: false,
-      appBarTitle: 'Request a Therapist',
-      body: SingleChildScrollView(
-          child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text('${S.of(context).tellUsWhatYouAreLookingFor}',
-              style: Theme.of(context)
-                  .textTheme
-                  .titleMedium
-                  ?.copyWith(fontSize: 17)),
-          const SizedBox(height: 20),
-          Stack(
-            children: [
-              TextField(
-                controller: _requestController,
-                decoration: InputDecoration(
-                  hintText: S.of(context).requestTextFieldHintText,
-                  border: const OutlineInputBorder(),
-                ),
-                maxLines: 18,
-                enabled: !isSendingRequest ||
-                    !_isImprovingTranscription ||
-                    !_isAutoWriting,
-              ),
-
-              /// Auto Writting Icon
-              Positioned(
-                right: 58,
-                bottom: 13,
-                child: InkWell(
-                    borderRadius: BorderRadius.circular(50),
-                    onTap: _isAutoWriting ? _stopAutoWrite : _startAutoWrite,
-                    child: Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: _isAutoWriting && isDarkMode(context)
-                            ? Colors.white24
-                            : Colors.transparent,
-                        boxShadow: [
-                          if (_isAutoWriting)
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
-                              blurRadius: 0,
-                              spreadRadius: 0,
-                            ),
-                        ],
-                        shape: BoxShape.circle,
-                      ),
-                      child: isSendingRequest
-                          ? const SizedBox()
-                          : Icon(
-                              _isAutoWriting
-                                  ? Icons.auto_awesome
-                                  : Icons.auto_awesome_outlined,
-                              color: _isAutoWriting && !isDarkMode(context)
-                                  ? Colors.yellow
-                                  : isDarkMode(context) && _isAutoWriting
-                                      ? Colors.white
-                                      : isDarkMode(context) && !_isAutoWriting
-                                          ? Colors.white.withOpacity(0.7)
-                                          : Colors.black.withOpacity(0.7),
-                              size: 28,
-                            ),
-                    )),
-              ),
-
-              /// Record Icon
-              Positioned(
-                right: 13,
-                bottom: 13,
-                child: InkWell(
-                    borderRadius: BorderRadius.circular(50),
-                    onTap: _isListening ? _stopListening : _startListening,
-                    child: Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: _isListening ? Colors.red : Colors.transparent,
-                        shape: BoxShape.circle,
-                      ),
-                      child: isSendingRequest
-                          ? const SizedBox()
-                          : Icon(
-                              _isListening ? Icons.mic : Icons.mic_none,
-                              color: _isListening && !isDarkMode(context)
-                                  ? Colors.white
-                                  : isDarkMode(context) && _isListening
-                                      ? Colors.white
-                                      : isDarkMode(context) && !_isListening
-                                          ? Colors.white.withOpacity(0.7)
-                                          : Colors.black.withOpacity(0.7),
-                              size: 30,
-                            ),
-                    )),
-              ),
-            ],
-          ),
-          const SizedBox(height: 15),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: <Widget>[
-              ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(120, ThemeSettings.buttonsHeight),
-                  ),
-                  onPressed: isSendingRequest ? null : _sendUserRequest,
-                  child: isSendingRequest ||
-                          _isImprovingTranscription ||
-                          _isAutoWriting
-                      ? SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: LoadingCircle(
-                            color: isDarkMode(context)
-                                ? Colors.white.withOpacity(0.8)
-                                : Colors.white.withOpacity(0.8),
-                          ),
-                        )
-                      : Text(S.of(context).sendButton)),
-            ],
-          ),
-          if (_tagsResponse != null) ...[
-            if (_tagsResponse!.error != null) ...[
-              const SizedBox(height: 15),
-              Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: ThemeSettings.errorColor.shade50,
-                  border: Border.all(
-                    color: ThemeSettings.errorColor,
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-
-                  /// add warning icon big and centered
-
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 10),
-                      const Icon(Icons.warning, color: Colors.red, size: 40),
-                      const SizedBox(height: 10),
-                      Text(
-                        S.of(context).ohNoSomethingWentWrong,
-                        textAlign: TextAlign.center,
-                        style:
-                            Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                  color: ThemeSettings.errorColor,
-                                ),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        ErrorCodeToText.getGeminiErrorMessage(
-                            _tagsResponse!.error!, context),
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              color: ThemeSettings.errorColor,
-                            ),
-                      ),
-                      const SizedBox(height: 10),
-                    ],
-                  ),
-                ),
-              )
-            ],
-          ],
-          const SizedBox(height: 60),
-        ],
-      )),
-    );
-  }
-
-  Future<Object?> _sendUserRequest() async {
-    if (isSendingRequest) return null;
-
-    setState(() {
-      isSendingRequest = true;
-    });
-    final inputText = _requestController.text;
-    final GeminiTagsResponse geminiResponse =
-        await _geminiService.getTherapyTags(inputText);
-
-    setState(() {
-      _tagsResponse = geminiResponse;
-    });
-
-    if (geminiResponse != null) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => AspectsScreen(
-            aspects: geminiResponse!.tags.toAspects(),
-          ),
-        ),
-      );
-    } else {
-      debugPrint('Error: Gemini response returned null');
-    }
-
-    setState(() {
-      isSendingRequest = false;
-    });
-
-    log(geminiResponse.toJson().toString());
-
-    return geminiResponse;
-  }
-}
-
 ///// lib/screens/common/welcome_main_screen/welcome_main_screen.dart /////
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:animate_do/animate_do.dart';
 import 'package:findatherapistapp/app_settings/app_info.dart';
-import 'package:findatherapistapp/utils/admin/add_therapists_in_batch.dart';
-import 'package:findatherapistapp/utils/admin/consolidate_terms.dart';
-import 'package:findatherapistapp/utils/admin/update_terms_index_from_all_therapist.dart';
+import 'package:findatherapistapp/utils/admin/update_all_therapists_aspects.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -2773,7 +2354,6 @@ import 'package:findatherapistapp/app_settings/app_general_settings.dart';
 import 'package:findatherapistapp/widgets/AppScaffold/app_scaffold.dart';
 
 import '../../../generated/l10n.dart';
-import '../../../models/therapist_model.dart';
 import '../../../routes/routes.dart';
 
 class WelcomeMainScreen extends ConsumerStatefulWidget {
@@ -2806,14 +2386,20 @@ class _WelcomeMainScreenState extends ConsumerState<WelcomeMainScreen> {
             const SizedBox(
               height: 48,
             ),
-            Lottie.asset(
-              'lib/assets/lottie_animations/animation2.json',
-              width: double.infinity,
-              height: 190,
-              fit: BoxFit.cover,
+            FadeInUp(
+              from: 20,
+              curve: Curves.decelerate,
+              delay: const Duration(milliseconds: 2500),
+              duration: const Duration(milliseconds: 900),
+              child: Lottie.asset(
+                'lib/assets/lottie_animations/animation2.json',
+                width: double.infinity,
+                height: 190,
+                fit: BoxFit.cover,
+              ),
             ),
             const SizedBox(
-              height: 197,
+              height: 194,
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 27),
@@ -2822,36 +2408,55 @@ class _WelcomeMainScreenState extends ConsumerState<WelcomeMainScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('${S.of(context).welcomeToPrefix}${AppInfo.appName}!',
-                        style: Theme.of(context).textTheme.headlineSmall),
-                    const SizedBox(height: 10),
-                    Text(
-                        'Your AI-powered partner that helps you find the right therapist for you and your specific needs - worldwide!',
-                        style: Theme.of(context).textTheme.bodyMedium),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                        onPressed: () {
-                          context.push(Routes.userRequestScreen.path);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: const Size(double.infinity, 47),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(S.of(context).findYourTherapistButton),
-                          ],
-                        )),
-                    const SizedBox(height: 15),
-                    OutlinedButton(
-                        onPressed: () {
-                          // consolidateTerms(
-                          //     'pet-therapy', ['pet-driven-therapy']);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: const Size(double.infinity, 47),
-                        ),
-                        child: Text(S.of(context).registerAsTherapistButton)),
+                    FadeInUp(
+                      curve: Curves.decelerate,
+                      duration: const Duration(milliseconds: 1000),
+                      delay: const Duration(milliseconds: 2000),
+                      from: 10,
+                      child: Column(
+                        children: [
+                          Text(
+                              '${S.of(context).welcomeToPrefix}${AppInfo.appName}!',
+                              style: Theme.of(context).textTheme.headlineSmall),
+                          const SizedBox(height: 10),
+                          Text(S.of(context).welcomeScreenSubtitleDescription,
+                              style: Theme.of(context).textTheme.bodyMedium),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 13),
+                    FadeInUp(
+                      curve: Curves.decelerate,
+                      duration: const Duration(milliseconds: 1000),
+                      from: 20,
+                      child: Column(
+                        children: [
+                          ElevatedButton(
+                              onPressed: () {
+                                context.push(Routes.userRequestScreen.path);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: const Size(double.infinity, 47),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(S.of(context).findYourTherapistButton),
+                                ],
+                              )),
+                          const SizedBox(height: 15),
+                          OutlinedButton(
+                              onPressed: () {
+                                // updateALLTherapistAspects();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: const Size(double.infinity, 47),
+                              ),
+                              child: Text(
+                                  S.of(context).registerAsTherapistButton)),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -2873,6 +2478,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:number_paginator/number_paginator.dart';
 import '../../../models/therapist_model.dart';
+import '../../../providers/providers_all.dart';
 import '../../../routes/routes.dart';
 import '../../../widgets/AppScaffold/app_scaffold.dart';
 import '../../../services/firestore_service.dart';
@@ -2926,6 +2532,7 @@ class _AllTherapistsScreenState extends ConsumerState<AllTherapistsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = ref.watch(themeProvider).themeMode == ThemeMode.dark;
     return AppScaffold(
       useTopAppBar: true,
       hideFloatingSpeedDialMenu: true,
@@ -2986,7 +2593,7 @@ class _AllTherapistsScreenState extends ConsumerState<AllTherapistsScreen> {
                               : endIndex);
 
                       return ListView.builder(
-                        physics: ClampingScrollPhysics(),
+                        physics: const ClampingScrollPhysics(),
                         itemCount: pageItems.length,
                         itemBuilder: (context, index) {
                           final therapist = pageItems[index];
@@ -3009,8 +2616,10 @@ class _AllTherapistsScreenState extends ConsumerState<AllTherapistsScreen> {
                   ),
                 ),
                 NumberPaginator(
-                  config: const NumberPaginatorUIConfig(
-                      buttonSelectedBackgroundColor: ThemeSettings.seedColor),
+                  config: NumberPaginatorUIConfig(
+                      buttonSelectedBackgroundColor: isDarkMode
+                          ? Colors.grey.shade800
+                          : Colors.grey.shade400),
                   numberPages: totalPages,
                   controller: _numberPaginatorController,
                   initialPage: currentPage,
@@ -3034,13 +2643,16 @@ class _AllTherapistsScreenState extends ConsumerState<AllTherapistsScreen> {
 
 ///// lib/utils/admin/find_best_therapist_by_aspects.dart /////
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:findatherapistapp/models/general_models.dart';
 import 'package:findatherapistapp/services/firestore_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:findatherapistapp/models/therapist_model.dart';
 import 'package:findatherapistapp/models/term_index_model.dart';
 
-Future<List<Map<String, dynamic>>> findBestTherapist(Aspects userAspects,
-    {String version = '3'}) async {
+Future<List<Map<String, dynamic>>> findBestTherapistByAspects(
+    {required Aspects userAspects,
+    required UserRequestFilters therapistFilters,
+    String version = '3'}) async {
   FirebaseFirestore firestore = FirestoreService.instance;
   CollectionReference termsCollection = firestore.collection('terms-index');
   CollectionReference therapistsCollection = firestore.collection('therapists');
@@ -3050,7 +2662,7 @@ Future<List<Map<String, dynamic>>> findBestTherapist(Aspects userAspects,
 
   try {
     for (var positive in userAspects.positive) {
-      List<String> relatedTerms = await getRelatedTerms(positive, version);
+      List<String> relatedTerms = await getRelatedTerms(positive.term, version);
 
       for (var term in relatedTerms) {
         DocumentSnapshot termDoc = await termsCollection.doc(term).get();
@@ -3064,12 +2676,12 @@ Future<List<Map<String, dynamic>>> findBestTherapist(Aspects userAspects,
                 therapist.therapistId,
                 (score) =>
                     score +
-                    (term == positive
+                    (term == positive.term
                         ? 1 / totalAspects * 100
                         : (relatedTerms.contains(term)
                             ? 0.5 / totalAspects * 100
                             : 0.0)),
-                ifAbsent: () => (term == positive
+                ifAbsent: () => (term == positive.term
                     ? 1 / totalAspects * 100
                     : (relatedTerms.contains(term)
                         ? 0.5 / totalAspects * 100
@@ -3081,12 +2693,12 @@ Future<List<Map<String, dynamic>>> findBestTherapist(Aspects userAspects,
                 therapist.therapistId,
                 (score) =>
                     score -
-                    (term == positive
+                    (term == positive.term
                         ? 1 / totalAspects * 100
                         : (relatedTerms.contains(term)
                             ? 0.5 / totalAspects * 100
                             : 0.0)),
-                ifAbsent: () => -(term == positive
+                ifAbsent: () => -(term == positive.term
                     ? 1 / totalAspects * 100
                     : (relatedTerms.contains(term)
                         ? 0.5 / totalAspects * 100
@@ -3097,7 +2709,7 @@ Future<List<Map<String, dynamic>>> findBestTherapist(Aspects userAspects,
     }
 
     for (var negative in userAspects.negative) {
-      List<String> relatedTerms = await getRelatedTerms(negative, version);
+      List<String> relatedTerms = await getRelatedTerms(negative.term, version);
 
       for (var term in relatedTerms) {
         DocumentSnapshot termDoc = await termsCollection.doc(term).get();
@@ -3111,12 +2723,12 @@ Future<List<Map<String, dynamic>>> findBestTherapist(Aspects userAspects,
                 therapist.therapistId,
                 (score) =>
                     score -
-                    (term == negative
+                    (term == negative.term
                         ? 1 / totalAspects * 100
                         : (relatedTerms.contains(term)
                             ? 0.5 / totalAspects * 100
                             : 0.0)),
-                ifAbsent: () => -(term == negative
+                ifAbsent: () => -(term == negative.term
                     ? 1 / totalAspects * 100
                     : (relatedTerms.contains(term)
                         ? 0.5 / totalAspects * 100
@@ -3128,12 +2740,12 @@ Future<List<Map<String, dynamic>>> findBestTherapist(Aspects userAspects,
                 therapist.therapistId,
                 (score) =>
                     score +
-                    (term == negative
+                    (term == negative.term
                         ? 1 / totalAspects * 100
                         : (relatedTerms.contains(term)
                             ? 0.5 / totalAspects * 100
                             : 0.0)),
-                ifAbsent: () => (term == negative
+                ifAbsent: () => (term == negative.term
                     ? 1 / totalAspects * 100
                     : (relatedTerms.contains(term)
                         ? 0.5 / totalAspects * 100
@@ -3425,7 +3037,7 @@ Expected Output: A structured object tags with two arrays, positive and negative
     );
 
     final prompt = '''
-Generate a detailed therapy request in ${textlanguage} language for an individual looking for a therapist. The request should include personal details (dont write '[your age] [your gender identity] [your race/ethnicity]', you invent the name and details), specific challenges, and preferences for the therapist and therapy methods. The text should be around 300 characters. You should only write one, not two or three. 
+Generate a detailed therapy request in ${textlanguage} language for an individual looking for a therapist. The request should include personal details (dont write '[your age] [your gender identity] [your race/ethnicity]' don't EVER use brackets, you invent the name and details), specific challenges, and preferences for the therapist and therapy methods. The text should be around not more than 200 characters. You should only write one, not two or three. 
 
 Example: My name is John Doe, and I am a black individual living in Germany. I've been struggling to find a therapist who understands my cultural background and the unique challenges I face. Specifically, I am looking for a black therapist who can relate to my experiences and provide culturally sensitive therapy. I've encountered issues such as racial discrimination, microaggressions, and feelings of isolation. Additionally, I have faced difficulties with anxiety, low self-esteem, and trust issues stemming from past relationships. I am currently very heartbroken due to a recent breakup with my ex, which has exacerbated my feelings of depression and loneliness. Despite my efforts, it has been incredibly difficult to find a black therapist in Germany who meets these criteria.
 
@@ -3517,8 +3129,8 @@ class Tags {
 
   Aspects toAspects() {
     return Aspects(
-      positive: positive,
-      negative: negative,
+      positive: positive.map((term) => Term(term: term, public: true)).toList(),
+      negative: negative.map((term) => Term(term: term, public: true)).toList(),
     );
   }
 }

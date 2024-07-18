@@ -546,7 +546,9 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
               ElevatedButton(
+                iconAlignment: IconAlignment.end,
                 style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.only(right: 10, left: 20),
                   minimumSize: const Size(120, ThemeSettings.buttonsHeight),
                 ),
                 onPressed: () {
@@ -555,7 +557,13 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                     curve: Curves.easeInOut,
                   );
                 },
-                child: Text(S.of(context).goToNextStep),
+                child: Row(
+                  children: [
+                    Text(S.of(context).continueButton),
+                    SizedBox(width: 10),
+                    const Icon(Icons.arrow_forward_ios, size: 16)
+                  ],
+                ),
               ),
             ],
           ),

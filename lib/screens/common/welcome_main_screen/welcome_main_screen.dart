@@ -103,6 +103,8 @@ class _WelcomeMainScreenState extends ConsumerState<WelcomeMainScreen> {
                           const SizedBox(height: 15),
                           OutlinedButton(
                               onPressed: () {
+                                context
+                                    .push(Routes.therapistProfileScreen.path);
                                 // updateALLTherapistAspects();
                               },
                               style: ElevatedButton.styleFrom(
