@@ -155,6 +155,7 @@ dependencies:
   cloud_firestore: ^5.1.0
   csc_picker: ^0.2.7
   country_state_city: ^0.1.6
+  dash_flags: ^0.1.1
   #  # Firebase Database is a Flutter plugin to use the Firebase Realtime Database API and allow storing and syncing data with a NoSQL cloud database.
 #  firebase_database: ^11.0.1
 #  # Firebase Storage is a Flutter plugin to use the Firebase Cloud Storage API and allow uploading, downloading, and deleting files in the cloud.

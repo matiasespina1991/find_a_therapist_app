@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:country_picker/country_picker.dart';
+import 'package:dash_flags/dash_flags.dart' as dash_flags;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:findatherapistapp/models/general_models.dart';
@@ -432,7 +433,6 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                                     .textTheme
                                     .titleMedium
                                     ?.copyWith(),
-                                border: const OutlineInputBorder(),
                                 prefixStyle: const TextStyle(
                                   fontSize: 0,
                                 ),
@@ -764,11 +764,20 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: availableLanguages.map((String languageCode) {
                   return CheckboxListTile(
-                    title: Text(
-                        LocaleNames.of(context)!.nameOf(languageCode) != null
+                    title: Row(
+                      children: [
+                        dash_flags.LanguageFlag(
+                            height: 20,
+                            language:
+                                dash_flags.Language.fromCode(languageCode)),
+                        SizedBox(width: 10),
+                        Text(LocaleNames.of(context)!.nameOf(languageCode) !=
+                                null
                             ? toCapitalCase(
                                 LocaleNames.of(context)!.nameOf(languageCode)!)
                             : languageCode),
+                      ],
+                    ),
                     value: selectedLanguages.contains(languageCode),
                     onChanged: (bool? value) {
                       setState(() {
