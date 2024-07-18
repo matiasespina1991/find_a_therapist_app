@@ -1,16 +1,15 @@
-import 'dart:developer';
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:country_picker/country_picker.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:findatherapistapp/models/general_models.dart';
 import 'package:findatherapistapp/providers/locale_provider.dart';
 import 'package:findatherapistapp/utils/admin/to_capital_case.dart';
 import 'package:findatherapistapp/widgets/NotificationSnackbar/notification_snackbar.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localized_locales/flutter_localized_locales.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:findatherapistapp/widgets/LoadingCircle/loading_circle.dart';
 import 'package:findatherapistapp/services/gemini_service.dart';
 import 'package:findatherapistapp/services/speech_to_text_service.dart';
@@ -51,19 +50,12 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
   List<Country> countries = [];
   String listenedText = '';
 
-  // final ScrollController _scrollController = ScrollController();
   final ScrollController _scrollControllerPage1 = ScrollController();
   final ScrollController _scrollControllerPage2 = ScrollController();
 
   CountryService countryService = CountryService();
 
   List<String> selectedLanguages = ['en'];
-
-  final List<String> languages = [
-    'en',
-    'es',
-    'de',
-  ];
 
   final PageController _pageController = PageController();
 
@@ -214,20 +206,11 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
   Widget build(BuildContext context) {
     final bool isDarkMode =
         ref.watch(themeProvider).themeMode == ThemeMode.dark;
+    final therapistsLanguages = ref.watch(therapistsLanguagesProvider);
+
     return AppScaffold(
       scrollPhysics: const NeverScrollableScrollPhysics(),
-      actions: [
-        // if (_pageController.hasClients && _pageController.page != 1)
-        //   IconButton(
-        //     icon: const Icon(Icons.arrow_forward_ios),
-        //     onPressed: () {
-        //       _pageController.nextPage(
-        //         duration: const Duration(milliseconds: 300),
-        //         curve: Curves.easeInOut,
-        //       );
-        //     },
-        //   ),
-      ],
+      actions: [],
       backButton: () {
         if (_pageController.hasClients && _pageController.page == 0) {
           if (Navigator.canPop(context)) {
@@ -244,7 +227,6 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
       },
       setFloatingSpeedDialToLoadingMode:
           isSendingRequest || _isAutoWriting || _isImprovingTranscription,
-      // scrollPhysics: const ClampingScrollPhysics(),
       useTopAppBar: true,
       isProtected: true,
       appBarTitle: S.of(context).yourRequest,
@@ -255,7 +237,8 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
               controller: _pageController,
               physics: const ClampingScrollPhysics(),
               children: [
-                _buildFirstPage(context, isDarkMode),
+                _buildFirstPage(
+                    context, isDarkMode, therapistsLanguages.languages),
                 _buildSecondPage(context, isDarkMode),
               ],
             ),
@@ -265,7 +248,8 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
     );
   }
 
-  Widget _buildFirstPage(BuildContext context, bool isDarkMode) {
+  Widget _buildFirstPage(
+      BuildContext context, bool isDarkMode, List<String> availableLanguages) {
     return SingleChildScrollView(
       controller: _scrollControllerPage1,
       child: Column(
@@ -356,13 +340,17 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
               ),
               const SizedBox(height: 10),
               GestureDetector(
-                onTap: () => _showLanguageSelectionModal(context),
+                onTap: () =>
+                    _showLanguageSelectionModal(context, availableLanguages),
                 child: AbsorbPointer(
                   child: TextField(
                     controller: _languageController,
                     decoration: InputDecoration(
                       hintText: S.of(context).selectPreferredLanguage,
-                      border: OutlineInputBorder(),
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.add),
+                        onPressed: () {},
+                      ),
                     ),
                   ),
                 ),
@@ -438,7 +426,6 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                                 label: Text(S.of(context).country),
                                 contentPadding: const EdgeInsets.only(
                                     left: 15, right: 10, top: 11, bottom: 13),
-                                // isDense: true,
                                 isCollapsed: true,
                                 hintText: '< ${S.of(context).selectACountry} >',
                                 hintStyle: Theme.of(context)
@@ -763,8 +750,10 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
     );
   }
 
-  void _showLanguageSelectionModal(BuildContext context) {
+  void _showLanguageSelectionModal(
+      BuildContext context, List<String> availableLanguages) {
     showModalBottomSheet(
+      isScrollControlled: true,
       context: context,
       builder: (BuildContext context) {
         return StatefulBuilder(
@@ -773,7 +762,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
-                children: languages.map((String languageCode) {
+                children: availableLanguages.map((String languageCode) {
                   return CheckboxListTile(
                     title: Text(
                         LocaleNames.of(context)!.nameOf(languageCode) != null

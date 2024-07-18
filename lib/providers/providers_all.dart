@@ -1,3 +1,4 @@
+import 'package:findatherapistapp/providers/therapists_languages_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:findatherapistapp/providers/auth_provider.dart';
 import 'package:findatherapistapp/providers/locale_provider.dart';
@@ -10,5 +11,5 @@ final themeProvider = ChangeNotifierProvider((ref) => ThemeProvider());
 final localeProvider = ChangeNotifierProvider((ref) => LocaleProvider());
 final connectivityProvider =
     ChangeNotifierProvider((ref) => ConnectivityService());
-
-final navigationStateProvider = StateProvider<bool>((ref) => false);
+final therapistsLanguagesProvider =
+    ChangeNotifierProvider((ref) => TherapistsLanguagesProvider());

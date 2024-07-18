@@ -95,9 +95,10 @@ class _TherapistPersonalProfileScreenState
             Stack(
               clipBehavior: Clip.none,
               children: [
-                CircleAvatar(
+                const CircleAvatar(
                   radius: 70,
-                  backgroundImage: AssetImage('assets/images/profile.jpg'),
+                  backgroundImage: AssetImage(
+                      'lib/assets/placeholders/default_profile_picture.jpg'),
                 ),
                 Positioned(
                   right: -4,
@@ -131,11 +132,11 @@ class _TherapistPersonalProfileScreenState
                 ),
               ],
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TabBar(
               dividerColor: Colors.transparent,
               controller: _tabController,
-              tabs: [
+              tabs: const [
                 Tab(text: 'Personal Info'),
                 Tab(text: 'About me'),
               ],
@@ -146,19 +147,16 @@ class _TherapistPersonalProfileScreenState
                 children: [
                   // Personal Info Tab
                   SingleChildScrollView(
-                    physics: ClampingScrollPhysics(),
+                    physics: const ClampingScrollPhysics(),
                     child: Form(
                       key: _formKey,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(height: 16),
-                          Text('Full name'),
+                          const SizedBox(height: 16),
+                          const Text('Full name'),
                           TextFormField(
                             controller: _fullNameController,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                            ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Please enter your full name';
@@ -166,12 +164,11 @@ class _TherapistPersonalProfileScreenState
                               return null;
                             },
                           ),
-                          SizedBox(height: 16),
-                          Text('Birthday'),
+                          const SizedBox(height: 16),
+                          const Text('Birthday'),
                           TextFormField(
                             controller: _birthdayController,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(),
+                            decoration: const InputDecoration(
                               suffixIcon: Icon(Icons.calendar_today),
                             ),
                             readOnly: true,
@@ -185,13 +182,10 @@ class _TherapistPersonalProfileScreenState
                               return null;
                             },
                           ),
-                          SizedBox(height: 16),
-                          Text('E-mail'),
+                          const SizedBox(height: 16),
+                          const Text('E-mail'),
                           TextFormField(
                             controller: _emailController,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                            ),
                             keyboardType: TextInputType.emailAddress,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
@@ -204,8 +198,7 @@ class _TherapistPersonalProfileScreenState
                           Text('Phone'),
                           TextFormField(
                             controller: _phoneController,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(),
+                            decoration: const InputDecoration(
                               suffixIcon: Icon(Icons.arrow_drop_down),
                             ),
                             keyboardType: TextInputType.phone,
@@ -216,37 +209,25 @@ class _TherapistPersonalProfileScreenState
                               return null;
                             },
                           ),
-                          SizedBox(height: 16),
-                          Text('Address'),
+                          const SizedBox(height: 16),
+                          const Text('Address'),
                           TextFormField(
                             controller: _addressController,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                            ),
                           ),
-                          SizedBox(height: 16),
-                          Text('City'),
+                          const SizedBox(height: 16),
+                          const Text('City'),
                           TextFormField(
                             controller: _cityController,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                            ),
                           ),
-                          SizedBox(height: 16),
-                          Text('Country'),
+                          const SizedBox(height: 16),
+                          const Text('Country'),
                           TextFormField(
                             controller: _countryController,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                            ),
                           ),
-                          SizedBox(height: 16),
-                          Text('State/Province'),
+                          const SizedBox(height: 16),
+                          const Text('State/Province'),
                           TextFormField(
                             controller: _stateProvinceController,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                            ),
                           ),
                           SizedBox(height: 16),
                           Text('ZIP Code'),
@@ -260,9 +241,6 @@ class _TherapistPersonalProfileScreenState
                           Text('Profile Picture URL'),
                           TextFormField(
                             controller: _profilePictureUrlController,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                            ),
                           ),
                           SizedBox(height: 16),
                           Wrap(
@@ -280,19 +258,18 @@ class _TherapistPersonalProfileScreenState
                                     ))
                                 .toList(),
                           ),
-                          Text('Add Specialization'),
+                          const Text('Add Specialization'),
                           TextFormField(
                             decoration: InputDecoration(
-                              border: OutlineInputBorder(),
                               suffixIcon: IconButton(
-                                icon: Icon(Icons.add),
+                                icon: const Icon(Icons.add),
                                 onPressed: () {
                                   // Acción para agregar especialización
                                 },
                               ),
                             ),
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           Wrap(
                             spacing: 8.0,
                             runSpacing: 4.0,
@@ -310,7 +287,6 @@ class _TherapistPersonalProfileScreenState
                           Text('Add Spoken Language'),
                           TextFormField(
                             decoration: InputDecoration(
-                              border: OutlineInputBorder(),
                               suffixIcon: IconButton(
                                 icon: Icon(Icons.add),
                                 onPressed: () {
@@ -361,9 +337,6 @@ class _TherapistPersonalProfileScreenState
                         TextFormField(
                           controller: _bioController,
                           maxLines: 3,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                          ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter your bio';
@@ -376,9 +349,6 @@ class _TherapistPersonalProfileScreenState
                         TextFormField(
                           controller: _publicPresentationController,
                           maxLines: 8,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                          ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter your public presentation';
@@ -391,9 +361,6 @@ class _TherapistPersonalProfileScreenState
                         TextFormField(
                           controller: _privateNotesController,
                           maxLines: 6,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                          ),
                         ),
                       ],
                     ),

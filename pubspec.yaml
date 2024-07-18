@@ -203,6 +203,7 @@ flutter:
     - lib/assets/icons/
     - lib/assets/app_icons/
     - lib/assets/app_logo/
+    - lib/assets/placeholders/
 
 
   # fonts:

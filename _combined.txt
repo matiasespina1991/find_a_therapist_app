@@ -31,19 +31,21 @@
 │   │   │   ├── gold-plan-badge.png
 │   │   │   └── verified-badge.png
 │   │   ├── images
-│   │   └── lottie_animations
-│   │       ├── animation.json
-│   │       ├── animation10.json
-│   │       ├── animation11.json
-│   │       ├── animation2.json
-│   │       ├── animation3.json
-│   │       ├── animation4.json
-│   │       ├── animation5.json
-│   │       ├── animation6.json
-│   │       ├── animation7.json
-│   │       ├── animation8.json
-│   │       ├── animation9.json
-│   │       └── searching_for_a_doctor.lottie
+│   │   ├── lottie_animations
+│   │   │   ├── animation.json
+│   │   │   ├── animation10.json
+│   │   │   ├── animation11.json
+│   │   │   ├── animation2.json
+│   │   │   ├── animation3.json
+│   │   │   ├── animation4.json
+│   │   │   ├── animation5.json
+│   │   │   ├── animation6.json
+│   │   │   ├── animation7.json
+│   │   │   ├── animation8.json
+│   │   │   ├── animation9.json
+│   │   │   └── searching_for_a_doctor.lottie
+│   │   └── placeholders
+│   │       └── default_profile_picture.jpg
 │   ├── firebase_options.dart
 │   ├── generated
 │   │   ├── intl
@@ -69,7 +71,8 @@
 │   │   ├── auth_provider.dart
 │   │   ├── locale_provider.dart
 │   │   ├── providers_all.dart
-│   │   └── theme_provider.dart
+│   │   ├── theme_provider.dart
+│   │   └── therapists_languages_provider.dart
 │   ├── routes
 │   │   └── routes.dart
 │   ├── screens
@@ -151,7 +154,7 @@
 ├── rename_imports.sh
 └── template_app.iml
 
-56 directories, 96 files
+57 directories, 98 files
 ///// pubspec.yaml /////
 name: findatherapistapp
 description: "An app to easily find the perfect therapist."
@@ -358,6 +361,7 @@ flutter:
     - lib/assets/icons/
     - lib/assets/app_icons/
     - lib/assets/app_logo/
+    - lib/assets/placeholders/
 
 
   # fonts:
@@ -391,7 +395,7 @@ class DebugConfig {
   static const bool debugMode = true;
   static const String debugDatabaseId = 'debug-database';
   static const bool showDebugPrints = false;
-  static RouteConfig debugScreen = Routes.userRequestScreen;
+  static RouteConfig debugScreen = Routes.therapistProfileScreen;
   static const forceDebugScreen =
       true; // If true, the route set in debugScreen will be shown and screen protection will be ignored
   static const bool bypassLoginScreen =
@@ -1008,6 +1012,7 @@ class MyApp extends ConsumerWidget {
 }
 
 ///// lib/providers/providers_all.dart /////
+import 'package:findatherapistapp/providers/therapists_languages_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:findatherapistapp/providers/auth_provider.dart';
 import 'package:findatherapistapp/providers/locale_provider.dart';
@@ -1020,8 +1025,8 @@ final themeProvider = ChangeNotifierProvider((ref) => ThemeProvider());
 final localeProvider = ChangeNotifierProvider((ref) => LocaleProvider());
 final connectivityProvider =
     ChangeNotifierProvider((ref) => ConnectivityService());
-
-final navigationStateProvider = StateProvider<bool>((ref) => false);
+final therapistsLanguagesProvider =
+    ChangeNotifierProvider((ref) => TherapistsLanguagesProvider());
 
 ///// lib/providers/auth_provider.dart /////
 import 'package:flutter/material.dart';
@@ -2447,6 +2452,8 @@ class _WelcomeMainScreenState extends ConsumerState<WelcomeMainScreen> {
                           const SizedBox(height: 15),
                           OutlinedButton(
                               onPressed: () {
+                                context
+                                    .push(Routes.therapistProfileScreen.path);
                                 // updateALLTherapistAspects();
                               },
                               style: ElevatedButton.styleFrom(
