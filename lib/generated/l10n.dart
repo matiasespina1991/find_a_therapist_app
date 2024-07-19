@@ -1280,6 +1280,26 @@ class S {
     );
   }
 
+  /// `Oops!`
+  String get oops {
+    return Intl.message(
+      'Oops!',
+      name: 'oops',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `We couldn't find any results for your request. Please try a different request or try to make it longer.`
+  String get noTagsFoundErrorDescription {
+    return Intl.message(
+      'We couldn\'t find any results for your request. Please try a different request or try to make it longer.',
+      name: 'noTagsFoundErrorDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Redo request`
   String get redoRequestButton {
     return Intl.message(

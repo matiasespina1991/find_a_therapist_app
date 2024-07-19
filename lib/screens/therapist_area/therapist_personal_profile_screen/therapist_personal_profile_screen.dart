@@ -95,10 +95,26 @@ class _TherapistPersonalProfileScreenState
             Stack(
               clipBehavior: Clip.none,
               children: [
-                const CircleAvatar(
-                  radius: 70,
-                  backgroundImage: AssetImage(
-                      'lib/assets/placeholders/default_profile_picture.jpg'),
+                Container(
+                  decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.1),
+                        blurRadius: 1,
+                        offset: const Offset(0, 1),
+                      ),
+                    ],
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Colors.white,
+                      width: 4,
+                    ),
+                  ),
+                  child: const CircleAvatar(
+                    radius: 70,
+                    backgroundImage: AssetImage(
+                        'lib/assets/placeholders/default_profile_picture.jpg'),
+                  ),
                 ),
                 Positioned(
                   right: -4,
@@ -118,7 +134,7 @@ class _TherapistPersonalProfileScreenState
                     child: Center(
                       child: IconButton(
                         padding: EdgeInsets.zero,
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.camera_alt,
                           size: 19,
                         ),
@@ -134,6 +150,7 @@ class _TherapistPersonalProfileScreenState
             ),
             const SizedBox(height: 16),
             TabBar(
+              tabAlignment: TabAlignment.center,
               dividerColor: Colors.transparent,
               controller: _tabController,
               tabs: const [
@@ -154,7 +171,11 @@ class _TherapistPersonalProfileScreenState
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const SizedBox(height: 16),
-                          const Text('Full name'),
+                          Text(
+                            'First Name',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          SizedBox(height: 8),
                           TextFormField(
                             controller: _fullNameController,
                             validator: (value) {
@@ -164,8 +185,27 @@ class _TherapistPersonalProfileScreenState
                               return null;
                             },
                           ),
-                          const SizedBox(height: 16),
-                          const Text('Birthday'),
+                          SizedBox(height: 10),
+                          Text(
+                            'Last Name',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          SizedBox(height: 8),
+                          TextFormField(
+                            controller: _fullNameController,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your full name';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            'Birthday',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          SizedBox(height: 8),
                           TextFormField(
                             controller: _birthdayController,
                             decoration: const InputDecoration(
@@ -182,8 +222,12 @@ class _TherapistPersonalProfileScreenState
                               return null;
                             },
                           ),
-                          const SizedBox(height: 16),
-                          const Text('E-mail'),
+                          const SizedBox(height: 10),
+                          Text(
+                            'Email',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          SizedBox(height: 8),
                           TextFormField(
                             controller: _emailController,
                             keyboardType: TextInputType.emailAddress,
@@ -194,8 +238,12 @@ class _TherapistPersonalProfileScreenState
                               return null;
                             },
                           ),
-                          SizedBox(height: 16),
-                          Text('Phone'),
+                          const SizedBox(height: 10),
+                          Text(
+                            'Phone',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          SizedBox(height: 8),
                           TextFormField(
                             controller: _phoneController,
                             decoration: const InputDecoration(
@@ -209,56 +257,60 @@ class _TherapistPersonalProfileScreenState
                               return null;
                             },
                           ),
-                          const SizedBox(height: 16),
-                          const Text('Address'),
+                          const SizedBox(height: 10),
+                          Text(
+                            'Address',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          SizedBox(height: 8),
                           TextFormField(
                             controller: _addressController,
                           ),
-                          const SizedBox(height: 16),
-                          const Text('City'),
+                          const SizedBox(height: 10),
+                          Text(
+                            'City',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          SizedBox(height: 8),
                           TextFormField(
                             controller: _cityController,
                           ),
-                          const SizedBox(height: 16),
-                          const Text('Country'),
+                          const SizedBox(height: 10),
+                          Text(
+                            'Country',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          SizedBox(height: 8),
                           TextFormField(
                             controller: _countryController,
                           ),
-                          const SizedBox(height: 16),
-                          const Text('State/Province'),
+                          const SizedBox(height: 10),
+                          Text(
+                            'State/Province',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          SizedBox(height: 8),
                           TextFormField(
                             controller: _stateProvinceController,
                           ),
-                          SizedBox(height: 16),
-                          Text('ZIP Code'),
+                          const SizedBox(height: 10),
+                          Text(
+                            'Zip Code',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          SizedBox(height: 8),
                           TextFormField(
                             controller: _zipController,
                             decoration: InputDecoration(
                               border: OutlineInputBorder(),
                             ),
                           ),
-                          SizedBox(height: 16),
-                          Text('Profile Picture URL'),
-                          TextFormField(
-                            controller: _profilePictureUrlController,
+                          const SizedBox(height: 10),
+                          Text(
+                            'Add Specialization/s',
+                            style: Theme.of(context).textTheme.titleMedium,
                           ),
-                          SizedBox(height: 16),
-                          Wrap(
-                            spacing: 8.0,
-                            runSpacing: 4.0,
-                            children: _specializations
-                                .map((specialization) => Chip(
-                                      label: Text(specialization),
-                                      onDeleted: () {
-                                        setState(() {
-                                          _specializations
-                                              .remove(specialization);
-                                        });
-                                      },
-                                    ))
-                                .toList(),
-                          ),
-                          const Text('Add Specialization'),
+                          SizedBox(height: 8),
                           TextFormField(
                             decoration: InputDecoration(
                               suffixIcon: IconButton(
@@ -269,22 +321,12 @@ class _TherapistPersonalProfileScreenState
                               ),
                             ),
                           ),
-                          const SizedBox(height: 16),
-                          Wrap(
-                            spacing: 8.0,
-                            runSpacing: 4.0,
-                            children: _spokenLanguages
-                                .map((language) => Chip(
-                                      label: Text(language),
-                                      onDeleted: () {
-                                        setState(() {
-                                          _spokenLanguages.remove(language);
-                                        });
-                                      },
-                                    ))
-                                .toList(),
+                          const SizedBox(height: 10),
+                          Text(
+                            'Add Spoken Language/s',
+                            style: Theme.of(context).textTheme.titleMedium,
                           ),
-                          Text('Add Spoken Language'),
+                          SizedBox(height: 8),
                           TextFormField(
                             decoration: InputDecoration(
                               suffixIcon: IconButton(
@@ -306,7 +348,10 @@ class _TherapistPersonalProfileScreenState
                                   });
                                 },
                               ),
-                              Text('Presential'),
+                              Text(
+                                'Presential',
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
                             ],
                           ),
                           Row(
@@ -319,7 +364,10 @@ class _TherapistPersonalProfileScreenState
                                   });
                                 },
                               ),
-                              Text('Remote'),
+                              Text(
+                                'Remote',
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
                             ],
                           ),
                         ],
@@ -333,7 +381,11 @@ class _TherapistPersonalProfileScreenState
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         SizedBox(height: 16),
-                        Text('Bio'),
+                        Text(
+                          'Bio',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        SizedBox(height: 8),
                         TextFormField(
                           controller: _bioController,
                           maxLines: 3,
@@ -344,8 +396,12 @@ class _TherapistPersonalProfileScreenState
                             return null;
                           },
                         ),
-                        SizedBox(height: 16),
-                        Text('Public Presentation'),
+                        const SizedBox(height: 10),
+                        Text(
+                          'Public Presentation',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        SizedBox(height: 8),
                         TextFormField(
                           controller: _publicPresentationController,
                           maxLines: 8,
@@ -356,8 +412,12 @@ class _TherapistPersonalProfileScreenState
                             return null;
                           },
                         ),
-                        SizedBox(height: 16),
-                        Text('Private Notes'),
+                        const SizedBox(height: 10),
+                        Text(
+                          'Private Notes',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        SizedBox(height: 8),
                         TextFormField(
                           controller: _privateNotesController,
                           maxLines: 6,

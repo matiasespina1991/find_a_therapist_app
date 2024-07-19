@@ -1,4 +1,3 @@
-import 'package:animate_do/animate_do.dart';
 import 'package:findatherapistapp/app_settings/theme_settings.dart';
 import 'package:findatherapistapp/widgets/LoadingCircle/loading_circle.dart';
 import 'package:flutter/material.dart';
@@ -46,6 +45,7 @@ class _ThemeFloatingSpeedDialMenuState
       animationDuration: const Duration(milliseconds: 200),
       elevation: 1.5,
       spacing: 10.0,
+      childMargin: const EdgeInsets.all(12.0),
       visible: widget.hideFloatingSpeedDialMenu |
               !AppGeneralSettings.useFloatingSpeedDialMenu
           ? false

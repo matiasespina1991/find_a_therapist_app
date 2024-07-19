@@ -162,6 +162,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "noResultsAvailableForSelectedCountryState":
             MessageLookupByLibrary.simpleMessage(
                 "No hay resultados disponibles para el país/estado seleccionados."),
+        "noTagsFoundErrorDescription": MessageLookupByLibrary.simpleMessage(
+            "No encontramos ningún resultado para tu solicitud. Por favor, intenta una solicitud diferente o intenta hacerla más larga."),
         "noTextFoundInResponseMessage": MessageLookupByLibrary.simpleMessage(
             "Hubo un error al intentar procesar su solicitud. Hemos reportado el problema. Por favor, inténtelo nuevamente más tarde."),
         "noTherapistsFoundDescription": MessageLookupByLibrary.simpleMessage(
@@ -170,6 +172,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "ohNoSomethingWentWrong":
             MessageLookupByLibrary.simpleMessage("Oh no, algo salió mal!"),
         "ok": MessageLookupByLibrary.simpleMessage("OK"),
+        "oops": MessageLookupByLibrary.simpleMessage("Oops!"),
         "outlinedButtonLabel":
             MessageLookupByLibrary.simpleMessage("Botón Contorneado"),
         "password": MessageLookupByLibrary.simpleMessage("contraseña"),

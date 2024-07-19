@@ -124,8 +124,8 @@
         "goToNextStep": "Go to next step",
         "noTherapistsFound": "Sorry, no therapists found matching your criteria.",
         "noTherapistsFoundDescription": "Please try again changing your request or selecting different filters.",
-
-
+        "oops": "Oops!",
+        "noTagsFoundErrorDescription": "We couldn't find any results for your request. Please try a different request or try to make it longer.",
        "redoRequestButton": "Redo request",
        "findMyTherapistButton": "Find my therapist",
        "seeResultsButton": "See results",

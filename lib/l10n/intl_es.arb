@@ -137,6 +137,9 @@
               "seeResultsButton": "Ver resultados",
           "positiveAspectsDescription": "Lo que deseas que ofrezca tu terapeuta",
           "notFound": "No se encontraron.",
+          "oops": "Oops!",
+
+           "noTagsFoundErrorDescription": "No encontramos ningún resultado para tu solicitud. Por favor, intenta una solicitud diferente o intenta hacerla más larga.",
     "ohNoSomethingWentWrong": "Oh no, algo salió mal!",
     "candidateBlockedDueToSafetyMessage": "Se ha detectado lenguaje no apropiado en su solicitud y no hemos podido procesarla. Por favor, inténtelo nuevamente. Si cree que esto se trata de un error, por favor contáctenos.",
     "noCandidatesMessage": "Hubo un error al intentar procesar su solicitud. Hemos reportado el problema. Por favor, inténtelo nuevamente más tarde.",

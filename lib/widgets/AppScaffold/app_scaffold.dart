@@ -118,6 +118,7 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
             _buildFloatingMenuBackdrop(),
           ],
         ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         floatingActionButton: ThemeFloatingSpeedDialMenu(
           loadingMode: widget.setFloatingSpeedDialToLoadingMode,
           hideFloatingSpeedDialMenu: widget.hideFloatingSpeedDialMenu,
@@ -319,7 +320,7 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
           content: Text(S.of(context).youAreCurrentlyOfflineMessage),
           actions: <Widget>[
             TextButton(
-              child: const Text('OK'),
+              child: Text(S.of(context).ok),
               onPressed: () {
                 context.pop();
               },

@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:country_picker/country_picker.dart';
 
 import 'package:dash_flags/dash_flags.dart' as dash_flags;
+import 'package:findatherapistapp/widgets/NotificationModal/notification_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:findatherapistapp/models/general_models.dart';
@@ -247,6 +248,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
 
     return AppScaffold(
       scrollPhysics: const NeverScrollableScrollPhysics(),
+      ignoreGlobalPadding: true,
       backButton: () {
         if (_pageController.hasClients && _pageController.page == 0) {
           if (Navigator.canPop(context)) {
@@ -266,20 +268,23 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
       useTopAppBar: true,
       isProtected: true,
       appBarTitle: S.of(context).yourRequest,
-      body: Column(
-        children: [
-          Expanded(
-            child: PageView(
-              controller: _pageController,
-              physics: const ClampingScrollPhysics(),
-              children: [
-                _buildFirstPage(
-                    context, isDarkMode, therapistsLanguages.languages),
-                _buildSecondPage(context, isDarkMode),
-              ],
+      body: Padding(
+        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+        child: Column(
+          children: [
+            Expanded(
+              child: PageView(
+                controller: _pageController,
+                physics: const ClampingScrollPhysics(),
+                children: [
+                  _buildFirstPage(
+                      context, isDarkMode, therapistsLanguages.languages),
+                  _buildSecondPage(context, isDarkMode),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -291,6 +296,9 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
+          const SizedBox(
+            height: 20,
+          ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -395,7 +403,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Flexible(child: _buildLanguageText(context)),
-                        const Icon(Icons.add, size: 20),
+                        const Icon(Icons.add, size: 23),
                       ],
                     ),
                   ),
@@ -590,10 +598,9 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
 
           /// Next Button
           Row(
@@ -669,7 +676,9 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          const SizedBox(height: 12),
+          SizedBox(
+            height: 20,
+          ),
           Text(S.of(context).tellUsWhatYouAreLookingFor,
               style: Theme.of(context)
                   .textTheme
@@ -847,7 +856,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                           : Text(S.of(context).sendButton)),
             ],
           ),
-          const SizedBox(height: 90),
+          const SizedBox(height: 50),
         ],
       ),
     );
@@ -923,6 +932,19 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
     final inputText = _requestController.text;
     final GeminiTagsResponse geminiResponse =
         await _geminiService.getTherapyTags(inputText);
+
+    if (geminiResponse.tags.positive.isEmpty &&
+        geminiResponse.tags.negative.isEmpty) {
+      NotificationModal.errorModal(
+          context: context,
+          title: S.of(context).oops,
+          message: S.of(context).noTagsFoundErrorDescription,
+          onTapConfirm: () {});
+      setState(() {
+        isSendingRequest = false;
+      });
+      return null;
+    }
 
     setState(() {
       _tagsResponse = geminiResponse;
