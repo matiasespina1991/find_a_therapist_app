@@ -345,7 +345,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                 child: AbsorbPointer(
                   child: Container(
                     width: double.infinity,
-                    padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                    padding: EdgeInsets.symmetric(vertical: 13, horizontal: 12),
                     decoration: BoxDecoration(
                       border: Border.all(
                           color: isDarkMode
@@ -596,7 +596,10 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
 
     return RichText(
       text: TextSpan(
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 15),
+        style: Theme.of(context)
+            .textTheme
+            .bodyMedium
+            ?.copyWith(fontSize: 15, height: 1.8),
         children: spans,
       ),
     );
