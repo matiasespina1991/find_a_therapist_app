@@ -211,7 +211,6 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
 
     return AppScaffold(
       scrollPhysics: const NeverScrollableScrollPhysics(),
-      actions: [],
       backButton: () {
         if (_pageController.hasClients && _pageController.page == 0) {
           if (Navigator.canPop(context)) {
@@ -277,7 +276,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                           });
                         },
                         contentPadding:
-                            const EdgeInsets.only(left: 25, right: 10),
+                            const EdgeInsets.only(left: 16, right: 10),
                         shape: RoundedRectangleBorder(
                           side: BorderSide(
                             width: 1,
@@ -310,7 +309,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                           });
                         },
                         contentPadding:
-                            const EdgeInsets.only(left: 24, right: 10),
+                            const EdgeInsets.only(left: 16, right: 10),
                         shape: RoundedRectangleBorder(
                           side: BorderSide(
                             width: 1,
@@ -344,19 +343,29 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                 onTap: () =>
                     _showLanguageSelectionModal(context, availableLanguages),
                 child: AbsorbPointer(
-                  child: TextField(
-                    controller: _languageController,
-                    decoration: InputDecoration(
-                      hintText: S.of(context).selectPreferredLanguage,
-                      suffixIcon: IconButton(
-                        icon: Icon(Icons.add),
-                        onPressed: () {},
-                      ),
+                  child: Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                          color: isDarkMode
+                              ? ThemeSettings.primaryTextColor.darkModePrimary
+                              : ThemeSettings
+                                  .primaryTextColor.lightModePrimary),
+                      borderRadius: ThemeSettings.inputsBorderRadius,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Flexible(child: _buildLanguageText(context)),
+
+                        /// add icon
+                        const Icon(Icons.add, size: 20),
+                      ],
                     ),
                   ),
                 ),
               ),
-
               const SizedBox(height: 10),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -560,6 +569,39 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
     );
   }
 
+  RichText _buildLanguageText(BuildContext context) {
+    List<InlineSpan> spans = [];
+
+    for (String languageCode in selectedLanguages) {
+      spans.add(WidgetSpan(
+        alignment: PlaceholderAlignment.middle,
+        child: dash_flags.LanguageFlag(
+          height: 19,
+          language: dash_flags.Language.fromCode(languageCode),
+        ),
+      ));
+      spans.add(TextSpan(text: '  '));
+      spans.add(TextSpan(
+        text: LocaleNames.of(context)!.nameOf(languageCode) != null
+            ? toCapitalCase(LocaleNames.of(context)!.nameOf(languageCode)!)
+            : languageCode,
+      ));
+      spans.add(TextSpan(text: ',  '));
+    }
+
+    // Remove the last comma and space
+    if (spans.isNotEmpty) {
+      spans.removeLast();
+    }
+
+    return RichText(
+      text: TextSpan(
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 15),
+        children: spans,
+      ),
+    );
+  }
+
   Widget _buildSecondPage(BuildContext context, bool isDarkMode) {
     return SingleChildScrollView(
       controller: _scrollControllerPage2,
@@ -757,7 +799,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
       context: context,
       builder: (BuildContext context) {
         return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
+          builder: (BuildContext context, StateSetter modalSetState) {
             return Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
@@ -780,7 +822,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                     ),
                     value: selectedLanguages.contains(languageCode),
                     onChanged: (bool? value) {
-                      setState(() {
+                      modalSetState(() {
                         if (value == true) {
                           selectedLanguages.add(languageCode);
                         } else {
@@ -789,8 +831,10 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                           }
                         }
                       });
-                      _languageController.text =
-                          _getLocalizedLanguageNames(selectedLanguages);
+                      setState(() {
+                        _languageController.text =
+                            _getLocalizedLanguageNames(selectedLanguages);
+                      });
                     },
                   );
                 }).toList(),

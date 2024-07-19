@@ -45,7 +45,7 @@ class _WelcomeMainScreenState extends ConsumerState<WelcomeMainScreen> {
             FadeInUp(
               from: 20,
               curve: Curves.decelerate,
-              delay: const Duration(milliseconds: 2500),
+              delay: const Duration(milliseconds: 2000),
               duration: const Duration(milliseconds: 900),
               child: Lottie.asset(
                 'lib/assets/lottie_animations/animation2.json',
@@ -67,7 +67,7 @@ class _WelcomeMainScreenState extends ConsumerState<WelcomeMainScreen> {
                     FadeInUp(
                       curve: Curves.decelerate,
                       duration: const Duration(milliseconds: 1000),
-                      delay: const Duration(milliseconds: 2000),
+                      delay: const Duration(milliseconds: 1500),
                       from: 10,
                       child: Column(
                         children: [
