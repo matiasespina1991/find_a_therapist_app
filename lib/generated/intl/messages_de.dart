@@ -156,6 +156,9 @@ class MessageLookup extends MessageLookupByLibrary {
             "Du hast versucht, dich anzumelden, aber du hast keine Internetverbindung. Bitte verbinde dich mit dem Internet und versuche es erneut."),
         "noJsonFoundInResponseTextMessage": MessageLookupByLibrary.simpleMessage(
             "Es gab einen Fehler beim Versuch, Ihre Anfrage zu verarbeiten. Wir haben das Problem gemeldet. Bitte versuchen Sie es später erneut."),
+        "noResultsAvailableForSelectedCountryState":
+            MessageLookupByLibrary.simpleMessage(
+                "Keine Ergebnisse für das ausgewählte Land/Bundesland gefunden."),
         "noTextFoundInResponseMessage": MessageLookupByLibrary.simpleMessage(
             "Es gab einen Fehler beim Versuch, Ihre Anfrage zu verarbeiten. Wir haben das Problem gemeldet. Bitte versuchen Sie es später erneut."),
         "noTherapistsFound":
@@ -190,6 +193,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "requestTextFieldHintText": MessageLookupByLibrary.simpleMessage(
             "Geben Sie hier Ihre Anfrage ein - Geben Sie so viele Informationen wie möglich über Ihre Bedürfnisse, Herausforderungen und was Sie von einem Therapeuten erwarten.   \n  \nz.B.:\nHallo, ich bin eine 32-jährige Person und suche einen Therapeuten. Ich habe Schwierigkeiten mit Angstzuständen, geringem Selbstwertgefühl und finde es in letzter Zeit schwer, Kontakte zu knüpfen. Ich brauche jemanden, der auf kognitive Verhaltenstherapie spezialisiert ist. Ich würde einen farbigen Therapeuten bevorzugen und... "),
         "score": MessageLookupByLibrary.simpleMessage("Bewertung"),
+        "searchPrefix": MessageLookupByLibrary.simpleMessage("Suche "),
         "seeResultsButton":
             MessageLookupByLibrary.simpleMessage("Ergebnisse anzeigen"),
         "selectACity":

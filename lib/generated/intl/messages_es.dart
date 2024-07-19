@@ -159,6 +159,9 @@ class MessageLookup extends MessageLookupByLibrary {
             "Intentaste iniciar sesión pero no tienes conexión a internet. Conéctate a internet e inténtalo de nuevo."),
         "noJsonFoundInResponseTextMessage": MessageLookupByLibrary.simpleMessage(
             "Hubo un error al intentar procesar su solicitud. Hemos reportado el problema. Por favor, inténtelo nuevamente más tarde."),
+        "noResultsAvailableForSelectedCountryState":
+            MessageLookupByLibrary.simpleMessage(
+                "No hay resultados disponibles para el país/estado seleccionados."),
         "noTextFoundInResponseMessage": MessageLookupByLibrary.simpleMessage(
             "Hubo un error al intentar procesar su solicitud. Hemos reportado el problema. Por favor, inténtelo nuevamente más tarde."),
         "noTherapistsFoundDescription": MessageLookupByLibrary.simpleMessage(
@@ -191,6 +194,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "requestTextFieldHintText": MessageLookupByLibrary.simpleMessage(
             "Escribe tu solicitud aquí - Proporciona tanta información como sea posible sobre tus necesidades, desafíos y lo que buscas en un terapeuta.  \n\np.ej:   \nHola, soy una persona de 32 años que busca un terapeuta que pueda relacionarse con mis experiencias y brindar terapia culturalmente sensible. He enfrentado dificultades con la ansiedad, baja autoestima y últimamente me ha sido difícil socializar. Necesito a alguien que se especialice en Terapia Cognitivo-Conductual, y que tenga conocimientos en astrología sería un plus. Preferiría un terapeuta de color y..."),
         "score": MessageLookupByLibrary.simpleMessage("Valoración"),
+        "searchPrefix": MessageLookupByLibrary.simpleMessage("Buscar "),
         "seeResultsButton":
             MessageLookupByLibrary.simpleMessage("Ver resultados"),
         "selectACity":

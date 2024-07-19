@@ -115,7 +115,8 @@
         "all": "All",
         "location": "Location",
         "country": "Country",
-
+        "searchPrefix": "Search",
+        "noResultsAvailableForSelectedCountryState": "No results available for the selected country/state.",
         "stateProvince": "State/Province",
         "city": "City",
         "preferredLanguage": "Preferred language/s",

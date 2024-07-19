@@ -32,30 +32,32 @@ class _WelcomeMainScreenState extends ConsumerState<WelcomeMainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ///device height
+    final double deviceHeight = MediaQuery.of(context).size.height;
     return AppScaffold(
       isProtected: true,
       ignoreGlobalPadding: true,
       appBarTitle: S.of(context).homeScreenTitle,
-      body: SingleChildScrollView(
+      body: SizedBox(
+        height: deviceHeight - 180,
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
-            const SizedBox(
-              height: 48,
+            SizedBox(
+              height: 60,
             ),
-            FadeInUp(
-              from: 20,
-              curve: Curves.decelerate,
-              delay: const Duration(milliseconds: 2000),
-              duration: const Duration(milliseconds: 900),
-              child: Lottie.asset(
-                'lib/assets/lottie_animations/animation2.json',
-                width: double.infinity,
-                height: 190,
-                fit: BoxFit.cover,
+            Expanded(
+              child: FadeInUp(
+                from: 20,
+                curve: Curves.decelerate,
+                delay: const Duration(milliseconds: 2000),
+                duration: const Duration(milliseconds: 900),
+                child: Lottie.asset(
+                    'lib/assets/lottie_animations/animation2.json',
+                    width: 330
+                    // Use BoxFit.contain to adjust the size
+                    ),
               ),
-            ),
-            const SizedBox(
-              height: 194,
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 27),
@@ -100,7 +102,7 @@ class _WelcomeMainScreenState extends ConsumerState<WelcomeMainScreen> {
                                   Text(S.of(context).findYourTherapistButton),
                                 ],
                               )),
-                          const SizedBox(height: 15),
+                          const SizedBox(height: 10),
                           OutlinedButton(
                               onPressed: () {
                                 context
@@ -119,7 +121,7 @@ class _WelcomeMainScreenState extends ConsumerState<WelcomeMainScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 15),
           ],
         ),
       ),

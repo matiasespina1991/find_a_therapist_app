@@ -111,6 +111,8 @@
              "requestTextFieldHintText": "Geben Sie hier Ihre Anfrage ein - Geben Sie so viele Informationen wie möglich über Ihre Bedürfnisse, Herausforderungen und was Sie von einem Therapeuten erwarten.   \n  \nz.B.:\nHallo, ich bin eine 32-jährige Person und suche einen Therapeuten. Ich habe Schwierigkeiten mit Angstzuständen, geringem Selbstwertgefühl und finde es in letzter Zeit schwer, Kontakte zu knüpfen. Ich brauche jemanden, der auf kognitive Verhaltenstherapie spezialisiert ist. Ich würde einen farbigen Therapeuten bevorzugen und... ",
            "meetingType": "Treffen",
               "country": "Land",
+               "searchPrefix": "Suche ",
+                "noResultsAvailableForSelectedCountryState": "Keine Ergebnisse für das ausgewählte Land/Bundesland gefunden.",
               "all": "Alle",
                  "worldwide": "Weltweit",
                  "selectACountry": "Wählen Sie ein Land",

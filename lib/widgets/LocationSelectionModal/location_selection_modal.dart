@@ -5,7 +5,9 @@ import 'package:country_state_city/utils/city_utils.dart';
 import 'package:country_state_city/utils/state_utils.dart';
 
 import 'package:flutter/material.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
+import '../../generated/l10n.dart';
 import '../../models/general_models.dart';
 
 class LocationSelectionModal extends StatefulWidget {
@@ -13,6 +15,7 @@ class LocationSelectionModal extends StatefulWidget {
   final UserRequestFilters therapistFilters;
   final TextEditingController stateProvinceInputController;
   final TextEditingController cityInputController;
+  final Function(dynamic) onSelect;
 
   const LocationSelectionModal({
     super.key,
@@ -20,6 +23,7 @@ class LocationSelectionModal extends StatefulWidget {
     required this.therapistFilters,
     required this.stateProvinceInputController,
     required this.cityInputController,
+    required this.onSelect,
   });
 
   @override
@@ -30,6 +34,7 @@ class _LocationSelectionModalState extends State<LocationSelectionModal> {
   late TextEditingController searchController;
   List<dynamic> items = [];
   List<dynamic> filteredItems = [];
+  bool fetchFinished = false;
 
   @override
   void initState() {
@@ -38,12 +43,26 @@ class _LocationSelectionModalState extends State<LocationSelectionModal> {
     _fetchData();
   }
 
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
   Future<void> _fetchData() async {
     if (widget.type == 'state') {
       items = await _getStates(widget.therapistFilters.location.country);
+
+      setState(() {
+        fetchFinished = true;
+      });
     } else if (widget.type == 'city') {
       items = await _getCities(widget.therapistFilters.location.country,
           widget.therapistFilters.location.state!);
+
+      setState(() {
+        fetchFinished = true;
+      });
     }
     setState(() {
       filteredItems = items;
@@ -98,44 +117,66 @@ class _LocationSelectionModalState extends State<LocationSelectionModal> {
               controller: searchController,
               decoration: InputDecoration(
                 labelText:
-                    'Search ${widget.type == 'state' ? 'State' : 'City'}',
+                    '${S.of(context).searchPrefix}${widget.type == 'state' ? S.of(context).stateProvince.toLowerCase() : S.of(context).city.toLowerCase()}',
                 prefixIcon: Icon(Icons.search),
               ),
               onChanged: (value) => _filterItems(value),
             ),
           ),
-          if (filteredItems.isEmpty)
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: CircularProgressIndicator(),
+          if (fetchFinished && filteredItems.isEmpty)
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Container(
+                  width: 250,
+                  height: 650,
+                  child: Center(
+                    child: Text(
+                        S.of(context).noResultsAvailableForSelectedCountryState,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 16.0)),
+                  ),
+                ),
+              ),
+            ),
+          if (filteredItems.isEmpty && !fetchFinished)
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: 8,
+                  itemBuilder: (context, index) {
+                    final item = 'example city of the  $index';
+                    return Skeletonizer(
+                      child: ListTile(
+                        title: Text(item),
+                        onTap: () {},
+                      ),
+                    );
+                  },
+                ),
+              ),
             )
           else
             Expanded(
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: filteredItems.length,
-                itemBuilder: (context, index) {
-                  final item = filteredItems[index];
-                  return ListTile(
-                    title: Text(item.name),
-                    onTap: () {
-                      setState(() {
-                        if (widget.type == 'state') {
-                          widget.therapistFilters.location.state = item.isoCode;
-                          widget.stateProvinceInputController.text = item.name;
-                          widget.therapistFilters.location.city = null;
-                          widget.cityInputController
-                              .clear(); // Limpiar el controlador de la ciudad
-                        } else if (widget.type == 'city') {
-                          widget.therapistFilters.location.city = item.name;
-                          widget.cityInputController.text = item
-                              .name; // Actualizar el controlador de la ciudad
-                        }
-                      });
-                      Navigator.of(context).pop();
-                    },
-                  );
-                },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: filteredItems.length,
+                  itemBuilder: (context, index) {
+                    final item = filteredItems[index];
+                    return ListTile(
+                      title: Text(item.name),
+                      onTap: () {
+                        widget.onSelect(
+                            item); // Llamar a onSelect con el elemento seleccionado
+                        Navigator.of(context).pop();
+                      },
+                    );
+                  },
+                ),
               ),
             ),
         ],

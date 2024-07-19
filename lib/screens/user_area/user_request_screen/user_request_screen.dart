@@ -220,6 +220,19 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
           type: type,
           therapistFilters: therapistFilters,
           stateProvinceInputController: stateProvinceInputController,
+          onSelect: (selectedItem) {
+            setState(() {
+              if (type == 'state') {
+                therapistFilters.location.state = selectedItem.isoCode;
+                stateProvinceInputController.text = selectedItem.name;
+                therapistFilters.location.city = null;
+                cityInputController.clear();
+              } else if (type == 'city') {
+                therapistFilters.location.city = selectedItem.name;
+                cityInputController.text = selectedItem.name;
+              }
+            });
+          },
           cityInputController: cityInputController,
         );
       },
@@ -382,8 +395,6 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Flexible(child: _buildLanguageText(context)),
-
-                        /// add icon
                         const Icon(Icons.add, size: 20),
                       ],
                     ),
@@ -440,6 +451,14 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                           showPhoneCode: false,
                           onSelect: (Country country) {
                             setState(() {
+                              if (therapistFilters.location.country !=
+                                  country.countryCode) {
+                                therapistFilters.location.state = null;
+                                therapistFilters.location.city = null;
+                                stateProvinceInputController.clear();
+                                cityInputController.clear();
+                              }
+
                               therapistFilters.location.country =
                                   country.countryCode;
 
@@ -501,6 +520,9 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                           children: [
                             const SizedBox(height: 15),
                             TextField(
+                              textAlign: therapistFilters.location.state == null
+                                  ? TextAlign.center
+                                  : TextAlign.start,
                               decoration: InputDecoration(
                                 floatingLabelBehavior:
                                     FloatingLabelBehavior.always,
@@ -543,6 +565,9 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                           children: [
                             const SizedBox(height: 15),
                             TextField(
+                              textAlign: therapistFilters.location.city == null
+                                  ? TextAlign.center
+                                  : TextAlign.start,
                               decoration: InputDecoration(
                                 floatingLabelBehavior:
                                     FloatingLabelBehavior.always,

@@ -150,6 +150,9 @@ class MessageLookup extends MessageLookupByLibrary {
             "You tried to login but you don\'t have internet connection. Please connect to the internet and try again."),
         "noJsonFoundInResponseTextMessage": MessageLookupByLibrary.simpleMessage(
             "There was an error trying to process your request. We have reported the issue. Please try again later."),
+        "noResultsAvailableForSelectedCountryState":
+            MessageLookupByLibrary.simpleMessage(
+                "No results available for the selected country/state."),
         "noTextFoundInResponseMessage": MessageLookupByLibrary.simpleMessage(
             "There was an error trying to process your request. We have reported the issue. Please try again later."),
         "noTherapistsFound": MessageLookupByLibrary.simpleMessage(
@@ -184,6 +187,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "requestTextFieldHintText": MessageLookupByLibrary.simpleMessage(
             "Enter your request here - Provide as much information as possible about your needs, challenges, and what you\'re looking for in a therapist.   \n\ne.g.:  \nHello, I am a 32-year-old individual looking for a therapist who can relate to my experiences and provide culturally sensitive therapy. I have faced difficulties with anxiety, low self-esteem, and have been finding it hard to socialize lately. I need someone who specializes in Cognitive Behavioral Therapy, and knowledge in astrology would be a plus. I would prefer a therapist of color and..."),
         "score": MessageLookupByLibrary.simpleMessage("Score"),
+        "searchPrefix": MessageLookupByLibrary.simpleMessage("Search"),
         "seeResultsButton": MessageLookupByLibrary.simpleMessage("See results"),
         "selectACity": MessageLookupByLibrary.simpleMessage("Select a city"),
         "selectACountry":

@@ -119,6 +119,8 @@
             "country": "País",
             "stateProvince": "Estado/Provincia",
             "city": "Ciudad",
+             "searchPrefix": "Buscar ",
+              "noResultsAvailableForSelectedCountryState": "No hay resultados disponibles para el país/estado seleccionados.",
             "preferredLanguage": "Idioma/s preferido/s",
             "selectPreferredLanguage": "Selecciona el/los idioma/s preferido/s",
                    "noTherapistsFounds": "Lo sentimos, no se encontraron terapeutas que coincidan con tus criterios.",

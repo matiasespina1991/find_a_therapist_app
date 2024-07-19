@@ -1190,6 +1190,26 @@ class S {
     );
   }
 
+  /// `Search`
+  String get searchPrefix {
+    return Intl.message(
+      'Search',
+      name: 'searchPrefix',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No results available for the selected country/state.`
+  String get noResultsAvailableForSelectedCountryState {
+    return Intl.message(
+      'No results available for the selected country/state.',
+      name: 'noResultsAvailableForSelectedCountryState',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `State/Province`
   String get stateProvince {
     return Intl.message(
