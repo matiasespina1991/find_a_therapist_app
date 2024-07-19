@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "Proyecto nuevo (8).png",
+      "filename" : "Proyecto nuevo (1).jpg",
       "idiom" : "universal",
       "scale" : "1x"
     },
@@ -10,7 +10,6 @@
       "scale" : "2x"
     },
     {
-      "filename" : "LaunchImage@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
