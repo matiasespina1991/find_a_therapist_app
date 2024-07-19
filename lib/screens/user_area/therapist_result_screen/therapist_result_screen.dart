@@ -63,8 +63,6 @@ class _TherapistResultsScreenState extends State<TherapistResultsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print(_filteredTherapists.length);
-
     return AppScaffold(
       centerTitle: true,
       useTopAppBar: true,

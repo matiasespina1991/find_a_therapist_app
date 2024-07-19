@@ -104,8 +104,4 @@ void main() {
   String country = filters.location.country;
   String? state = filters.location.state;
   String? city = filters.location.city;
-
-  print('Country: $country'); // Output: Country: AU
-  print('State: $state'); // Output: State: null
-  print('City: $city'); // Output: City: null
 }

@@ -23,8 +23,6 @@ class TherapistsLanguagesProvider extends ChangeNotifier {
           .where('therapistInfo.spokenLanguages', isNull: false)
           .get();
 
-      print("querySnapshot: ${querySnapshot.docs.length}");
-
       Set<String> languageSet = {};
 
       for (var doc in querySnapshot.docs) {
@@ -35,7 +33,7 @@ class TherapistsLanguagesProvider extends ChangeNotifier {
       _languages = languageSet.toList();
       notifyListeners();
     } catch (e) {
-      print("Error fetching languages: $e");
+      debugPrint("Error fetching languages: $e");
     }
   }
 }
