@@ -14,7 +14,7 @@ class DebugConfig {
   static const bool debugMode = true;
   static const String debugDatabaseId = 'debug-database';
   static const bool showDebugPrints = false;
-  static RouteConfig debugScreen = Routes.therapistProfileScreen;
+  static RouteConfig debugScreen = Routes.userRequestScreen;
   static const forceDebugScreen =
       true; // If true, the route set in debugScreen will be shown and screen protection will be ignored
   static const bool bypassLoginScreen =

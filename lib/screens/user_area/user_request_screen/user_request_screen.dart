@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:country_picker/country_picker.dart';
+
 import 'package:dash_flags/dash_flags.dart' as dash_flags;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,7 +10,7 @@ import 'package:findatherapistapp/models/general_models.dart';
 import 'package:findatherapistapp/providers/locale_provider.dart';
 import 'package:findatherapistapp/utils/admin/to_capital_case.dart';
 import 'package:findatherapistapp/widgets/NotificationSnackbar/notification_snackbar.dart';
-import 'package:flutter/services.dart';
+
 import 'package:flutter_localized_locales/flutter_localized_locales.dart';
 import 'package:findatherapistapp/widgets/LoadingCircle/loading_circle.dart';
 import 'package:findatherapistapp/services/gemini_service.dart';
@@ -22,6 +23,7 @@ import '../../../routes/routes.dart';
 import '../../../utils/debug/error_code_to_text.dart';
 import '../../../widgets/AppScaffold/app_scaffold.dart';
 import '../../../generated/l10n.dart';
+import '../../../widgets/LocationSelectionModal/location_selection_modal.dart';
 import '../../common/aspects_screen/aspects_screen.dart';
 
 class UserRequestScreen extends ConsumerStatefulWidget {
@@ -45,7 +47,9 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
   Timer? _autoWriteTimer;
   TextEditingController countryInputController = TextEditingController();
   TextEditingController stateProvinceInputController = TextEditingController();
-  String? defaultCountry = null;
+  TextEditingController cityInputController = TextEditingController();
+
+  String? defaultCountry;
   late UserRequestFilters therapistFilters;
 
   List<Country> countries = [];
@@ -203,6 +207,25 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
     });
   }
 
+  void _showLocationSelectionModal(BuildContext context, String type) {
+    showModalBottomSheet(
+      isScrollControlled: true,
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.8,
+      ),
+      useSafeArea: true,
+      context: context,
+      builder: (BuildContext context) {
+        return LocationSelectionModal(
+          type: type,
+          therapistFilters: therapistFilters,
+          stateProvinceInputController: stateProvinceInputController,
+          cityInputController: cityInputController,
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final bool isDarkMode =
@@ -345,7 +368,8 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                 child: AbsorbPointer(
                   child: Container(
                     width: double.infinity,
-                    padding: EdgeInsets.symmetric(vertical: 13, horizontal: 12),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 13, horizontal: 12),
                     decoration: BoxDecoration(
                       border: Border.all(
                           color: isDarkMode
@@ -382,7 +406,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                             children: [
                               Checkbox(
                                   value: !therapistFilters.location.enabled,
-                                  onChanged: (bool) {
+                                  onChanged: (_) {
                                     setState(() {
                                       therapistFilters.location.enabled =
                                           !therapistFilters.location.enabled;
@@ -461,13 +485,15 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
 
                   /// State/Province Input
                   Visibility(
                     visible: therapistFilters.location.enabled,
                     child: GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        _showLocationSelectionModal(context, 'state');
+                      },
                       child: AbsorbPointer(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -475,7 +501,6 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                           children: [
                             const SizedBox(height: 15),
                             TextField(
-                              textAlign: TextAlign.center,
                               decoration: InputDecoration(
                                 floatingLabelBehavior:
                                     FloatingLabelBehavior.always,
@@ -490,19 +515,27 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                                 border: const OutlineInputBorder(),
                               ),
                               controller: stateProvinceInputController,
+                              onChanged: (value) {
+                                if (value.isEmpty) {
+                                  therapistFilters.location.state = null;
+                                }
+                              },
                             ),
                           ],
                         ),
                       ),
                     ),
                   ),
+                  const SizedBox(height: 8),
 
                   /// City Input
                   Visibility(
                     visible: therapistFilters.location.enabled &&
                         therapistFilters.location.state != null,
                     child: GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        _showLocationSelectionModal(context, 'city');
+                      },
                       child: AbsorbPointer(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -510,7 +543,6 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                           children: [
                             const SizedBox(height: 15),
                             TextField(
-                              textAlign: TextAlign.center,
                               decoration: InputDecoration(
                                 floatingLabelBehavior:
                                     FloatingLabelBehavior.always,
@@ -522,7 +554,8 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                                     ?.copyWith(fontSize: 15),
                                 border: const OutlineInputBorder(),
                               ),
-                              controller: stateProvinceInputController,
+                              controller:
+                                  cityInputController, // Usar el nuevo controlador
                             ),
                             const SizedBox(height: 12),
                           ],
@@ -556,7 +589,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                 child: Row(
                   children: [
                     Text(S.of(context).continueButton),
-                    SizedBox(width: 10),
+                    const SizedBox(width: 10),
                     const Icon(Icons.arrow_forward_ios, size: 16)
                   ],
                 ),
@@ -580,13 +613,13 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
           language: dash_flags.Language.fromCode(languageCode),
         ),
       ));
-      spans.add(TextSpan(text: '  '));
+      spans.add(const TextSpan(text: '  '));
       spans.add(TextSpan(
         text: LocaleNames.of(context)!.nameOf(languageCode) != null
             ? toCapitalCase(LocaleNames.of(context)!.nameOf(languageCode)!)
             : languageCode,
       ));
-      spans.add(TextSpan(text: ',  '));
+      spans.add(const TextSpan(text: ',  '));
     }
 
     // Remove the last comma and space
@@ -815,7 +848,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                             height: 20,
                             language:
                                 dash_flags.Language.fromCode(languageCode)),
-                        SizedBox(width: 10),
+                        const SizedBox(width: 10),
                         Text(LocaleNames.of(context)!.nameOf(languageCode) !=
                                 null
                             ? toCapitalCase(

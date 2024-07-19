@@ -53,7 +53,7 @@ class LocationFilters {
 
   @override
   String toString() =>
-      'LocationFilters(country: $country, state: $state, city: $city)';
+      'LocationFilters(enabled: $enabled, country: $country, state: $state, city: $city)';
 }
 
 class UserRequestFilters {
@@ -87,21 +87,4 @@ class UserRequestFilters {
   String toString() {
     return 'UserRequestFilters(remote: $remote, presential: $presential, location: $location)';
   }
-}
-
-void main() {
-  UserRequestFilters filters = UserRequestFilters(
-    remote: true,
-    presential: false,
-    location: LocationFilters(
-      enabled: true,
-      country: 'AU',
-      state: null,
-      city: null,
-    ),
-  );
-
-  String country = filters.location.country;
-  String? state = filters.location.state;
-  String? city = filters.location.city;
 }
