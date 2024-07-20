@@ -87,7 +87,6 @@ class _TherapistPersonalProfileScreenState
       appBarTitle: "Therapist Profile",
       useTopAppBar: true,
       actions: [
-        /// settings button
         IconButton(
           icon: Icon(Icons.settings),
           onPressed: () {
@@ -99,7 +98,6 @@ class _TherapistPersonalProfileScreenState
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) => [
           SliverAppBar(
-            //make appbar transparent
             backgroundColor: isDarkMode
                 ? ThemeSettings.scaffoldBackgroundColor.darkModePrimary
                 : ThemeSettings.scaffoldBackgroundColor.lightModePrimary,
@@ -121,31 +119,48 @@ class _TherapistPersonalProfileScreenState
                         alignment: Alignment.topCenter,
                         clipBehavior: Clip.none,
                         children: [
-                          AnimatedContainer(
-                            duration: Duration(milliseconds: 100),
-                            margin: EdgeInsets.only(
-                              top: top > 160.0 ? 0.0 : 17.0,
-                            ),
-                            width: top > 160.0 ? 140.0 : 80.0,
-                            height: top > 160.0 ? 140.0 : 80.0,
-                            decoration: BoxDecoration(
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.1),
-                                  blurRadius: 1,
-                                  offset: const Offset(0, 1),
+                          ClipOval(
+                            child: Material(
+                              child: InkWell(
+                                splashColor: Colors.black.withAlpha(30),
+                                onTap: () {
+                                  // Acción al presionar la imagen de perfil
+                                },
+                                child: AnimatedContainer(
+                                  clipBehavior: Clip.hardEdge,
+                                  duration: Duration(milliseconds: 100),
+                                  margin: EdgeInsets.only(
+                                    top: top > 160.0 ? 0.0 : 17.0,
+                                  ),
+                                  width: top > 160.0 ? 140.0 : 80.0,
+                                  height: top > 160.0 ? 140.0 : 80.0,
+                                  decoration: BoxDecoration(
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.1),
+                                        blurRadius: 1,
+                                        offset: const Offset(0, 1),
+                                      ),
+                                    ],
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Colors.white,
+                                      width: 4,
+                                    ),
+                                  ),
+                                  child: Ink(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      image: DecorationImage(
+                                        image: AssetImage(
+                                          'lib/assets/placeholders/default_profile_picture.jpg',
+                                        ),
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                              ],
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Colors.white,
-                                width: 4,
                               ),
-                            ),
-                            child: const CircleAvatar(
-                              radius: 70,
-                              backgroundImage: AssetImage(
-                                  'lib/assets/placeholders/default_profile_picture.jpg'),
                             ),
                           ),
                           if (top > 160.0)
@@ -187,6 +202,8 @@ class _TherapistPersonalProfileScreenState
               },
             ),
             bottom: TabBar(
+              overlayColor: WidgetStateProperty.all<Color>(Colors.transparent),
+              splashFactory: null,
               controller: _tabController,
               tabAlignment: TabAlignment.center,
               dividerColor: Colors.transparent,
