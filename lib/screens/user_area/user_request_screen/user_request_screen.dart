@@ -4,8 +4,6 @@ import 'dart:developer';
 import 'package:country_picker/country_picker.dart';
 
 import 'package:dash_flags/dash_flags.dart' as dash_flags;
-import 'package:findatherapistapp/utils/admin/update_all_therapists_aspects.dart';
-import 'package:findatherapistapp/utils/admin/update_props_on_therapists_docs.dart';
 import 'package:findatherapistapp/widgets/ModalTopChip/modal_top_chip.dart';
 import 'package:findatherapistapp/widgets/NotificationModal/notification_modal.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +17,7 @@ import 'package:flutter_localized_locales/flutter_localized_locales.dart';
 import 'package:findatherapistapp/widgets/LoadingCircle/loading_circle.dart';
 import 'package:findatherapistapp/services/gemini_service.dart';
 import 'package:findatherapistapp/services/speech_to_text_service.dart';
-import 'package:flutter_svg/svg.dart';
+
 import 'package:go_router/go_router.dart';
 import '../../../app_settings/theme_settings.dart';
 import '../../../models/gemini_tags_response_model.dart';
@@ -640,11 +638,6 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                   ],
                 ),
               ),
-              // ElevatedButton(
-              //     onPressed: () {
-              //       updatePropsOnTherapistsDocs();
-              //     },
-              //     child: Text('Test')),
             ],
           ),
           const SizedBox(height: 90),
@@ -695,7 +688,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Text(S.of(context).tellUsWhatYouAreLookingFor,
@@ -902,7 +895,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                     padding: const EdgeInsets.only(
                         top: 10, bottom: 30, left: 10, right: 10),
                     child: SingleChildScrollView(
-                      physics: ClampingScrollPhysics(),
+                      physics: const ClampingScrollPhysics(),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: availableLanguages.map((String languageCode) {
@@ -972,11 +965,14 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
 
     if (geminiResponse.tags.positive.isEmpty &&
         geminiResponse.tags.negative.isEmpty) {
-      NotificationModal.errorModal(
-          context: context,
-          title: S.of(context).oops,
-          message: S.of(context).noTagsFoundErrorDescription,
-          onTapConfirm: () {});
+      if (mounted) {
+        NotificationModal.errorModal(
+            context: context,
+            title: S.of(context).oops,
+            message: S.of(context).noTagsFoundErrorDescription,
+            onTapConfirm: () {});
+      }
+
       setState(() {
         isSendingRequest = false;
       });

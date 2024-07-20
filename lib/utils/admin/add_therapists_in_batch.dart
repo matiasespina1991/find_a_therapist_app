@@ -6,6 +6,8 @@ Future<void> addTherapistsBatch(List<TherapistModel> therapists) async {
   FirebaseFirestore firestore = FirestoreService.instance;
   WriteBatch batch = firestore.batch();
 
+  /// Comment this line to allow this function to run
+  return;
   try {
     for (var therapist in therapists) {
       DocumentReference docRef = firestore.collection('therapists').doc();

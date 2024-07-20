@@ -456,7 +456,7 @@ class _TherapistPersonalProfileScreenState
                       maxLines: 3,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your bio';
+                          return 'Please enter your intro';
                         }
                         return null;
                       },

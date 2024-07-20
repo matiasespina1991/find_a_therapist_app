@@ -13,6 +13,8 @@ Future<void> updateTermsIndex() async {
       await firestore.collection('therapists').get();
   List<QueryDocumentSnapshot> therapistDocs = therapistSnapshot.docs;
 
+  /// Comment this line to allow this function to run
+  return;
   for (var therapistDoc in therapistDocs) {
     try {
       var therapistData = therapistDoc.data() as Map<String, dynamic>;

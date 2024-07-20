@@ -24,7 +24,7 @@
 //     ),
 //     score: Score(rating: 4.9, amountRatings: 150),
 //     therapistInfo: TherapistInfo(
-//       bio:
+//       intro:
 //       'Specialist in pet therapy and animal-assisted therapy.',
 //       publicPresentation:
 //       'Hello, I am Laura Davies, a therapist specializing in pet therapy and animal-assisted therapy. I help clients experience the therapeutic benefits of interacting with companion animals to improve their emotional well-being and reduce stress.',
@@ -92,7 +92,7 @@
 //     ),
 //     score: Score(rating: 4.8, amountRatings: 120),
 //     therapistInfo: TherapistInfo(
-//       bio:
+//       intro:
 //       'Expert in art therapy and creative expression.',
 //       publicPresentation:
 //       'Hi, I am Samuel Turner, an expert in art therapy and creative expression. My sessions encourage clients to explore their emotions and heal through artistic techniques and creative expression.',
@@ -160,7 +160,7 @@
 //     ),
 //     score: Score(rating: 4.7, amountRatings: 110),
 //     therapistInfo: TherapistInfo(
-//       bio:
+//       intro:
 //       'Music therapist specializing in emotional healing through music.',
 //       publicPresentation:
 //       'Hello, I am Isabel Flores, a music therapist specializing in emotional healing through music. I use musical creativity and therapeutic music sessions to help clients express their emotions and find relief from stress.',
@@ -228,7 +228,7 @@
 //     ),
 //     score: Score(rating: 4.9, amountRatings: 130),
 //     therapistInfo: TherapistInfo(
-//       bio:
+//       intro:
 //       'Sports therapist specializing in mental and physical well-being for athletes.',
 //       publicPresentation:
 //       'Hi, I am Diego Rodriguez, a sports therapist specializing in the mental and physical well-being of athletes. I focus on enhancing athletic performance, injury rehabilitation, and mental toughness.',
@@ -296,7 +296,7 @@
 //     ),
 //     score: Score(rating: 4.8, amountRatings: 140),
 //     therapistInfo: TherapistInfo(
-//       bio:
+//       intro:
 //       'Nutrition therapist focusing on holistic health and diet planning.',
 //       publicPresentation:
 //       'Hello, I am Clara Kim, a nutrition therapist focusing on holistic health and diet planning. I provide nutritional counseling and support for clients aiming to achieve their health goals through healthy eating and lifestyle changes.',
@@ -364,7 +364,7 @@
 //     ),
 //     score: Score(rating: 4.7, amountRatings: 90),
 //     therapistInfo: TherapistInfo(
-//       bio:
+//       intro:
 //       'Tech therapist specializing in digital well-being and tech addiction.',
 //       publicPresentation:
 //       'Hi, I am Michael Lee, a tech therapist specializing in digital well-being and tech addiction. I help clients manage their screen time, undergo digital detox, and develop healthy tech use habits.',
@@ -432,7 +432,7 @@
 //     ),
 //     score: Score(rating: 4.9, amountRatings: 100),
 //     therapistInfo: TherapistInfo(
-//       bio:
+//       intro:
 //       'Dance therapist focusing on emotional and physical expression through movement.',
 //       publicPresentation:
 //       'Hello, I am Emily Chen, a dance therapist focusing on emotional and physical expression through movement. I use dance as a healing tool to help clients achieve emotional release and body awareness.',
@@ -500,7 +500,7 @@
 //     ),
 //     score: Score(rating: 4.8, amountRatings: 85),
 //     therapistInfo: TherapistInfo(
-//       bio:
+//       intro:
 //       'Eco-therapist focusing on healing through nature and environmental connection.',
 //       publicPresentation:
 //       'Hi, I am Daniel Green, an eco-therapist focusing on healing through nature and environmental connection. My sessions involve outdoor activities and nature immersion to promote well-being and mental health.',
@@ -568,7 +568,7 @@
 //     ),
 //     score: Score(rating: 4.7, amountRatings: 95),
 //     therapistInfo: TherapistInfo(
-//       bio:
+//       intro:
 //       'Play therapist specializing in child development and emotional expression.',
 //       publicPresentation:
 //       'Hello, I am Sara Ahmed, a play therapist specializing in child development and emotional expression. I use creative play to help children express their emotions and work through behavioral issues in a supportive environment.',
@@ -636,7 +636,7 @@
 //     ),
 //     score: Score(rating: 4.9, amountRatings: 130),
 //     therapistInfo: TherapistInfo(
-//       bio:
+//       intro:
 //       'Mindfulness therapist focusing on meditation and stress reduction.',
 //       publicPresentation:
 //       'Hi, I am Asha Patel, a mindfulness therapist focusing on meditation and stress reduction. My sessions help clients achieve mental clarity and emotional balance through mindful living and holistic approaches.',

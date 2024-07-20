@@ -1,6 +1,5 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:findatherapistapp/app_settings/app_info.dart';
-import 'package:findatherapistapp/utils/admin/update_all_therapists_aspects.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -43,7 +42,7 @@ class _WelcomeMainScreenState extends ConsumerState<WelcomeMainScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
-            SizedBox(
+            const SizedBox(
               height: 60,
             ),
             Expanded(

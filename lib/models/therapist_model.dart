@@ -157,7 +157,7 @@ class Score {
 }
 
 class TherapistInfo {
-  String bio;
+  String intro;
   String publicPresentation;
   String privateNotes;
   Location location;
@@ -171,7 +171,7 @@ class TherapistInfo {
   MeetingType meetingType;
 
   TherapistInfo({
-    required this.bio,
+    required this.intro,
     required this.publicPresentation,
     required this.privateNotes,
     required this.location,
@@ -187,7 +187,7 @@ class TherapistInfo {
 
   factory TherapistInfo.fromJson(Map<String, dynamic> json) {
     return TherapistInfo(
-      bio: json['bio'],
+      intro: json['intro'],
       publicPresentation: json['publicPresentation'],
       privateNotes: json['privateNotes'],
       location: Location.fromJson(json['location']),
@@ -206,7 +206,7 @@ class TherapistInfo {
 
   Map<String, dynamic> toJson() {
     return {
-      'bio': bio,
+      'intro': intro,
       'publicPresentation': publicPresentation,
       'privateNotes': privateNotes,
       'location': location.toJson(),

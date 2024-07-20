@@ -17,7 +17,7 @@
 //     },
 //     "score": {"rating": 4.5, "amountRatings": 120},
 //     "therapistInfo": {
-//       "bio": "Experienced psychologist specializing in anxiety management.",
+//       "intro": "Experienced psychologist specializing in anxiety management.",
 //       "location": {
 //         "address": "China Bazaar Rd",
 //         "city": "Raichur",
@@ -67,7 +67,7 @@
 //     },
 //     "score": {"rating": 4.8, "amountRatings": 85},
 //     "therapistInfo": {
-//       "bio": "Therapist with a focus on trauma and recovery.",
+//       "intro": "Therapist with a focus on trauma and recovery.",
 //       "location": {
 //         "address": "Kubanskoyi Ukrayini",
 //         "city": "Verhivceve",
@@ -117,7 +117,7 @@
 //     },
 //     "score": {"rating": 4.7, "amountRatings": 150},
 //     "therapistInfo": {
-//       "bio": "Specializes in family therapy and child psychology.",
+//       "intro": "Specializes in family therapy and child psychology.",
 //       "location": {
 //         "address": "Mcclellan Rd",
 //         "city": "Wollongong",
@@ -167,7 +167,7 @@
 //     },
 //     "score": {"rating": 4.9, "amountRatings": 200},
 //     "therapistInfo": {
-//       "bio": "Veteran therapist with over 40 years of experience.",
+//       "intro": "Veteran therapist with over 40 years of experience.",
 //       "location": {
 //         "address": "Washington Ave",
 //         "city": "Gladstone",
@@ -217,7 +217,7 @@
 //     },
 //     "score": {"rating": 4.4, "amountRatings": 100},
 //     "therapistInfo": {
-//       "bio": "Therapist with a focus on cultural and societal issues.",
+//       "intro": "Therapist with a focus on cultural and societal issues.",
 //       "location": {
 //         "address": "Bağdat Cd",
 //         "city": "Kocaeli",
@@ -267,7 +267,7 @@
 //     },
 //     "score": {"rating": 4.3, "amountRatings": 90},
 //     "therapistInfo": {
-//       "bio": "Psychologist specializing in adolescent therapy.",
+//       "intro": "Psychologist specializing in adolescent therapy.",
 //       "location": {
 //         "address": "کلاهدوز",
 //         "city": "Sabzevar",
@@ -317,7 +317,7 @@
 //     },
 //     "score": {"rating": 4.6, "amountRatings": 110},
 //     "therapistInfo": {
-//       "bio": "Therapist specializing in anxiety and depression.",
+//       "intro": "Therapist specializing in anxiety and depression.",
 //       "location": {
 //         "address": "Park Danshjo",
 //         "city": "Dezful",
@@ -367,7 +367,7 @@
 //     },
 //     "score": {"rating": 4.7, "amountRatings": 100},
 //     "therapistInfo": {
-//       "bio": "Specializes in family therapy and child psychology.",
+//       "intro": "Specializes in family therapy and child psychology.",
 //       "location": {
 //         "address": "Manor Road",
 //         "city": "Bandon",
@@ -417,7 +417,7 @@
 //     },
 //     "score": {"rating": 4.4, "amountRatings": 130},
 //     "therapistInfo": {
-//       "bio": "Psychologist specializing in cognitive behavioral therapy.",
+//       "intro": "Psychologist specializing in cognitive behavioral therapy.",
 //       "location": {
 //         "address": "Moghadas Ardabili",
 //         "city": "Mashhad",
@@ -467,7 +467,7 @@
 //     },
 //     "score": {"rating": 4.6, "amountRatings": 90},
 //     "therapistInfo": {
-//       "bio": "Geriatric therapist specializing in family therapy.",
+//       "intro": "Geriatric therapist specializing in family therapy.",
 //       "location": {
 //         "address": "Valley View Ln",
 //         "city": "Busselton",
@@ -517,7 +517,7 @@
 //     },
 //     "score": {"rating": 4.5, "amountRatings": 140},
 //     "therapistInfo": {
-//       "bio": "Specialist in treating anxiety and depression.",
+//       "intro": "Specialist in treating anxiety and depression.",
 //       "location": {
 //         "address": "Tuam Street",
 //         "city": "Hastings",
@@ -567,7 +567,7 @@
 //     },
 //     "score": {"rating": 4.8, "amountRatings": 150},
 //     "therapistInfo": {
-//       "bio": "Specializes in trauma recovery and post-traumatic growth.",
+//       "intro": "Specializes in trauma recovery and post-traumatic growth.",
 //       "location": {
 //         "address": "Place de L'Abbé-Basset",
 //         "city": "Courtelary",
@@ -617,7 +617,7 @@
 //     },
 //     "score": {"rating": 4.4, "amountRatings": 130},
 //     "therapistInfo": {
-//       "bio":
+//       "intro":
 //           "Specialist in cognitive behavioral therapy and treating depression.",
 //       "location": {
 //         "address": "Grove Road",
@@ -668,7 +668,7 @@
 //     },
 //     "score": {"rating": 4.7, "amountRatings": 180},
 //     "therapistInfo": {
-//       "bio":
+//       "intro":
 //           "Experienced psychologist specializing in cognitive behavioral therapy.",
 //       "location": {
 //         "address": "Poplar Dr",
@@ -719,7 +719,7 @@
 //     },
 //     "score": {"rating": 4.6, "amountRatings": 100},
 //     "therapistInfo": {
-//       "bio": "Specializes in family therapy and child psychology.",
+//       "intro": "Specializes in family therapy and child psychology.",
 //       "location": {
 //         "address": "Moghadas Ardabili",
 //         "city": "Mashhad",

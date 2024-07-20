@@ -194,7 +194,7 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
         },
         "score": {"rating": 4.9, "amountRatings": 200},
         "therapistInfo": {
-          "bio":
+          "intro":
               "Therapist with extensive experience in stress and relationship counseling.",
           "location": {
             "address": "123 Therapy Lane",

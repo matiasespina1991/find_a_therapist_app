@@ -15,6 +15,8 @@ Future<void> updateALLTherapistAspects() async {
   QuerySnapshot snapshot = await firestore.collection('therapists').get();
   List<QueryDocumentSnapshot> docs = snapshot.docs;
 
+  /// Comment this line to allow this function to run
+  return;
   for (var doc in docs) {
     try {
       var data = doc.data() as Map<String, dynamic>;

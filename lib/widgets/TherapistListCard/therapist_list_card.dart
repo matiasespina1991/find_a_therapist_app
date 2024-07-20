@@ -194,7 +194,7 @@ class TherapistListCard extends StatelessWidget {
                                 ],
                               ),
                               Text(
-                                therapist.therapistInfo.bio,
+                                therapist.therapistInfo.intro,
                                 style: TextStyle(
                                   fontSize: 15.5,
                                   color: Colors.grey[700],

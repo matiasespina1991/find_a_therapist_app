@@ -296,12 +296,12 @@ class _TherapistPublicProfileScreenState
                                 if (translateToUserDefinedLanguage)
                                   FutureBuilder<String>(
                                     future: onDeviceTranslator.translateText(
-                                        widget.therapist.therapistInfo.bio),
+                                        widget.therapist.therapistInfo.intro),
                                     builder: (context, snapshot) {
                                       if (snapshot.connectionState ==
                                           ConnectionState.waiting) {
                                         return Text(
-                                          widget.therapist.therapistInfo.bio,
+                                          widget.therapist.therapistInfo.intro,
                                           style: TextStyle(
                                             fontSize: 15,
                                             color: Colors.grey[700],
@@ -329,7 +329,7 @@ class _TherapistPublicProfileScreenState
                                   )
                                 else
                                   Text(
-                                    widget.therapist.therapistInfo.bio,
+                                    widget.therapist.therapistInfo.intro,
                                     style: TextStyle(
                                       fontSize: 15,
                                       color: Colors.grey[700],

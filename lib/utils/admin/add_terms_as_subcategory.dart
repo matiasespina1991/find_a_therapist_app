@@ -8,6 +8,8 @@ Future<void> addTermsAsSubcategory(
   FirebaseFirestore firestore = FirestoreService.instance;
   CollectionReference termsCollection = firestore.collection('terms-index');
 
+  /// Comment this line to allow this function to run
+  return;
   // Obtener el documento del término principal
   DocumentSnapshot parentDoc = await termsCollection.doc(parentTerm).get();
   TermIndex parentTermIndex;
