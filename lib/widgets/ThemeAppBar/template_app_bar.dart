@@ -35,7 +35,7 @@ class ThemeAppBar extends ConsumerWidget implements PreferredSizeWidget {
               onPressed: backButton,
             )
           : null,
-      elevation: 2,
+      elevation: 0,
       backgroundColor: isDarkMode
           ? ThemeSettings.appbarBackgroundColor.darkModePrimary
           : ThemeSettings.appbarBackgroundColor.lightModePrimary,

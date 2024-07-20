@@ -26,11 +26,8 @@ class TherapistPublicProfileScreen extends ConsumerStatefulWidget {
 
 class _TherapistPublicProfileScreenState
     extends ConsumerState<TherapistPublicProfileScreen> {
-  ValueNotifier<bool> isTranslating = ValueNotifier(false);
-
   @override
   void dispose() {
-    isTranslating.dispose();
     super.dispose();
   }
 
@@ -60,7 +57,6 @@ class _TherapistPublicProfileScreenState
 
         return AppScaffold(
           scrollPhysics: const ClampingScrollPhysics(),
-          setFloatingSpeedDialToLoadingMode: isTranslating.value,
           actions: [
             if (Localizations.localeOf(context).languageCode.toLowerCase() !=
                 'en')
@@ -214,7 +210,6 @@ class _TherapistPublicProfileScreenState
                                     builder: (context, snapshot) {
                                       if (snapshot.connectionState ==
                                           ConnectionState.waiting) {
-                                        isTranslating.value = true;
                                         return Text(
                                           widget.therapist.therapistInfo
                                               .specializations
@@ -231,7 +226,7 @@ class _TherapistPublicProfileScreenState
                                       } else if (snapshot.hasError) {
                                         debugPrint(
                                             'Error when trying to translate specializations: ${snapshot.error}');
-                                        isTranslating.value = false;
+
                                         return Text(
                                           '.',
                                           style: TextStyle(
@@ -240,7 +235,6 @@ class _TherapistPublicProfileScreenState
                                           ),
                                         );
                                       } else {
-                                        isTranslating.value = false;
                                         return Text(
                                           snapshot.data ?? '',
                                           maxLines: 1,
@@ -440,18 +434,15 @@ class _TherapistPublicProfileScreenState
                           builder: (context, snapshot) {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
-                              isTranslating.value = true;
                               return Text(
                                 widget
                                     .therapist.therapistInfo.publicPresentation,
                                 style: Theme.of(context).textTheme.bodyMedium,
                               );
                             } else if (snapshot.hasError) {
-                              isTranslating.value = false;
                               return Text(
                                   'Error when trying to translate intro text: ${snapshot.error}');
                             } else {
-                              isTranslating.value = false;
                               return Text(
                                 snapshot.data ?? '',
                                 style: Theme.of(context).textTheme.bodyMedium,

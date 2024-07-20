@@ -123,6 +123,11 @@ class ThemeSettings {
     darkModePrimary: Colors.blueGrey,
   );
 
+  static ThemeColors inputBackgroundColor = ThemeColors(
+    lightModePrimary: Colors.white.withOpacity(0.4),
+    darkModePrimary: appbarBackgroundColor.darkModePrimary,
+  );
+
   static const ThemeColors outlinedButtonTextColor = ThemeColors(
     lightModePrimary: Colors.black,
     darkModePrimary: Colors.white,

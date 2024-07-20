@@ -27,6 +27,12 @@
 │   │   │   └── lupe2.webp
 │   │   ├── app_logo
 │   │   │   └── logo.png
+│   │   ├── extra_dash_flags
+│   │   │   ├── ac.svg
+│   │   │   ├── as.svg
+│   │   │   ├── do.svg
+│   │   │   ├── in.svg
+│   │   │   └── is.svg
 │   │   ├── icons
 │   │   │   ├── gold-plan-badge.png
 │   │   │   └── verified-badge.png
@@ -72,7 +78,8 @@
 │   │   ├── locale_provider.dart
 │   │   ├── providers_all.dart
 │   │   ├── theme_provider.dart
-│   │   └── therapists_languages_provider.dart
+│   │   ├── therapists_languages_provider.dart
+│   │   └── translate_profiles_providers.dart
 │   ├── routes
 │   │   └── routes.dart
 │   ├── screens
@@ -99,6 +106,7 @@
 │   │   ├── error_reporting_service.dart
 │   │   ├── firestore_service.dart
 │   │   ├── gemini_service.dart
+│   │   ├── profiles_translate_delegate.dart
 │   │   └── speech_to_text_service.dart
 │   ├── theme
 │   │   └── main_theme
@@ -118,12 +126,14 @@
 │   │   │   ├── log_all_therapists.dart
 │   │   │   ├── to_capital_case.dart
 │   │   │   ├── update_all_therapists_aspects.dart
+│   │   │   ├── update_props_on_therapists_docs.dart
 │   │   │   └── update_terms_index_from_all_therapist.dart
 │   │   ├── debug
 │   │   │   ├── error_code_to_text.dart
 │   │   │   ├── log_configurations.dart
 │   │   │   └── notify_that_app_is_runing_in_debug_mode.dart
 │   │   ├── ui
+│   │   │   └── get_dash_flag_by_country_code.dart
 │   │   └── validation
 │   │       └── is_email_valid.dart
 │   └── widgets
@@ -135,6 +145,10 @@
 │       │   └── google_place_autocomplete_text_field.dart
 │       ├── LoadingCircle
 │       │   └── loading_circle.dart
+│       ├── LocationSelectionModal
+│       │   └── location_selection_modal.dart
+│       ├── ModalTopChip
+│       │   └── modal_top_chip.dart
 │       ├── NotificationModal
 │       │   └── notification_modal.dart
 │       ├── NotificationSnackbar
@@ -154,7 +168,7 @@
 ├── rename_imports.sh
 └── template_app.iml
 
-57 directories, 98 files
+60 directories, 109 files
 ///// pubspec.yaml /////
 name: findatherapistapp
 description: "An app to easily find the perfect therapist."
@@ -311,8 +325,10 @@ dependencies:
   firebase_auth: ^5.1.1
 #  # Cloud Firestore is a flexible, scalable database for mobile, web, and server development from Firebase and Google Cloud Platform.
   cloud_firestore: ^5.1.0
-  csc_picker: ^0.2.7
+
   country_state_city: ^0.1.6
+  dash_flags: ^0.1.1
+  flutter_svg: ^2.0.10+1
   #  # Firebase Database is a Flutter plugin to use the Firebase Realtime Database API and allow storing and syncing data with a NoSQL cloud database.
 #  firebase_database: ^11.0.1
 #  # Firebase Storage is a Flutter plugin to use the Firebase Cloud Storage API and allow uploading, downloading, and deleting files in the cloud.
@@ -362,6 +378,7 @@ flutter:
     - lib/assets/app_icons/
     - lib/assets/app_logo/
     - lib/assets/placeholders/
+    - lib/assets/extra_dash_flags/
 
 
   # fonts:
@@ -395,9 +412,9 @@ class DebugConfig {
   static const bool debugMode = true;
   static const String debugDatabaseId = 'debug-database';
   static const bool showDebugPrints = false;
-  static RouteConfig debugScreen = Routes.therapistProfileScreen;
+  static RouteConfig debugScreen = Routes.userRequestScreen;
   static const forceDebugScreen =
-      true; // If true, the route set in debugScreen will be shown and screen protection will be ignored
+      false; // If true, the route set in debugScreen will be shown and screen protection will be ignored
   static const bool bypassLoginScreen =
       false; // If true, login screen will be skipped
   // static const bool alwaysAllowNavigation =
@@ -1412,6 +1429,7 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
             _buildFloatingMenuBackdrop(),
           ],
         ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         floatingActionButton: ThemeFloatingSpeedDialMenu(
           loadingMode: widget.setFloatingSpeedDialToLoadingMode,
           hideFloatingSpeedDialMenu: widget.hideFloatingSpeedDialMenu,
@@ -1613,7 +1631,7 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
           content: Text(S.of(context).youAreCurrentlyOfflineMessage),
           actions: <Widget>[
             TextButton(
-              child: const Text('OK'),
+              child: Text(S.of(context).ok),
               onPressed: () {
                 context.pop();
               },
@@ -1847,7 +1865,7 @@ class TherapistListCard extends StatelessWidget {
                                 ],
                               ),
                               Text(
-                                therapist.therapistInfo.bio,
+                                therapist.therapistInfo.intro,
                                 style: TextStyle(
                                   fontSize: 15.5,
                                   color: Colors.grey[700],
@@ -2073,7 +2091,7 @@ class Score {
 }
 
 class TherapistInfo {
-  String bio;
+  String intro;
   String publicPresentation;
   String privateNotes;
   Location location;
@@ -2087,7 +2105,7 @@ class TherapistInfo {
   MeetingType meetingType;
 
   TherapistInfo({
-    required this.bio,
+    required this.intro,
     required this.publicPresentation,
     required this.privateNotes,
     required this.location,
@@ -2103,7 +2121,7 @@ class TherapistInfo {
 
   factory TherapistInfo.fromJson(Map<String, dynamic> json) {
     return TherapistInfo(
-      bio: json['bio'],
+      intro: json['intro'],
       publicPresentation: json['publicPresentation'],
       privateNotes: json['privateNotes'],
       location: Location.fromJson(json['location']),
@@ -2122,7 +2140,7 @@ class TherapistInfo {
 
   Map<String, dynamic> toJson() {
     return {
-      'bio': bio,
+      'intro': intro,
       'publicPresentation': publicPresentation,
       'privateNotes': privateNotes,
       'location': location.toJson(),
@@ -2349,7 +2367,6 @@ class TherapistIndex {
 ///// lib/screens/common/welcome_main_screen/welcome_main_screen.dart /////
 import 'package:animate_do/animate_do.dart';
 import 'package:findatherapistapp/app_settings/app_info.dart';
-import 'package:findatherapistapp/utils/admin/update_all_therapists_aspects.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -2381,30 +2398,32 @@ class _WelcomeMainScreenState extends ConsumerState<WelcomeMainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ///device height
+    final double deviceHeight = MediaQuery.of(context).size.height;
     return AppScaffold(
       isProtected: true,
       ignoreGlobalPadding: true,
       appBarTitle: S.of(context).homeScreenTitle,
-      body: SingleChildScrollView(
+      body: SizedBox(
+        height: deviceHeight - 180,
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
             const SizedBox(
-              height: 48,
+              height: 60,
             ),
-            FadeInUp(
-              from: 20,
-              curve: Curves.decelerate,
-              delay: const Duration(milliseconds: 2500),
-              duration: const Duration(milliseconds: 900),
-              child: Lottie.asset(
-                'lib/assets/lottie_animations/animation2.json',
-                width: double.infinity,
-                height: 190,
-                fit: BoxFit.cover,
+            Expanded(
+              child: FadeInUp(
+                from: 20,
+                curve: Curves.decelerate,
+                delay: const Duration(milliseconds: 2000),
+                duration: const Duration(milliseconds: 900),
+                child: Lottie.asset(
+                    'lib/assets/lottie_animations/animation2.json',
+                    width: 330
+                    // Use BoxFit.contain to adjust the size
+                    ),
               ),
-            ),
-            const SizedBox(
-              height: 194,
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 27),
@@ -2416,7 +2435,7 @@ class _WelcomeMainScreenState extends ConsumerState<WelcomeMainScreen> {
                     FadeInUp(
                       curve: Curves.decelerate,
                       duration: const Duration(milliseconds: 1000),
-                      delay: const Duration(milliseconds: 2000),
+                      delay: const Duration(milliseconds: 1500),
                       from: 10,
                       child: Column(
                         children: [
@@ -2449,7 +2468,7 @@ class _WelcomeMainScreenState extends ConsumerState<WelcomeMainScreen> {
                                   Text(S.of(context).findYourTherapistButton),
                                 ],
                               )),
-                          const SizedBox(height: 15),
+                          const SizedBox(height: 10),
                           OutlinedButton(
                               onPressed: () {
                                 context
@@ -2468,7 +2487,7 @@ class _WelcomeMainScreenState extends ConsumerState<WelcomeMainScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 15),
           ],
         ),
       ),
@@ -2779,6 +2798,7 @@ Future<List<Map<String, dynamic>>> findBestTherapistByAspects(
       if (therapistDoc.exists) {
         TherapistModel therapist = TherapistModel.fromJson(
             therapistDoc.data() as Map<String, dynamic>, therapistDoc.id);
+
         finalResults.add({
           'therapist': therapist,
           'matchScore': match['matchScore'],

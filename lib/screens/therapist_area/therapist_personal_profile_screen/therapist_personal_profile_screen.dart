@@ -73,6 +73,10 @@ class _TherapistPersonalProfileScreenState
     final bool isDarkMode =
         ref.watch(themeProvider).themeMode == ThemeMode.dark;
 
+    final labelTextStyle = Theme.of(context).textTheme.titleMedium?.copyWith(
+          fontSize: 15,
+        );
+
     return AppScaffold(
       ignoreGlobalPadding: true,
       backButton: () {
@@ -121,6 +125,7 @@ class _TherapistPersonalProfileScreenState
                         children: [
                           ClipOval(
                             child: Material(
+                              color: Colors.transparent,
                               child: InkWell(
                                 splashColor: Colors.black.withAlpha(30),
                                 onTap: () {
@@ -149,7 +154,7 @@ class _TherapistPersonalProfileScreenState
                                     ),
                                   ),
                                   child: Ink(
-                                    decoration: BoxDecoration(
+                                    decoration: const BoxDecoration(
                                       shape: BoxShape.circle,
                                       image: DecorationImage(
                                         image: AssetImage(
@@ -207,10 +212,13 @@ class _TherapistPersonalProfileScreenState
               controller: _tabController,
               tabAlignment: TabAlignment.center,
               dividerColor: Colors.transparent,
+              labelStyle: Theme.of(context).textTheme.titleMedium,
               labelPadding:
                   const EdgeInsets.symmetric(vertical: 0, horizontal: 12),
               tabs: const [
-                Tab(text: 'Personal Info'),
+                Tab(
+                  text: 'Personal Info',
+                ),
                 Tab(text: 'About me'),
               ],
             ),
@@ -235,7 +243,7 @@ class _TherapistPersonalProfileScreenState
                       const SizedBox(height: 16),
                       Text(
                         'First Name',
-                        style: Theme.of(context).textTheme.titleMedium,
+                        style: labelTextStyle,
                       ),
                       const SizedBox(height: 8),
                       TextFormField(
@@ -250,7 +258,7 @@ class _TherapistPersonalProfileScreenState
                       const SizedBox(height: 10),
                       Text(
                         'Last Name',
-                        style: Theme.of(context).textTheme.titleMedium,
+                        style: labelTextStyle,
                       ),
                       const SizedBox(height: 8),
                       TextFormField(
@@ -265,7 +273,7 @@ class _TherapistPersonalProfileScreenState
                       const SizedBox(height: 10),
                       Text(
                         'Birthday',
-                        style: Theme.of(context).textTheme.titleMedium,
+                        style: labelTextStyle,
                       ),
                       const SizedBox(height: 8),
                       TextFormField(
@@ -287,7 +295,7 @@ class _TherapistPersonalProfileScreenState
                       const SizedBox(height: 10),
                       Text(
                         'Email',
-                        style: Theme.of(context).textTheme.titleMedium,
+                        style: labelTextStyle,
                       ),
                       const SizedBox(height: 8),
                       TextFormField(
@@ -303,7 +311,7 @@ class _TherapistPersonalProfileScreenState
                       const SizedBox(height: 10),
                       Text(
                         'Phone',
-                        style: Theme.of(context).textTheme.titleMedium,
+                        style: labelTextStyle,
                       ),
                       const SizedBox(height: 8),
                       TextFormField(
@@ -322,17 +330,14 @@ class _TherapistPersonalProfileScreenState
                       const SizedBox(height: 10),
                       Text(
                         'Address',
-                        style: Theme.of(context).textTheme.titleMedium,
+                        style: labelTextStyle,
                       ),
                       const SizedBox(height: 8),
                       TextFormField(
                         controller: _addressController,
                       ),
                       const SizedBox(height: 10),
-                      Text(
-                        'City',
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
+                      Text('City', style: labelTextStyle),
                       const SizedBox(height: 8),
                       TextFormField(
                         controller: _cityController,
@@ -340,7 +345,7 @@ class _TherapistPersonalProfileScreenState
                       const SizedBox(height: 10),
                       Text(
                         'Country',
-                        style: Theme.of(context).textTheme.titleMedium,
+                        style: labelTextStyle,
                       ),
                       const SizedBox(height: 8),
                       TextFormField(
@@ -349,7 +354,7 @@ class _TherapistPersonalProfileScreenState
                       const SizedBox(height: 10),
                       Text(
                         'State/Province',
-                        style: Theme.of(context).textTheme.titleMedium,
+                        style: labelTextStyle,
                       ),
                       const SizedBox(height: 8),
                       TextFormField(
@@ -358,19 +363,16 @@ class _TherapistPersonalProfileScreenState
                       const SizedBox(height: 10),
                       Text(
                         'Zip Code',
-                        style: Theme.of(context).textTheme.titleMedium,
+                        style: labelTextStyle,
                       ),
                       const SizedBox(height: 8),
                       TextFormField(
                         controller: _zipController,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                        ),
                       ),
                       const SizedBox(height: 10),
                       Text(
                         'Add Specialization/s',
-                        style: Theme.of(context).textTheme.titleMedium,
+                        style: labelTextStyle,
                       ),
                       const SizedBox(height: 8),
                       TextFormField(
@@ -386,7 +388,7 @@ class _TherapistPersonalProfileScreenState
                       const SizedBox(height: 10),
                       Text(
                         'Add Spoken Language/s',
-                        style: Theme.of(context).textTheme.titleMedium,
+                        style: labelTextStyle,
                       ),
                       const SizedBox(height: 8),
                       TextFormField(
@@ -447,8 +449,8 @@ class _TherapistPersonalProfileScreenState
                   children: [
                     SizedBox(height: 16),
                     Text(
-                      'Bio',
-                      style: Theme.of(context).textTheme.titleMedium,
+                      'Intro',
+                      style: labelTextStyle,
                     ),
                     SizedBox(height: 8),
                     TextFormField(
@@ -464,7 +466,7 @@ class _TherapistPersonalProfileScreenState
                     const SizedBox(height: 10),
                     Text(
                       'Public Presentation',
-                      style: Theme.of(context).textTheme.titleMedium,
+                      style: labelTextStyle,
                     ),
                     SizedBox(height: 8),
                     TextFormField(
@@ -480,7 +482,7 @@ class _TherapistPersonalProfileScreenState
                     const SizedBox(height: 10),
                     Text(
                       'Private Notes',
-                      style: Theme.of(context).textTheme.titleMedium,
+                      style: labelTextStyle,
                     ),
                     SizedBox(height: 8),
                     TextFormField(

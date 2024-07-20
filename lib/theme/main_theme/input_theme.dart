@@ -5,6 +5,10 @@ class InputTheme {
   static InputDecorationTheme inputDecorationTheme(
       Brightness brightness, ColorScheme colorScheme) {
     return InputDecorationTheme(
+      filled: true,
+      fillColor: brightness == Brightness.light
+          ? ThemeSettings.inputBackgroundColor.lightModePrimary
+          : ThemeSettings.inputBackgroundColor.darkModePrimary,
       hintStyle: TextStyle(
         color: brightness == Brightness.light
             ? ThemeSettings.primaryTextColor.lightModePrimary.withOpacity(0.4)

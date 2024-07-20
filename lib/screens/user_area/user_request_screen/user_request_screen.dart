@@ -324,7 +324,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                           });
                         },
                         contentPadding: const EdgeInsets.only(
-                            left: 16, right: 10, bottom: 1),
+                            left: 16, right: 4, bottom: 1, top: 1),
                         shape: RoundedRectangleBorder(
                           side: BorderSide(
                             width: 1,
@@ -357,7 +357,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                           });
                         },
                         contentPadding: const EdgeInsets.only(
-                            left: 16, right: 10, bottom: 1),
+                            left: 16, right: 4, bottom: 1, top: 1),
                         shape: RoundedRectangleBorder(
                           side: BorderSide(
                             width: 1,
@@ -396,6 +396,9 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                     padding: const EdgeInsets.symmetric(
                         vertical: 13, horizontal: 12),
                     decoration: BoxDecoration(
+                      color: isDarkMode
+                          ? ThemeSettings.inputBackgroundColor.darkModePrimary
+                          : ThemeSettings.inputBackgroundColor.lightModePrimary,
                       border: Border.all(
                           color: isDarkMode
                               ? ThemeSettings.primaryTextColor.darkModePrimary
@@ -544,6 +547,9 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                                   ? TextAlign.center
                                   : TextAlign.start,
                               decoration: InputDecoration(
+                                filled: therapistFilters.location.state == null
+                                    ? false
+                                    : true,
                                 floatingLabelBehavior:
                                     FloatingLabelBehavior.always,
                                 label: Text(S.of(context).stateProvince),
