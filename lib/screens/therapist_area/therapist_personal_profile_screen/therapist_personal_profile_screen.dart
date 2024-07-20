@@ -120,6 +120,14 @@ class _TherapistPersonalProfileScreenState
   Widget build(BuildContext context) {
     final bool isDarkMode =
         ref.watch(themeProvider).themeMode == ThemeMode.dark;
+    final _authProvider = ref.watch(authProvider);
+
+    // Verificación de si es terapeuta
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_authProvider.isTherapist) {
+        context.go(Routes.welcomeMainScreen.path);
+      }
+    });
 
     final labelTextStyle = Theme.of(context).textTheme.titleMedium?.copyWith(
           fontSize: 15,

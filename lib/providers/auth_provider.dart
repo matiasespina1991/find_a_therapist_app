@@ -1,7 +1,9 @@
+import 'package:findatherapistapp/services/firestore_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:findatherapistapp/app_settings/app_general_settings.dart';
 import 'package:findatherapistapp/app_settings/auth_config.dart';
 
@@ -14,6 +16,8 @@ class AuthorizationProvider extends ChangeNotifier {
   String? _authToken;
   User? _user;
   bool _isLoading = true;
+  bool _isUser = false;
+  bool _isTherapist = false;
 
   AuthorizationProvider() {
     _initializeUser();
@@ -22,12 +26,15 @@ class AuthorizationProvider extends ChangeNotifier {
   String? get authToken => _authToken;
   User? get user => _user;
   bool get isLoading => _isLoading;
+  bool get isUser => _isUser;
+  bool get isTherapist => _isTherapist;
 
   Future<void> _initializeUser() async {
     if (AuthConfig.useFirebase) {
       _user = _firebaseAuth?.currentUser;
       if (_user != null) {
         _authToken = _user!.uid;
+        await _checkUserRole(_user!.uid);
       }
     } else {
       _authToken = await storage.read(key: 'auth_token');
@@ -50,7 +57,7 @@ class AuthorizationProvider extends ChangeNotifier {
         if (_user != null) {
           _authToken = _user?.uid;
           await setAuthToken(_authToken!);
-          notifyListeners();
+          await _checkUserRole(_user!.uid);
         }
       }
     }
@@ -65,6 +72,7 @@ class AuthorizationProvider extends ChangeNotifier {
         if (_user != null) {
           _authToken = _user?.uid;
           await setAuthToken(_authToken!);
+          await _checkUserRole(_user!.uid);
         }
       } else {
         _user = null;
@@ -79,6 +87,7 @@ class AuthorizationProvider extends ChangeNotifier {
       if (_user != null) {
         _authToken = _user?.uid;
         await setAuthToken(_authToken!);
+        await _checkUserRole(_user!.uid);
         notifyListeners();
       }
     }
@@ -151,6 +160,7 @@ class AuthorizationProvider extends ChangeNotifier {
         _authToken = authResult.user!.uid;
         _user = authResult.user;
         await setAuthToken(_authToken!);
+        await _checkUserRole(_user!.uid);
       } else {
         _authToken = email;
         await setAuthToken(_authToken!);
@@ -189,6 +199,7 @@ class AuthorizationProvider extends ChangeNotifier {
             _authToken = authResult?.user!.uid;
             _user = authResult?.user;
             await setAuthToken(_authToken!);
+            await _checkUserRole(_user!.uid);
           } else {
             _authToken = googleAuth.accessToken;
             await setAuthToken(_authToken!);
@@ -207,5 +218,28 @@ class AuthorizationProvider extends ChangeNotifier {
       }
     }
     return success;
+  }
+
+  Future<void> _checkUserRole(String userId) async {
+    _isUser = await checkIfUserExists(userId);
+    _isTherapist = await checkIfTherapistExists(userId);
+
+    debugPrint(
+        'Current user is a registered User: $_isUser, Current user is a registered Therapist: $_isTherapist');
+    notifyListeners();
+  }
+
+  Future<bool> checkIfUserExists(String userId) async {
+    DocumentSnapshot userDoc =
+        await FirestoreService.instance.collection('users').doc(userId).get();
+    return userDoc.exists;
+  }
+
+  Future<bool> checkIfTherapistExists(String userId) async {
+    DocumentSnapshot therapistDoc = await FirestoreService.instance
+        .collection('therapists')
+        .doc(userId)
+        .get();
+    return therapistDoc.exists;
   }
 }
