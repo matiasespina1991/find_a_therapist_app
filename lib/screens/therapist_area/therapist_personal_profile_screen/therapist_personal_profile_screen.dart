@@ -1,11 +1,14 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../generated/l10n.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../../widgets/AppScaffold/app_scaffold.dart';
 import '../../../app_settings/theme_settings.dart';
 import '../../../providers/providers_all.dart';
 import '../../../routes/routes.dart';
+import '../../../utils/functions/images_utils.dart';
 
 class TherapistPersonalProfileScreen extends ConsumerStatefulWidget {
   const TherapistPersonalProfileScreen({super.key});
@@ -20,25 +23,28 @@ class _TherapistPersonalProfileScreenState
     with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
 
-  // Controladores para los campos de texto
-  TextEditingController _firstNameController = TextEditingController();
-  TextEditingController _lastNameController = TextEditingController();
-  TextEditingController _birthdayController = TextEditingController();
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _phoneController = TextEditingController();
-  TextEditingController _bioController = TextEditingController();
-  TextEditingController _publicPresentationController = TextEditingController();
-  TextEditingController _privateNotesController = TextEditingController();
-  TextEditingController _addressController = TextEditingController();
-  TextEditingController _cityController = TextEditingController();
-  TextEditingController _countryController = TextEditingController();
-  TextEditingController _stateProvinceController = TextEditingController();
-  TextEditingController _zipController = TextEditingController();
-  TextEditingController _profilePictureUrlController = TextEditingController();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _birthdayController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _bioController = TextEditingController();
+  final TextEditingController _publicPresentationController =
+      TextEditingController();
+  final TextEditingController _privateNotesController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _cityController = TextEditingController();
+  final TextEditingController _countryController = TextEditingController();
+  final TextEditingController _stateProvinceController =
+      TextEditingController();
+  final TextEditingController _zipController = TextEditingController();
+  final TextEditingController _profilePictureUrlController =
+      TextEditingController();
   List<String> _specializations = [];
   List<String> _spokenLanguages = [];
   bool _presential = false;
   bool _remote = false;
+  File? _selectedImage;
 
   late TabController _tabController;
 
@@ -68,6 +74,48 @@ class _TherapistPersonalProfileScreenState
     super.dispose();
   }
 
+  Future<void> _pickImageFromGallery() async {
+    final imageFile = await pickImage(
+      ImageSource.gallery,
+    );
+
+    if (imageFile != null) {
+      setState(() {
+        _selectedImage = imageFile;
+      });
+      final downloadUrl = await uploadImageToFirebase(_selectedImage!);
+
+      if (downloadUrl != null) {
+        setState(() {
+          _profilePictureUrlController.text = downloadUrl;
+        });
+
+        // Aquí puedes actualizar el perfil del terapeuta con la URL de la imagen subida
+        debugPrint('Image uploaded: $downloadUrl');
+      }
+    }
+  }
+
+  Future<void> _pickImageFromCamera() async {
+    final imageFile = await pickImage(ImageSource.camera);
+
+    if (imageFile != null) {
+      setState(() {
+        _selectedImage = imageFile;
+      });
+      final downloadUrl = await uploadImageToFirebase(_selectedImage!);
+
+      if (downloadUrl != null) {
+        setState(() {
+          _profilePictureUrlController.text = downloadUrl;
+        });
+
+        // Aquí puedes actualizar el perfil del terapeuta con la URL de la imagen subida
+        debugPrint('Image uploaded: $downloadUrl');
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final bool isDarkMode =
@@ -87,8 +135,8 @@ class _TherapistPersonalProfileScreenState
         }
       },
       hideFloatingSpeedDialMenu: true,
-      scrollPhysics: NeverScrollableScrollPhysics(),
-      appBarTitle: "Therapist Profile",
+      scrollPhysics: const NeverScrollableScrollPhysics(),
+      appBarTitle: "Your Therapist Profile",
       useTopAppBar: true,
       actions: [
         IconButton(
@@ -131,36 +179,40 @@ class _TherapistPersonalProfileScreenState
                                 onTap: () {
                                   // Acción al presionar la imagen de perfil
                                 },
-                                child: AnimatedContainer(
-                                  clipBehavior: Clip.hardEdge,
-                                  duration: Duration(milliseconds: 100),
-                                  margin: EdgeInsets.only(
-                                    top: top > 160.0 ? 0.0 : 17.0,
-                                  ),
-                                  width: top > 160.0 ? 140.0 : 80.0,
-                                  height: top > 160.0 ? 140.0 : 80.0,
-                                  decoration: BoxDecoration(
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.grey.withOpacity(0.1),
-                                        blurRadius: 1,
-                                        offset: const Offset(0, 1),
-                                      ),
-                                    ],
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: Colors.white,
-                                      width: 4,
+                                child: InkWell(
+                                  splashColor: Colors.black.withAlpha(30),
+                                  onTap: _pickImageFromGallery,
+                                  child: AnimatedContainer(
+                                    clipBehavior: Clip.hardEdge,
+                                    duration: Duration(milliseconds: 100),
+                                    margin: EdgeInsets.only(
+                                      top: top > 160.0 ? 0.0 : 17.0,
                                     ),
-                                  ),
-                                  child: Ink(
-                                    decoration: const BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      image: DecorationImage(
-                                        image: AssetImage(
-                                          'lib/assets/placeholders/default_profile_picture.jpg',
+                                    width: top > 160.0 ? 140.0 : 80.0,
+                                    height: top > 160.0 ? 140.0 : 80.0,
+                                    decoration: BoxDecoration(
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.grey.withOpacity(0.1),
+                                          blurRadius: 1,
+                                          offset: const Offset(0, 1),
                                         ),
-                                        fit: BoxFit.cover,
+                                      ],
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: Colors.white,
+                                        width: 4,
+                                      ),
+                                    ),
+                                    child: Ink(
+                                      decoration: const BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        image: DecorationImage(
+                                          image: AssetImage(
+                                            'lib/assets/placeholders/default_profile_picture.jpg',
+                                          ),
+                                          fit: BoxFit.cover,
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -192,9 +244,8 @@ class _TherapistPersonalProfileScreenState
                                       size: 19,
                                     ),
                                     color: Colors.black54,
-                                    onPressed: () {
-                                      // Acción del ícono de cámara
-                                    },
+                                    onPressed:
+                                        _pickImageFromCamera, // Llamar a la nueva función aquí
                                   ),
                                 ),
                               ),
