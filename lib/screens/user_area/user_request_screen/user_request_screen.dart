@@ -462,6 +462,9 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                         showCountryPicker(
                           context: context,
                           showPhoneCode: false,
+                          favorite: defaultCountry != null
+                              ? [therapistFilters.location.country!]
+                              : null,
                           countryListTheme: const CountryListThemeData(
                             textStyle: TextStyle(height: 2, fontSize: 16.5),
                           ),
@@ -497,17 +500,11 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                             TextField(
                               decoration: InputDecoration(
                                 label: Text(S.of(context).country),
-                                contentPadding: const EdgeInsets.only(
-                                    left: 15, right: 10, top: 11, bottom: 13),
-                                isCollapsed: true,
                                 hintText: '< ${S.of(context).selectACountry} >',
                                 hintStyle: Theme.of(context)
                                     .textTheme
                                     .titleMedium
                                     ?.copyWith(),
-                                // prefixStyle: const TextStyle(
-                                //   fontSize: 0,
-                                // ),
                                 prefixIcon: Padding(
                                   padding: const EdgeInsets.only(left: 15),
                                   child: getDashFlagByCountryCode(
@@ -517,15 +514,6 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                                   minWidth: 41,
                                   minHeight: 20,
                                 ),
-
-                                // Text(
-                                //   therapistFilters.location.enabled
-                                //       ? '${countryService.findByCode(therapistFilters.location.country)?.flagEmoji}'
-                                //       : '',
-                                //   style: const TextStyle(
-                                //     fontSize: 22,
-                                //   ),
-                                // ),
                               ),
                               controller: countryInputController,
                             ),
