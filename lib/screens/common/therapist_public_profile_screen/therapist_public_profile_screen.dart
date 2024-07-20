@@ -1,16 +1,17 @@
 import 'package:country_picker/country_picker.dart';
 import 'package:expandable/expandable.dart';
-import 'package:findatherapistapp/app_settings/theme_settings.dart';
-import 'package:findatherapistapp/utils/admin/to_capital_case.dart';
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_localized_locales/flutter_localized_locales.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:findatherapistapp/app_settings/theme_settings.dart';
 import 'package:google_mlkit_translation/google_mlkit_translation.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../../generated/l10n.dart';
 import '../../../models/therapist_model.dart';
 import '../../../providers/providers_all.dart';
+import '../../../providers/translate_profiles_providers.dart';
+import '../../../utils/admin/to_capital_case.dart';
 import '../../../widgets/AppScaffold/app_scaffold.dart';
 
 class TherapistPublicProfileScreen extends ConsumerStatefulWidget {
@@ -25,7 +26,6 @@ class TherapistPublicProfileScreen extends ConsumerStatefulWidget {
 
 class _TherapistPublicProfileScreenState
     extends ConsumerState<TherapistPublicProfileScreen> {
-  bool translateToUserDefinedLanguage = false;
   ValueNotifier<bool> isTranslating = ValueNotifier(false);
 
   @override
@@ -39,6 +39,8 @@ class _TherapistPublicProfileScreenState
     return Consumer(
       builder: (context, ref, child) {
         final _themeProvider = ref.watch(themeProvider);
+        final translateToUserDefinedLanguage =
+            ref.watch(translateProfileProvider);
 
         const TranslateLanguage sourceLanguage = TranslateLanguage.english;
         final TranslateLanguage targetLanguage =
@@ -90,11 +92,10 @@ class _TherapistPublicProfileScreenState
                             !translateToUserDefinedLanguage)
                         ? ThemeSettings.appbarOnBackgroundColor.lightModePrimary
                         : ThemeSettings.appbarOnBackgroundColor.darkModePrimary,
-                onPressed: () {
-                  setState(() {
-                    translateToUserDefinedLanguage =
-                        !translateToUserDefinedLanguage;
-                  });
+                onPressed: () async {
+                  final notifier = ref.read(translateProfileProvider.notifier);
+                  await notifier
+                      .setTranslateProfile(!translateToUserDefinedLanguage);
                 },
               ),
           ],
