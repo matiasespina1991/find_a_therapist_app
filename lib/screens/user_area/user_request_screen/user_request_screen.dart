@@ -295,6 +295,11 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
   Widget _buildFirstPage(
       BuildContext context, bool isDarkMode, List<String> availableLanguages) {
     final screenHeight = MediaQuery.of(context).size.height;
+
+    final labelTextStyle = Theme.of(context).textTheme.bodyMedium?.copyWith(
+          fontSize: 15,
+        );
+
     return SingleChildScrollView(
       controller: _scrollControllerPage1,
       child: Column(
@@ -308,7 +313,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
             children: [
               Text(
                 '${S.of(context).meetingType}:',
-                style: Theme.of(context).textTheme.titleMedium,
+                style: labelTextStyle,
               ),
               const SizedBox(height: 10),
               Row(
@@ -384,7 +389,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
               /// Preferred Language Input
               Text(
                 '${S.of(context).preferredLanguage}:',
-                style: Theme.of(context).textTheme.titleMedium,
+                style: labelTextStyle,
               ),
               const SizedBox(height: 10),
               GestureDetector(
@@ -424,7 +429,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                     children: [
                       Text(
                         '${S.of(context).location}:',
-                        style: Theme.of(context).textTheme.titleMedium,
+                        style: labelTextStyle,
                       ),
                       Expanded(
                         child: Row(
@@ -446,10 +451,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                                   });
                                 },
                                 child: Text('${S.of(context).worldwide}  🌐',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium
-                                        ?.copyWith(fontSize: 15)),
+                                    style: labelTextStyle),
                               ),
                             ]),
                       ),

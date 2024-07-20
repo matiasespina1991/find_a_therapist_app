@@ -329,6 +329,7 @@ dependencies:
   country_state_city: ^0.1.6
   dash_flags: ^0.1.1
   flutter_svg: ^2.0.10+1
+  image_picker: ^1.1.2
   #  # Firebase Database is a Flutter plugin to use the Firebase Realtime Database API and allow storing and syncing data with a NoSQL cloud database.
 #  firebase_database: ^11.0.1
 #  # Firebase Storage is a Flutter plugin to use the Firebase Cloud Storage API and allow uploading, downloading, and deleting files in the cloud.
@@ -572,6 +573,11 @@ class ThemeSettings {
     darkModePrimary: Colors.blueGrey,
   );
 
+  static ThemeColors inputBackgroundColor = ThemeColors(
+    lightModePrimary: Colors.white.withOpacity(0.4),
+    darkModePrimary: appbarBackgroundColor.darkModePrimary,
+  );
+
   static const ThemeColors outlinedButtonTextColor = ThemeColors(
     lightModePrimary: Colors.black,
     darkModePrimary: Colors.white,
@@ -797,131 +803,6 @@ class MainTheme {
         ? GoogleFonts.getFont(font.name, textStyle: style)
         : style.copyWith(fontFamily: font.name, fontSize: style.fontSize);
   }
-}
-
-///// lib/routes/routes.dart /////
-import 'package:findatherapistapp/app_settings/app_general_settings.dart';
-import 'package:findatherapistapp/screens/admin/debug_screen/debug_screen.dart';
-import 'package:findatherapistapp/screens/common/loading_screen/loading_screen.dart';
-import 'package:findatherapistapp/screens/common/not_found_screen/not_found_screen.dart';
-import 'package:go_router/go_router.dart';
-import 'package:flutter/material.dart';
-
-import '../screens/common/all_therapists_screen/all_therapists_screen.dart';
-
-import '../screens/common/login_screen/login_screen.dart';
-import '../screens/common/settings_screen/settings_screen.dart';
-import '../screens/common/welcome_main_screen/welcome_main_screen.dart';
-import '../screens/therapist_area/therapist_personal_profile_screen/therapist_personal_profile_screen.dart';
-import '../screens/user_area/user_profile_screen/user_profile_screen.dart';
-import '../screens/user_area/user_request_screen/user_request_screen.dart';
-
-class Routes {
-  /// COMMON ROUTES
-
-  static RouteConfig loginScreen = RouteConfig(
-    path: '/login',
-    name: 'Login Screen',
-    builder: (context) => const LoginScreen(),
-  );
-
-  static RouteConfig welcomeMainScreen = RouteConfig(
-    path: '/',
-    name: 'Welcome Main Screen',
-    builder: (context) => const WelcomeMainScreen(),
-  );
-
-  static RouteConfig settingsScreen = RouteConfig(
-    path: '/settings-screen',
-    name: 'Settings Screen',
-    builder: (context) => const SettingsScreen(),
-  );
-
-  static RouteConfig allTherapistsScreen = RouteConfig(
-    path: '/all-therapists',
-    name: 'All Therapists Screen',
-    builder: (context) => const AllTherapistsScreen(),
-  );
-
-  static RouteConfig notFoundScreen = RouteConfig(
-    path: '/404',
-    name: '404 Not Found',
-    builder: (context) => const NotFoundScreen(),
-  );
-
-  static RouteConfig loadingScreen = RouteConfig(
-      path: '/loading',
-      name: 'Loading',
-      builder: (context) => const LoadingScreen());
-
-  /// USER AREA ROUTES
-
-  static RouteConfig userProfileScreen = RouteConfig(
-    path: '/user-profile',
-    name: 'User Profile Screen',
-    builder: (context) => const UserProfileScreen(),
-  );
-
-  static RouteConfig userRequestScreen = RouteConfig(
-    path: '/user-request',
-    name: 'User Request',
-    builder: (context) => const UserRequestScreen(),
-  );
-
-  /// THERAPIST AREA ROUTES
-
-  static RouteConfig therapistProfileScreen = RouteConfig(
-    path: '/therapist-profile',
-    name: 'Therapist Profile Screen',
-    builder: (context) => const TherapistPersonalProfileScreen(),
-  );
-
-  /// ADMIN AREA ROUTES
-
-  static RouteConfig debugScreen = RouteConfig(
-    path: '/debug-screen',
-    name: 'Debug Screen',
-    builder: (context) => const DebugScreen(),
-  );
-
-  static List<GoRoute> _generateRoutes() {
-    List<RouteConfig> publicRoutes = [
-      loginScreen,
-      welcomeMainScreen,
-      settingsScreen,
-      userProfileScreen,
-      userRequestScreen,
-      therapistProfileScreen,
-      notFoundScreen,
-      loadingScreen,
-      debugScreen,
-      allTherapistsScreen
-    ];
-    return publicRoutes
-        .map((routeConfig) => GoRoute(
-              path: routeConfig.path,
-              builder: (context, state) => routeConfig.builder(context),
-            ))
-        .toList();
-  }
-
-  static final GoRouter router = GoRouter(
-    initialLocation:
-        DebugConfig.forceDebugScreen ? DebugConfig.debugScreen.path : null,
-    routes: _generateRoutes(),
-  );
-}
-
-class RouteConfig {
-  final String path;
-  final Widget Function(BuildContext) builder;
-  final String name;
-
-  const RouteConfig({
-    required this.path,
-    required this.builder,
-    required this.name,
-  });
 }
 
 ///// lib/main.dart /////
@@ -1304,366 +1185,6 @@ class ThemeProvider extends ChangeNotifier {
       bool isDarkMode = userDefinedTheme == 'dark';
       _themeMode = isDarkMode ? ThemeMode.dark : ThemeMode.light;
       notifyListeners();
-    }
-  }
-}
-
-///// lib/widgets/AppScaffold/app_scaffold.dart /////
-import 'dart:async';
-import 'dart:ui';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'package:lottie/lottie.dart';
-import 'package:findatherapistapp/app_settings/app_general_settings.dart';
-import 'package:findatherapistapp/app_settings/auth_config.dart';
-import 'package:findatherapistapp/providers/providers_all.dart';
-import 'package:findatherapistapp/widgets/NotificationModal/notification_modal.dart';
-import 'package:findatherapistapp/widgets/NotificationSnackbar/notification_snackbar.dart';
-import 'package:skeletonizer/skeletonizer.dart';
-import '../../app_settings/theme_settings.dart';
-import '../../generated/l10n.dart';
-import '../../models/general_models.dart';
-import '../../routes/routes.dart';
-import '../../screens/common/loading_screen/loading_screen.dart';
-import '../ThemeAppBar/template_app_bar.dart';
-import '../ThemeFloatingSpeedDialMenu/theme_floating_speed_dial_menu.dart';
-
-class AppScaffold extends ConsumerStatefulWidget {
-  final Widget body;
-  final bool hideFloatingSpeedDialMenu;
-  final String appBarTitle;
-  final bool isProtected;
-  final bool? useSafeArea;
-  final ScrollPhysics? scrollPhysics;
-  final LottieAnimationBackground? backgroundAnimation;
-  final LottieAnimationBackground? backgroundAnimationDarkMode;
-  final bool useTopAppBar;
-  final bool showScreenTitleInAppBar;
-  final EdgeInsetsGeometry? scaffoldPadding;
-  final bool ignoreGlobalPadding;
-  final List<Widget>? actions;
-  final bool? centerTitle;
-  final bool setFloatingSpeedDialToLoadingMode;
-  final Function()? backButton;
-  const AppScaffold(
-      {super.key,
-      required this.body,
-      required this.appBarTitle,
-      required this.isProtected,
-      this.useSafeArea,
-      this.hideFloatingSpeedDialMenu = false,
-      this.scrollPhysics,
-      this.backgroundAnimation,
-      this.backgroundAnimationDarkMode,
-      this.useTopAppBar = false,
-      this.showScreenTitleInAppBar = true,
-      this.scaffoldPadding,
-      this.ignoreGlobalPadding = false,
-      this.actions,
-      this.centerTitle,
-      this.setFloatingSpeedDialToLoadingMode = false,
-      this.backButton});
-
-  @override
-  AppScaffoldState createState() => AppScaffoldState();
-}
-
-class AppScaffoldState extends ConsumerState<AppScaffold> {
-  bool _connectivityChecked = false;
-  bool _userWentOffline = false;
-  Timer? _connectivityTimer;
-
-  @override
-  void initState() {
-    super.initState();
-
-    final String debugRouteName = DebugConfig.debugScreen.name;
-
-    if (DebugConfig.forceDebugScreen && debugRouteName.isNotEmpty) {
-      bool navigationAllowed = true;
-      // if (DebugConfig.alwaysAllowNavigation) {
-      //   navigationAllowed = true;
-      // }
-      debugPrint(
-          '[DebugConfig.forceDebugScreen is set to true. Target screen is: $debugRouteName. Navigation ${navigationAllowed ? 'allowed' : 'is blocked'}.');
-    }
-  }
-
-  @override
-  void dispose() {
-    _connectivityTimer?.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final auth = ref.watch(authProvider);
-    final connectivity = ref.watch(connectivityProvider);
-
-    if (auth.isLoading && !auth.isAuthenticated) {
-      return const LoadingScreen();
-    }
-
-    _handleProtectedRoutes(auth);
-    _checkConnectivity(connectivity);
-
-    return SafeArea(
-      bottom: widget.useSafeArea ?? ThemeSettings.useSafeArea,
-      top: widget.useSafeArea ?? ThemeSettings.useSafeArea,
-      child: Scaffold(
-        appBar: (AppGeneralSettings.useTopAppBar || widget.useTopAppBar)
-            ? ThemeAppBar(
-                backButton: widget.backButton,
-                appBarHeight: ThemeSettings.appBarHeight,
-                centerTitle: widget.centerTitle,
-                actions: widget.actions,
-                title: widget.showScreenTitleInAppBar ? widget.appBarTitle : '',
-              )
-            : null,
-        body: Stack(
-          fit: StackFit.expand,
-          children: [
-            _buildBackgroundAnimation(),
-            _buildMainContent(auth.isAuthenticated),
-            _buildFloatingMenuBackdrop(),
-          ],
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-        floatingActionButton: ThemeFloatingSpeedDialMenu(
-          loadingMode: widget.setFloatingSpeedDialToLoadingMode,
-          hideFloatingSpeedDialMenu: widget.hideFloatingSpeedDialMenu,
-          isDialOpenNotifier: ValueNotifier(false),
-        ),
-      ),
-    );
-  }
-
-  LoadingScreen? _handleProtectedRoutes(auth) {
-    if (DebugConfig.forceDebugScreen) {
-      return null;
-    }
-
-    if (!DebugConfig.bypassLoginScreen &&
-        AuthConfig.useProtectedRoutes &&
-        widget.isProtected &&
-        !auth.isAuthenticated) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        context.go(Routes.loginScreen.path);
-      });
-    }
-
-    if (!auth.isAuthenticated && widget.isProtected) {
-      return const LoadingScreen();
-    }
-    return null;
-  }
-
-  void _checkConnectivity(connectivity) {
-    if (!connectivity.isConnected && !_connectivityChecked) {
-      _connectivityChecked = true;
-      _connectivityTimer?.cancel();
-      _connectivityTimer = Timer(
-          const Duration(
-              seconds: ThemeSettings.secondsUntilNoInternetNotification), () {
-        if (!connectivity.isConnected) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (ModalRoute.of(context)?.isCurrent == true) {
-              _showNoInternetNotification(context);
-              _userWentOffline = true;
-            }
-          });
-        }
-      });
-    } else if (connectivity.isConnected && _userWentOffline) {
-      _connectivityTimer?.cancel();
-      _connectivityChecked = false;
-      _userWentOffline = false;
-
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (ModalRoute.of(context)?.isCurrent == true) {
-          _showBackToInternetConnectionNotification(context);
-        }
-      });
-    }
-  }
-
-  ScrollPhysics getScrollPhysics() {
-    switch (ThemeSettings.defaultScrollPhysics) {
-      case 'never':
-        return const NeverScrollableScrollPhysics();
-      case 'always':
-        return const AlwaysScrollableScrollPhysics();
-      case 'clamp':
-        return const ClampingScrollPhysics();
-      default:
-        return const AlwaysScrollableScrollPhysics();
-    }
-  }
-
-  LottieAnimationBackground? getLottieAnimation() {
-    final bool isDarkMode =
-        ref.watch(themeProvider).themeMode == ThemeMode.dark;
-    if (isDarkMode && widget.backgroundAnimationDarkMode != null) {
-      return widget.backgroundAnimationDarkMode;
-    }
-    return widget.backgroundAnimation;
-  }
-
-  Widget _buildBackgroundAnimation() {
-    final animationConfig = getLottieAnimation();
-    if (animationConfig != null && animationConfig.active) {
-      final screenWidth = MediaQuery.of(context).size.width;
-      final screenHeight = MediaQuery.of(context).size.height;
-      return Stack(
-        children: [
-          Positioned(
-            left: (screenWidth / 2) +
-                animationConfig.x -
-                (screenWidth * (animationConfig.width / 100) / 2),
-            top: (screenHeight / 2) +
-                animationConfig.y -
-                (screenWidth * (animationConfig.width / 100) / 2),
-            width: screenWidth * (animationConfig.width / 100),
-            child: Opacity(
-              opacity: animationConfig.opacity,
-              child: Lottie.asset(
-                animationConfig.animationPath,
-              ),
-            ),
-          ),
-          if (animationConfig.blur > 0)
-            Positioned.fill(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(
-                    sigmaX: animationConfig.blur, sigmaY: animationConfig.blur),
-                child: Container(
-                  color: Colors.transparent,
-                ),
-              ),
-            ),
-        ],
-      );
-    }
-    return const SizedBox.shrink();
-  }
-
-  Widget _buildMainContent(bool isAuthenticated) {
-    if (widget.scrollPhysics is NeverScrollableScrollPhysics) {
-      return Skeletonizer(
-        enabled: !isAuthenticated &&
-            widget.isProtected &&
-            !DebugConfig.forceDebugScreen &&
-            !DebugConfig.bypassLoginScreen,
-        child: Padding(
-          padding: widget.ignoreGlobalPadding
-              ? EdgeInsets.zero
-              : (widget.scaffoldPadding ?? ThemeSettings.scaffoldPadding),
-          child: widget.body,
-        ),
-      );
-    }
-
-    return SingleChildScrollView(
-      physics: widget.scrollPhysics ?? getScrollPhysics(),
-      child: Column(
-        children: [
-          Skeletonizer(
-            enabled: !isAuthenticated &&
-                widget.isProtected &&
-                !DebugConfig.forceDebugScreen &&
-                !DebugConfig.bypassLoginScreen,
-            child: Padding(
-              padding: widget.ignoreGlobalPadding
-                  ? EdgeInsets.zero
-                  : (widget.scaffoldPadding ?? ThemeSettings.scaffoldPadding),
-              child: widget.body,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFloatingMenuBackdrop() {
-    if (!widget.hideFloatingSpeedDialMenu &&
-        AppGeneralSettings.useFloatingSpeedDialMenu) {
-      return Positioned.fill(
-        child: ValueListenableBuilder(
-          valueListenable: ValueNotifier(false),
-          builder: (context, value, child) {
-            return value
-                ? BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
-                    child: Container(
-                      color: Colors.black.withOpacity(0.1),
-                    ),
-                  )
-                : const SizedBox.shrink();
-          },
-        ),
-      );
-    }
-    return const SizedBox.shrink();
-  }
-
-  void _showNoInternetNotification(BuildContext context) {
-    if (ThemeSettings.noInternetNotificationType == 'snackbar') {
-      NotificationSnackbar.showSnackBar(
-          message: S.of(context).noInternetConnection,
-          icon: Icons.wifi_off,
-          variant: 'info',
-          duration: 'infinite');
-    } else if (ThemeSettings.noInternetNotificationType == 'modal') {
-      NotificationModal.noInternetConnection(
-        context: context,
-        onTapConfirm: () {
-          setState(() {
-            _connectivityChecked = true;
-          });
-        },
-      );
-    } else if (ThemeSettings.noInternetNotificationType == 'dialog') {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text(S.of(context).noInternetConnection),
-          content: Text(S.of(context).youAreCurrentlyOfflineMessage),
-          actions: <Widget>[
-            TextButton(
-              child: Text(S.of(context).ok),
-              onPressed: () {
-                context.pop();
-              },
-            ),
-          ],
-        ),
-      );
-    }
-  }
-
-  void _showBackToInternetConnectionNotification(BuildContext context) {
-    if (ThemeSettings.noInternetNotificationType == 'snackbar') {
-      NotificationSnackbar.showSnackBar(
-          message: S.of(context).backToInternetConnection,
-          icon: Icons.wifi,
-          variant: 'success',
-          duration: 'long');
-    } else if (ThemeSettings.noInternetNotificationType == 'modal') {
-      NotificationModal.backToInternetConnection(
-        context: context,
-        onTapConfirm: () {
-          setState(() {
-            _connectivityChecked = false; // Allow for future offline checks
-          });
-        },
-      );
-    } else if (ThemeSettings.noInternetNotificationType == 'dialog') {
-      NotificationSnackbar.showSnackBar(
-          message: S.of(context).backToInternetConnection,
-          icon: Icons.wifi,
-          variant: 'success',
-          duration: 'long');
     }
   }
 }
@@ -2495,173 +2016,504 @@ class _WelcomeMainScreenState extends ConsumerState<WelcomeMainScreen> {
   }
 }
 
-///// lib/screens/common/all_therapists_screen/all_therapists_screen.dart /////
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:findatherapistapp/app_settings/theme_settings.dart';
-import 'package:findatherapistapp/widgets/Skeletons/SkeletonTherapistCard/skeleton_therapist_card.dart';
+///// lib/screens/therapist_area/therapist_personal_profile_screen/therapist_personal_profile_screen.dart /////
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:number_paginator/number_paginator.dart';
-import '../../../models/therapist_model.dart';
+import '../../../../generated/l10n.dart';
+import '../../../../widgets/AppScaffold/app_scaffold.dart';
+import '../../../app_settings/theme_settings.dart';
 import '../../../providers/providers_all.dart';
 import '../../../routes/routes.dart';
-import '../../../widgets/AppScaffold/app_scaffold.dart';
-import '../../../services/firestore_service.dart';
-import '../../../widgets/TherapistListCard/therapist_list_card.dart';
-import '../../common/therapist_public_profile_screen/therapist_public_profile_screen.dart';
 
-class AllTherapistsScreen extends ConsumerStatefulWidget {
-  const AllTherapistsScreen({super.key});
+class TherapistPersonalProfileScreen extends ConsumerStatefulWidget {
+  const TherapistPersonalProfileScreen({super.key});
 
   @override
-  ConsumerState<AllTherapistsScreen> createState() =>
-      _AllTherapistsScreenState();
+  ConsumerState<TherapistPersonalProfileScreen> createState() =>
+      _TherapistPersonalProfileScreenState();
 }
 
-class _AllTherapistsScreenState extends ConsumerState<AllTherapistsScreen> {
-  late Future<List<TherapistModel>> _futureTherapists;
-  int currentPage = 0;
-  late PageController _pageController;
-  late NumberPaginatorController _numberPaginatorController;
+class _TherapistPersonalProfileScreenState
+    extends ConsumerState<TherapistPersonalProfileScreen>
+    with SingleTickerProviderStateMixin {
+  final _formKey = GlobalKey<FormState>();
+
+  // Controladores para los campos de texto
+  TextEditingController _firstNameController = TextEditingController();
+  TextEditingController _lastNameController = TextEditingController();
+  TextEditingController _birthdayController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _phoneController = TextEditingController();
+  TextEditingController _bioController = TextEditingController();
+  TextEditingController _publicPresentationController = TextEditingController();
+  TextEditingController _privateNotesController = TextEditingController();
+  TextEditingController _addressController = TextEditingController();
+  TextEditingController _cityController = TextEditingController();
+  TextEditingController _countryController = TextEditingController();
+  TextEditingController _stateProvinceController = TextEditingController();
+  TextEditingController _zipController = TextEditingController();
+  TextEditingController _profilePictureUrlController = TextEditingController();
+  List<String> _specializations = [];
+  List<String> _spokenLanguages = [];
+  bool _presential = false;
+  bool _remote = false;
+
+  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    _futureTherapists = _fetchTherapists();
-    _pageController = PageController(initialPage: currentPage);
-    _numberPaginatorController = NumberPaginatorController();
+    _tabController = TabController(length: 2, vsync: this);
   }
 
-  Future<List<TherapistModel>> _fetchTherapists() async {
-    try {
-      FirebaseFirestore firestore = FirestoreService.instance;
-      QuerySnapshot snapshot = await firestore.collection('therapists').get();
-      return snapshot.docs.map((doc) {
-        return TherapistModel.fromJson(
-          doc.data() as Map<String, dynamic>,
-          doc.id,
-        );
-      }).toList();
-    } catch (e) {
-      debugPrint('Failed to get therapists: $e');
-      return [];
-    }
-  }
-
-  Future<void> _refreshTherapists() async {
-    debugPrint('Refreshing therapists list...');
-    setState(() {
-      _futureTherapists = _fetchTherapists();
-    });
+  @override
+  void dispose() {
+    _tabController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _birthdayController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    _bioController.dispose();
+    _publicPresentationController.dispose();
+    _privateNotesController.dispose();
+    _addressController.dispose();
+    _cityController.dispose();
+    _countryController.dispose();
+    _stateProvinceController.dispose();
+    _zipController.dispose();
+    _profilePictureUrlController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = ref.watch(themeProvider).themeMode == ThemeMode.dark;
+    final bool isDarkMode =
+        ref.watch(themeProvider).themeMode == ThemeMode.dark;
+
+    final labelTextStyle = Theme.of(context).textTheme.titleMedium?.copyWith(
+          fontSize: 15,
+        );
+
     return AppScaffold(
-      useTopAppBar: true,
-      hideFloatingSpeedDialMenu: true,
-      scrollPhysics: const NeverScrollableScrollPhysics(),
       ignoreGlobalPadding: true,
-      appBarTitle: '',
-      isProtected: false,
+      backButton: () {
+        if (context.canPop()) {
+          context.pop();
+        } else {
+          context.go(Routes.welcomeMainScreen.path);
+        }
+      },
+      hideFloatingSpeedDialMenu: true,
+      scrollPhysics: NeverScrollableScrollPhysics(),
+      appBarTitle: "Therapist Profile",
+      useTopAppBar: true,
       actions: [
-        /// settings button
         IconButton(
-          icon: const Icon(Icons.settings),
+          icon: Icon(Icons.settings),
           onPressed: () {
             context.push(Routes.settingsScreen.path);
           },
         ),
       ],
-      body: FutureBuilder<List<TherapistModel>>(
-        future: _futureTherapists,
-        builder: (context, snapshot) {
-          if ((snapshot.connectionState == ConnectionState.waiting &&
-              (snapshot.data == null || snapshot.data!.isEmpty))) {
-            return SingleChildScrollView(
-              child: Column(
-                children: List.generate(7, (index) {
-                  return const SkeletonTherapistCard();
-                }),
-              ),
-            );
-          } else if (snapshot.hasError) {
-            return const Center(child: Text('Failed to load therapists'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No therapists found'));
-          }
-
-          int totalPages = (snapshot.data!.length / 10).ceil();
-
-          return RefreshIndicator(
-            onRefresh: _refreshTherapists,
-            child: Column(
-              children: [
-                Expanded(
-                  child: PageView.builder(
-                    controller: _pageController,
-                    onPageChanged: (index) {
-                      setState(() {
-                        currentPage = index;
-                        _numberPaginatorController.navigateToPage(index);
-                      });
-                    },
-                    itemCount: totalPages,
-                    itemBuilder: (context, pageIndex) {
-                      final startIndex = pageIndex * 10;
-                      final endIndex = (pageIndex + 1) * 10;
-                      final pageItems = snapshot.data!.sublist(
-                          startIndex,
-                          endIndex > snapshot.data!.length
-                              ? snapshot.data!.length
-                              : endIndex);
-
-                      return ListView.builder(
-                        physics: const ClampingScrollPhysics(),
-                        itemCount: pageItems.length,
-                        itemBuilder: (context, index) {
-                          final therapist = pageItems[index];
-                          return TherapistListCard(
-                            therapist: therapist,
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      TherapistPublicProfileScreen(
-                                          therapist: therapist),
+      isProtected: false,
+      body: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) => [
+          SliverAppBar(
+            backgroundColor: isDarkMode
+                ? ThemeSettings.scaffoldBackgroundColor.darkModePrimary
+                : ThemeSettings.scaffoldBackgroundColor.lightModePrimary,
+            surfaceTintColor: Color(0xFF4B4B4B),
+            leading: Container(),
+            expandedHeight: 220.0,
+            floating: true,
+            pinned: true,
+            flexibleSpace: LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) {
+                double top = constraints.biggest.height;
+                return FlexibleSpaceBar(
+                  centerTitle: true,
+                  background: Column(
+                    children: [
+                      const SizedBox(height: 20),
+                      Stack(
+                        fit: StackFit.loose,
+                        alignment: Alignment.topCenter,
+                        clipBehavior: Clip.none,
+                        children: [
+                          ClipOval(
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                splashColor: Colors.black.withAlpha(30),
+                                onTap: () {
+                                  // Acción al presionar la imagen de perfil
+                                },
+                                child: AnimatedContainer(
+                                  clipBehavior: Clip.hardEdge,
+                                  duration: Duration(milliseconds: 100),
+                                  margin: EdgeInsets.only(
+                                    top: top > 160.0 ? 0.0 : 17.0,
+                                  ),
+                                  width: top > 160.0 ? 140.0 : 80.0,
+                                  height: top > 160.0 ? 140.0 : 80.0,
+                                  decoration: BoxDecoration(
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.1),
+                                        blurRadius: 1,
+                                        offset: const Offset(0, 1),
+                                      ),
+                                    ],
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Colors.white,
+                                      width: 4,
+                                    ),
+                                  ),
+                                  child: Ink(
+                                    decoration: const BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      image: DecorationImage(
+                                        image: AssetImage(
+                                          'lib/assets/placeholders/default_profile_picture.jpg',
+                                        ),
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                              );
-                            },
-                          );
-                        },
-                      );
-                    },
+                              ),
+                            ),
+                          ),
+                          if (top > 160.0)
+                            Positioned(
+                              right: -4,
+                              top: 10,
+                              child: Container(
+                                padding: const EdgeInsets.all(0),
+                                width: 35,
+                                height: 35,
+                                decoration: const BoxDecoration(
+                                  border: Border.fromBorderSide(BorderSide(
+                                    color: Colors.black26,
+                                    width: 3,
+                                  )),
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Center(
+                                  child: IconButton(
+                                    padding: EdgeInsets.zero,
+                                    icon: const Icon(
+                                      Icons.camera_alt,
+                                      size: 19,
+                                    ),
+                                    color: Colors.black54,
+                                    onPressed: () {
+                                      // Acción del ícono de cámara
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ],
                   ),
+                );
+              },
+            ),
+            bottom: TabBar(
+              overlayColor: WidgetStateProperty.all<Color>(Colors.transparent),
+              splashFactory: null,
+              controller: _tabController,
+              tabAlignment: TabAlignment.center,
+              dividerColor: Colors.transparent,
+              labelStyle: Theme.of(context).textTheme.titleMedium,
+              labelPadding:
+                  const EdgeInsets.symmetric(vertical: 0, horizontal: 12),
+              tabs: const [
+                Tab(
+                  text: 'Personal Info',
                 ),
-                NumberPaginator(
-                  config: NumberPaginatorUIConfig(
-                      buttonSelectedBackgroundColor: isDarkMode
-                          ? Colors.grey.shade800
-                          : Colors.grey.shade400),
-                  numberPages: totalPages,
-                  controller: _numberPaginatorController,
-                  initialPage: currentPage,
-                  onPageChange: (int index) {
-                    // setState(() {
-                    //   currentPage = index;
-                    // });
-                    _pageController.animateToPage(index,
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut);
-                  },
-                ),
+                Tab(text: 'About me'),
               ],
             ),
-          );
-        },
+          ),
+        ],
+        body: TabBarView(
+          controller: _tabController,
+          children: [
+            // Personal Info Tab
+            SingleChildScrollView(
+              physics: const ClampingScrollPhysics(),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 18.0,
+                  vertical: 16.0,
+                ),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 16),
+                      Text(
+                        'First Name',
+                        style: labelTextStyle,
+                      ),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: _firstNameController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your full name';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'Last Name',
+                        style: labelTextStyle,
+                      ),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: _lastNameController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your full name';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'Birthday',
+                        style: labelTextStyle,
+                      ),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: _birthdayController,
+                        decoration: const InputDecoration(
+                          suffixIcon: Icon(Icons.calendar_today),
+                        ),
+                        readOnly: true,
+                        onTap: () {
+                          // Acción para seleccionar la fecha
+                        },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your birthday';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'Email',
+                        style: labelTextStyle,
+                      ),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: _emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your email';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'Phone',
+                        style: labelTextStyle,
+                      ),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: _phoneController,
+                        decoration: const InputDecoration(
+                          suffixIcon: Icon(Icons.arrow_drop_down),
+                        ),
+                        keyboardType: TextInputType.phone,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your phone number';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'Address',
+                        style: labelTextStyle,
+                      ),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: _addressController,
+                      ),
+                      const SizedBox(height: 10),
+                      Text('City', style: labelTextStyle),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: _cityController,
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'Country',
+                        style: labelTextStyle,
+                      ),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: _countryController,
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'State/Province',
+                        style: labelTextStyle,
+                      ),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: _stateProvinceController,
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'Zip Code',
+                        style: labelTextStyle,
+                      ),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: _zipController,
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'Add Specialization/s',
+                        style: labelTextStyle,
+                      ),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        decoration: InputDecoration(
+                          suffixIcon: IconButton(
+                            icon: const Icon(Icons.add),
+                            onPressed: () {
+                              // Acción para agregar especialización
+                            },
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'Add Spoken Language/s',
+                        style: labelTextStyle,
+                      ),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        decoration: InputDecoration(
+                          suffixIcon: IconButton(
+                            icon: Icon(Icons.add),
+                            onPressed: () {
+                              // Acción para agregar idioma hablado
+                            },
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Checkbox(
+                            value: _presential,
+                            onChanged: (bool? value) {
+                              setState(() {
+                                _presential = value ?? false;
+                              });
+                            },
+                          ),
+                          Text(
+                            'Presential',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Checkbox(
+                            value: _remote,
+                            onChanged: (bool? value) {
+                              setState(() {
+                                _remote = value ?? false;
+                              });
+                            },
+                          ),
+                          Text(
+                            'Remote',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            // About me Tab
+            SingleChildScrollView(
+              physics: ClampingScrollPhysics(),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 16),
+                    Text(
+                      'Intro',
+                      style: labelTextStyle,
+                    ),
+                    SizedBox(height: 8),
+                    TextFormField(
+                      controller: _bioController,
+                      maxLines: 3,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your intro';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      'Public Presentation',
+                      style: labelTextStyle,
+                    ),
+                    SizedBox(height: 8),
+                    TextFormField(
+                      controller: _publicPresentationController,
+                      maxLines: 8,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your public presentation';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      'Private Notes',
+                      style: labelTextStyle,
+                    ),
+                    SizedBox(height: 8),
+                    TextFormField(
+                      controller: _privateNotesController,
+                      maxLines: 6,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
