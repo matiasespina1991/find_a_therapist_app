@@ -248,6 +248,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
   Widget build(BuildContext context) {
     final bool isDarkMode =
         ref.watch(themeProvider).themeMode == ThemeMode.dark;
+
     final therapistsLanguages = ref.watch(therapistsLanguagesProvider);
 
     return AppScaffold(
@@ -295,6 +296,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
 
   Widget _buildFirstPage(
       BuildContext context, bool isDarkMode, List<String> availableLanguages) {
+    final screenHeight = MediaQuery.of(context).size.height;
     return SingleChildScrollView(
       controller: _scrollControllerPage1,
       child: Column(
@@ -464,8 +466,10 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                           favorite: defaultCountry != null
                               ? [therapistFilters.location.country!]
                               : null,
-                          countryListTheme: const CountryListThemeData(
-                            textStyle: TextStyle(height: 2, fontSize: 16.5),
+                          countryListTheme: CountryListThemeData(
+                            bottomSheetHeight: screenHeight * 0.85,
+                            textStyle:
+                                const TextStyle(height: 2, fontSize: 16.5),
                           ),
                           customFlagBuilder: (Country country) {
                             return getDashFlagByCountryCode(
