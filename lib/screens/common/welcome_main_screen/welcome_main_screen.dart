@@ -10,6 +10,8 @@ import 'package:findatherapistapp/widgets/AppScaffold/app_scaffold.dart';
 
 import '../../../generated/l10n.dart';
 import '../../../routes/routes.dart';
+import '../../../utils/admin/add_current_user_as_therapist.dart';
+import '../../../utils/admin/add_current_user_to_database.dart';
 
 class WelcomeMainScreen extends ConsumerStatefulWidget {
   const WelcomeMainScreen({super.key});
@@ -120,6 +122,12 @@ class _WelcomeMainScreenState extends ConsumerState<WelcomeMainScreen> {
                 ),
               ),
             ),
+            ElevatedButton(
+                onPressed: () {
+                  addTherapist();
+                  createUser();
+                },
+                child: Text('Add Therapist and user')),
             const SizedBox(height: 15),
           ],
         ),

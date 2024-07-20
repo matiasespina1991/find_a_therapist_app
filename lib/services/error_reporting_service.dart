@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:findatherapistapp/providers/auth_provider.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter/foundation.dart';
 
@@ -23,9 +24,9 @@ class ErrorReportingService {
       'errorLocation': errorLocation,
       'user': userData != null
           ? {
-              'id': userData.userId,
-              'email': userData.email,
-              'isAnonymous': userData.isAnonymous,
+              'id': userData.id,
+              'email': userData.userInfo.email,
+              // 'isAnonymous': userData.isAnonymous,
             }
           : 'No user data available',
       'deviceData': deviceData,
