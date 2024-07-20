@@ -19,12 +19,14 @@ import 'package:flutter_localized_locales/flutter_localized_locales.dart';
 import 'package:findatherapistapp/widgets/LoadingCircle/loading_circle.dart';
 import 'package:findatherapistapp/services/gemini_service.dart';
 import 'package:findatherapistapp/services/speech_to_text_service.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import '../../../app_settings/theme_settings.dart';
 import '../../../models/gemini_tags_response_model.dart';
 import '../../../providers/providers_all.dart';
 import '../../../routes/routes.dart';
 import '../../../utils/debug/error_code_to_text.dart';
+import '../../../utils/ui/get_dash_flag_by_country_code.dart';
 import '../../../widgets/AppScaffold/app_scaffold.dart';
 import '../../../generated/l10n.dart';
 import '../../../widgets/LocationSelectionModal/location_selection_modal.dart';
@@ -460,6 +462,13 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                         showCountryPicker(
                           context: context,
                           showPhoneCode: false,
+                          countryListTheme: const CountryListThemeData(
+                            textStyle: TextStyle(height: 2, fontSize: 16.5),
+                          ),
+                          customFlagBuilder: (Country country) {
+                            return getDashFlagByCountryCode(
+                                country.countryCode);
+                          },
                           onSelect: (Country country) {
                             setState(() {
                               if (therapistFilters.location.country !=
@@ -496,17 +505,27 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                                     .textTheme
                                     .titleMedium
                                     ?.copyWith(),
-                                prefixStyle: const TextStyle(
-                                  fontSize: 0,
+                                // prefixStyle: const TextStyle(
+                                //   fontSize: 0,
+                                // ),
+                                prefixIcon: Padding(
+                                  padding: const EdgeInsets.only(left: 15),
+                                  child: getDashFlagByCountryCode(
+                                      therapistFilters.location.country),
                                 ),
-                                prefix: Text(
-                                  therapistFilters.location.enabled
-                                      ? '${countryService.findByCode(therapistFilters.location.country)?.flagEmoji}'
-                                      : '',
-                                  style: const TextStyle(
-                                    fontSize: 22,
-                                  ),
+                                prefixIconConstraints: const BoxConstraints(
+                                  minWidth: 41,
+                                  minHeight: 20,
                                 ),
+
+                                // Text(
+                                //   therapistFilters.location.enabled
+                                //       ? '${countryService.findByCode(therapistFilters.location.country)?.flagEmoji}'
+                                //       : '',
+                                //   style: const TextStyle(
+                                //     fontSize: 22,
+                                //   ),
+                                // ),
                               ),
                               controller: countryInputController,
                             ),

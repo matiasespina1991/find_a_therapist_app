@@ -19,7 +19,8 @@ class _TherapistPersonalProfileScreenState
   final _formKey = GlobalKey<FormState>();
 
   // Controladores para los campos de texto
-  TextEditingController _fullNameController = TextEditingController();
+  TextEditingController _firstNameController = TextEditingController();
+  TextEditingController _lastNameController = TextEditingController();
   TextEditingController _birthdayController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
   TextEditingController _phoneController = TextEditingController();
@@ -48,7 +49,8 @@ class _TherapistPersonalProfileScreenState
   @override
   void dispose() {
     _tabController.dispose();
-    _fullNameController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
     _birthdayController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
@@ -154,7 +156,9 @@ class _TherapistPersonalProfileScreenState
               dividerColor: Colors.transparent,
               controller: _tabController,
               tabs: const [
-                Tab(text: 'Personal Info'),
+                Tab(
+                  text: 'Personal Info',
+                ),
                 Tab(text: 'About me'),
               ],
             ),
@@ -175,9 +179,9 @@ class _TherapistPersonalProfileScreenState
                             'First Name',
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
-                          SizedBox(height: 8),
+                          const SizedBox(height: 8),
                           TextFormField(
-                            controller: _fullNameController,
+                            controller: _firstNameController,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Please enter your full name';
@@ -192,7 +196,7 @@ class _TherapistPersonalProfileScreenState
                           ),
                           SizedBox(height: 8),
                           TextFormField(
-                            controller: _fullNameController,
+                            controller: _lastNameController,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Please enter your full name';

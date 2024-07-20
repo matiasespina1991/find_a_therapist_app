@@ -156,6 +156,7 @@ dependencies:
 
   country_state_city: ^0.1.6
   dash_flags: ^0.1.1
+  flutter_svg: ^2.0.10+1
   #  # Firebase Database is a Flutter plugin to use the Firebase Realtime Database API and allow storing and syncing data with a NoSQL cloud database.
 #  firebase_database: ^11.0.1
 #  # Firebase Storage is a Flutter plugin to use the Firebase Cloud Storage API and allow uploading, downloading, and deleting files in the cloud.
@@ -205,6 +206,7 @@ flutter:
     - lib/assets/app_icons/
     - lib/assets/app_logo/
     - lib/assets/placeholders/
+    - lib/assets/extra_dash_flags/
 
 
   # fonts:
