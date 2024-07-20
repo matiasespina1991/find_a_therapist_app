@@ -91,19 +91,18 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
     });
 
     stateProvinceInputController.text = '';
-
-    if (therapistFilters.location.country == null) {
-      countryInputController.text = '< Select a country >';
-    } else {
-      countryInputController.text =
-          '  ${countryService.findByCode(therapistFilters.location.country)?.name}';
-    }
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _languageController.text = _getLocalizedLanguageNames(selectedLanguages);
+    if (therapistFilters.location.country == null) {
+      countryInputController.text = '< Select a country >';
+    } else {
+      countryInputController.text =
+          ' ${CountryLocalizations.of(context)?.countryName(countryCode: therapistFilters.location.country)}';
+    }
   }
 
   String _getLocalizedLanguageNames(List<String> languageCodes) {
@@ -485,7 +484,8 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                               therapistFilters.location.country =
                                   country.countryCode;
 
-                              countryInputController.text = '  ${country.name}';
+                              countryInputController.text =
+                                  '  ${country.nameLocalized}';
                               defaultCountry = country.countryCode;
                             });
                           },
