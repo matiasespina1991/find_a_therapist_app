@@ -9,6 +9,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../generated/l10n.dart';
 import '../../models/general_models.dart';
+import '../ModalTopChip/modal_top_chip.dart';
 
 class LocationSelectionModal extends StatefulWidget {
   final String type;
@@ -111,6 +112,7 @@ class _LocationSelectionModalState extends State<LocationSelectionModal> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          const ModalTopChip(),
           Padding(
             padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0),
             child: TextField(

@@ -4,6 +4,9 @@ import 'dart:developer';
 import 'package:country_picker/country_picker.dart';
 
 import 'package:dash_flags/dash_flags.dart' as dash_flags;
+import 'package:findatherapistapp/utils/admin/update_all_therapists_aspects.dart';
+import 'package:findatherapistapp/utils/admin/update_props_on_therapists_docs.dart';
+import 'package:findatherapistapp/widgets/ModalTopChip/modal_top_chip.dart';
 import 'package:findatherapistapp/widgets/NotificationModal/notification_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -319,8 +322,8 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                             therapistFilters.remote = !therapistFilters.remote;
                           });
                         },
-                        contentPadding:
-                            const EdgeInsets.only(left: 16, right: 10),
+                        contentPadding: const EdgeInsets.only(
+                            left: 16, right: 10, bottom: 1),
                         shape: RoundedRectangleBorder(
                           side: BorderSide(
                             width: 1,
@@ -352,8 +355,8 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                                 !therapistFilters.presential;
                           });
                         },
-                        contentPadding:
-                            const EdgeInsets.only(left: 16, right: 10),
+                        contentPadding: const EdgeInsets.only(
+                            left: 16, right: 10, bottom: 1),
                         shape: RoundedRectangleBorder(
                           side: BorderSide(
                             width: 1,
@@ -626,6 +629,11 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                   ],
                 ),
               ),
+              // ElevatedButton(
+              //     onPressed: () {
+              //       updatePropsOnTherapistsDocs();
+              //     },
+              //     child: Text('Test')),
             ],
           ),
           const SizedBox(height: 90),
@@ -866,51 +874,69 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
       BuildContext context, List<String> availableLanguages) {
     showModalBottomSheet(
       isScrollControlled: true,
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.8,
+      ),
       context: context,
       builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter modalSetState) {
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: availableLanguages.map((String languageCode) {
-                  return CheckboxListTile(
-                    title: Row(
-                      children: [
-                        dash_flags.LanguageFlag(
-                            height: 20,
-                            language:
-                                dash_flags.Language.fromCode(languageCode)),
-                        const SizedBox(width: 10),
-                        Text(LocaleNames.of(context)!.nameOf(languageCode) !=
-                                null
-                            ? toCapitalCase(
-                                LocaleNames.of(context)!.nameOf(languageCode)!)
-                            : languageCode),
-                      ],
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const ModalTopChip(),
+            StatefulBuilder(
+              builder: (BuildContext context, StateSetter modalSetState) {
+                return Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        top: 10, bottom: 30, left: 10, right: 10),
+                    child: SingleChildScrollView(
+                      physics: ClampingScrollPhysics(),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: availableLanguages.map((String languageCode) {
+                          return CheckboxListTile(
+                            title: Row(
+                              children: [
+                                dash_flags.LanguageFlag(
+                                    height: 20,
+                                    language: dash_flags.Language.fromCode(
+                                        languageCode)),
+                                const SizedBox(width: 10),
+                                Text(LocaleNames.of(context)!
+                                            .nameOf(languageCode) !=
+                                        null
+                                    ? toCapitalCase(LocaleNames.of(context)!
+                                        .nameOf(languageCode)!)
+                                    : languageCode),
+                              ],
+                            ),
+                            value: selectedLanguages.contains(languageCode),
+                            onChanged: (bool? value) {
+                              modalSetState(() {
+                                if (value == true) {
+                                  selectedLanguages.add(languageCode);
+                                } else {
+                                  if (selectedLanguages.length > 1) {
+                                    selectedLanguages.remove(languageCode);
+                                  }
+                                }
+                              });
+                              setState(() {
+                                _languageController.text =
+                                    _getLocalizedLanguageNames(
+                                        selectedLanguages);
+                              });
+                            },
+                          );
+                        }).toList(),
+                      ),
                     ),
-                    value: selectedLanguages.contains(languageCode),
-                    onChanged: (bool? value) {
-                      modalSetState(() {
-                        if (value == true) {
-                          selectedLanguages.add(languageCode);
-                        } else {
-                          if (selectedLanguages.length > 1) {
-                            selectedLanguages.remove(languageCode);
-                          }
-                        }
-                      });
-                      setState(() {
-                        _languageController.text =
-                            _getLocalizedLanguageNames(selectedLanguages);
-                      });
-                    },
-                  );
-                }).toList(),
-              ),
-            );
-          },
+                  ),
+                );
+              },
+            ),
+          ],
         );
       },
     );

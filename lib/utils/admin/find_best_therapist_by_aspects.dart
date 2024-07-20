@@ -128,6 +128,7 @@ Future<List<Map<String, dynamic>>> findBestTherapistByAspects(
       if (therapistDoc.exists) {
         TherapistModel therapist = TherapistModel.fromJson(
             therapistDoc.data() as Map<String, dynamic>, therapistDoc.id);
+
         finalResults.add({
           'therapist': therapist,
           'matchScore': match['matchScore'],
