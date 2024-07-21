@@ -1,8 +1,11 @@
 // lib/screens/therapist_area/therapist_personal_profile_screen.dart
 
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:findatherapistapp/services/firestore_service.dart';
+import 'package:findatherapistapp/widgets/LoadingCircle/loading_circle.dart';
+import 'package:findatherapistapp/widgets/NotificationModal/notification_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -52,6 +55,8 @@ class _TherapistPersonalProfileScreenState
   bool _presential = false;
   bool _remote = false;
   File? _selectedImage;
+  bool uploadingProfilePicture = false;
+  bool savingChanges = false;
 
   late TabController _tabController;
 
@@ -99,8 +104,9 @@ class _TherapistPersonalProfileScreenState
           _profilePictureUrlController.text = downloadUrl;
         });
 
-        // Aquí puedes actualizar el perfil del terapeuta con la URL de la imagen subida
         debugPrint('Image uploaded: $downloadUrl');
+      } else {
+        debugPrint('Error uploading image');
       }
     }
   }
@@ -126,6 +132,9 @@ class _TherapistPersonalProfileScreenState
   }
 
   Future<void> _saveChanges() async {
+    setState(() {
+      savingChanges = true;
+    });
     final profileService = ref.read(profileServiceProvider);
 
     // Obtener el documento actual del terapeuta
@@ -136,62 +145,69 @@ class _TherapistPersonalProfileScreenState
     final currentData = currentDoc.data() as Map<String, dynamic>;
 
     final Map<String, dynamic> updatedData = {
-      'therapistInfo': {
-        'firstName': _firstNameController.text,
-        'lastName': _lastNameController.text,
-        'birthday': _birthdayController.text,
-        'email': _emailController.text,
-        'phone': {
-          'number': _phoneController.text,
-          'areaCode':
-              '', // Asegúrate de manejar el código de área si es necesario
-        },
-        'intro': _bioController.text,
-        'publicPresentation': _publicPresentationController.text,
-        'privateNotes': _privateNotesController.text,
-        'location': {
-          'address': _addressController.text,
-          'city': _cityController.text,
-          'country': _countryController.text,
-          'stateProvince': _stateProvinceController.text,
-          'zip': _zipController.text,
-          'geolocation': GeoPoint(0.0,
-              0.0) // Asegúrate de manejar la geolocalización si es necesario
-        },
-        'specializations': _specializations,
-        'spokenLanguages': _spokenLanguages,
-        'meetingType': {
-          'presential': _presential,
-          'remote': _remote,
-        },
-        'profilePictureUrl': {
-          'large': _profilePictureUrlController.text,
-          'small': '',
-          'thumb': ''
-        },
-        'title': '', // Asegúrate de manejar el título si es necesario
-        'userInfoIsVerified':
-            false, // Asegúrate de manejar la verificación si es necesario
-        'professionalCertificates':
-            currentData['therapistInfo']['professionalCertificates'] ?? [],
-      }
+      'firstName': _firstNameController.text,
+      'lastName': _lastNameController.text,
+      'birthday': _birthdayController.text,
+      'email': _emailController.text,
+      'phone': {
+        'number': _phoneController.text,
+        'areaCode': '',
+      },
+      'intro': _bioController.text,
+      'publicPresentation': _publicPresentationController.text,
+      'privateNotes': _privateNotesController.text,
+      'location': {
+        'address': _addressController.text,
+        'city': _cityController.text,
+        'country': _countryController.text,
+        'stateProvince': _stateProvinceController.text,
+        'zip': _zipController.text,
+        'geolocation': const GeoPoint(
+            0.0, 0.0) // Asegúrate de manejar la geolocalización si es necesario
+      },
+      'specializations': _specializations,
+      'spokenLanguages': _spokenLanguages,
+      'meetingType': {
+        'presential': _presential,
+        'remote': _remote,
+      },
+      'profilePictureUrl': {
+        'large': _profilePictureUrlController.text,
+        'small': '',
+        'thumb': ''
+      },
+      'title': '',
+      'userInfoIsVerified': false,
+      'professionalCertificates':
+          currentData['therapistInfo']['professionalCertificates'] ?? [],
     };
 
     try {
       await profileService.updateProfile(
         profileTarget: 'therapist',
         userId: therapistId!,
-        data: updatedData,
+        data: {'therapistInfo': updatedData},
         profilePicture: _selectedImage,
       );
-      // Mostrar un mensaje de éxito o hacer alguna acción adicional
       debugPrint('Profile updated successfully');
 
-      ref.read(therapistProvider.notifier).fetchTherapist(therapistId!);
+      ref.read(therapistProvider.notifier).updateTherapistInfo(updatedData);
+
+      if (mounted) {
+        NotificationModal.successfulModal(
+          context: context,
+          title: 'Profile saved!',
+          message: 'Your profile has been successfully updated.',
+        );
+      }
     } catch (e) {
-      // Manejar el error
       debugPrint('Error updating profile: $e');
     }
+
+    setState(() {
+      savingChanges = false;
+      _selectedImage = null;
+    });
   }
 
   @override
@@ -204,9 +220,6 @@ class _TherapistPersonalProfileScreenState
     if (therapist == null) {
       return const Center(child: CircularProgressIndicator());
     }
-
-    print('firstName: ${therapist.therapistInfo.firstName}');
-    print('lastName: ${therapist.therapistInfo.lastName}');
 
     therapistId = therapist.id;
 
@@ -335,27 +348,36 @@ class _TherapistPersonalProfileScreenState
                                         ),
                                         child: Ink(
                                           decoration: BoxDecoration(
+                                            color: Colors.white,
                                             shape: BoxShape.circle,
-                                            image: therapist
-                                                    .therapistInfo
-                                                    .profilePictureUrl
-                                                    .large
-                                                    .isEmpty
-                                                ? const DecorationImage(
+                                            image: _selectedImage != null
+                                                ? DecorationImage(
                                                     image: AssetImage(
-                                                      'lib/assets/placeholders/default_profile_picture.jpg',
+                                                      _selectedImage!.path,
                                                     ),
                                                     fit: BoxFit.cover,
                                                   )
-                                                : DecorationImage(
-                                                    image: NetworkImage(
-                                                      therapist
-                                                          .therapistInfo
-                                                          .profilePictureUrl
-                                                          .large,
-                                                    ),
-                                                    fit: BoxFit.cover,
-                                                  ),
+                                                : therapist
+                                                        .therapistInfo
+                                                        .profilePictureUrl
+                                                        .large
+                                                        .isEmpty
+                                                    ? const DecorationImage(
+                                                        image: AssetImage(
+                                                          'lib/assets/placeholders/default_profile_picture.jpg',
+                                                        ),
+                                                        fit: BoxFit.cover,
+                                                      )
+                                                    : DecorationImage(
+                                                        image:
+                                                            CachedNetworkImageProvider(
+                                                          therapist
+                                                              .therapistInfo
+                                                              .profilePictureUrl
+                                                              .large,
+                                                        ),
+                                                        fit: BoxFit.cover,
+                                                      ),
                                           ),
                                         ),
                                       ),
@@ -698,8 +720,22 @@ class _TherapistPersonalProfileScreenState
             width: double.infinity,
             padding: const EdgeInsets.all(16.0),
             child: ElevatedButton(
-              onPressed: _saveChanges,
-              child: Text('Save Changes'),
+              onPressed: savingChanges ? null : _saveChanges,
+              child: savingChanges
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Text('Saving Changes...'),
+                        SizedBox(width: 8),
+                        SizedBox(
+                            width: 12,
+                            height: 12,
+                            child: LoadingCircle(
+                              strokeWidth: 2.5,
+                            ))
+                      ],
+                    )
+                  : const Text('Save Changes'),
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.symmetric(vertical: 16),
               ),

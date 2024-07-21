@@ -25,6 +25,12 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "_locale": MessageLookupByLibrary.simpleMessage("en"),
+        "aboutMe": MessageLookupByLibrary.simpleMessage("About me"),
+        "addSpecializations":
+            MessageLookupByLibrary.simpleMessage("Add Specialization/s"),
+        "addSpokenLanguages":
+            MessageLookupByLibrary.simpleMessage("Add Spoken Language/s"),
+        "address": MessageLookupByLibrary.simpleMessage("Address"),
         "all": MessageLookupByLibrary.simpleMessage("All"),
         "allTherapists": MessageLookupByLibrary.simpleMessage("All therapists"),
         "aspectsDetectedByAi":
@@ -32,6 +38,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "back": MessageLookupByLibrary.simpleMessage("Back"),
         "backToInternetConnection":
             MessageLookupByLibrary.simpleMessage("You are back online"),
+        "birthday": MessageLookupByLibrary.simpleMessage("Birthday"),
         "buttonsSectionTitle": MessageLookupByLibrary.simpleMessage("Buttons"),
         "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
         "cancelButton": MessageLookupByLibrary.simpleMessage("Cancel"),
@@ -49,7 +56,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "darkMode": MessageLookupByLibrary.simpleMessage("Dark Mode"),
         "elevatedButtonLabel":
             MessageLookupByLibrary.simpleMessage("Elevated Button"),
-        "email": MessageLookupByLibrary.simpleMessage("email"),
+        "email": MessageLookupByLibrary.simpleMessage("Email"),
         "emailHintText": MessageLookupByLibrary.simpleMessage("Email"),
         "emailLabel": MessageLookupByLibrary.simpleMessage("EMAIL"),
         "emptyFields":
@@ -57,6 +64,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "errorSigningInWithGoogleSnackbarMessage":
             MessageLookupByLibrary.simpleMessage(
                 "There was an error signing in with Google. Please try again or contact support."),
+        "errorUpdatingProfile":
+            MessageLookupByLibrary.simpleMessage("Error updating profile"),
+        "errorUploadingImage":
+            MessageLookupByLibrary.simpleMessage("Error uploading image"),
         "exampleBodyLargePrefix":
             MessageLookupByLibrary.simpleMessage("Example of Body "),
         "exampleBodyMediumPrefix":
@@ -99,6 +110,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Find your therapist"),
         "findingMatches":
             MessageLookupByLibrary.simpleMessage("Finding matches..."),
+        "firstName": MessageLookupByLibrary.simpleMessage("First Name"),
         "forgotPasswordButton":
             MessageLookupByLibrary.simpleMessage("Forgot your password?"),
         "generativeAiErrorMessage": MessageLookupByLibrary.simpleMessage(
@@ -106,7 +118,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "goToNextStep": MessageLookupByLibrary.simpleMessage("Go to next step"),
         "gotIt": MessageLookupByLibrary.simpleMessage("Got it"),
         "homeScreenTitle": MessageLookupByLibrary.simpleMessage("Home Screen"),
+        "imageUploaded": MessageLookupByLibrary.simpleMessage("Image uploaded"),
         "inputsSectionTitle": MessageLookupByLibrary.simpleMessage("Inputs"),
+        "intro": MessageLookupByLibrary.simpleMessage("Intro"),
         "invalidEmailMessage": MessageLookupByLibrary.simpleMessage(
             "Please insert a valid email."),
         "invalidEmailSnackbarMessage": MessageLookupByLibrary.simpleMessage(
@@ -118,6 +132,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "invalidPasswordTooShortMessage": MessageLookupByLibrary.simpleMessage(
             "Password must be at least 6 characters long."),
         "languages": MessageLookupByLibrary.simpleMessage("Languages"),
+        "lastName": MessageLookupByLibrary.simpleMessage("Last Name"),
         "lightMode": MessageLookupByLibrary.simpleMessage("Light Mode"),
         "lightModeDarkMode":
             MessageLookupByLibrary.simpleMessage("Light Mode/Dark Mode"),
@@ -171,6 +186,21 @@ class MessageLookup extends MessageLookupByLibrary {
         "password": MessageLookupByLibrary.simpleMessage("password"),
         "passwordHintText": MessageLookupByLibrary.simpleMessage("Password"),
         "passwordLabel": MessageLookupByLibrary.simpleMessage("PASSWORD"),
+        "personalInfo": MessageLookupByLibrary.simpleMessage("Personal Info"),
+        "phone": MessageLookupByLibrary.simpleMessage("Phone"),
+        "pleaseEnterYourBirthday":
+            MessageLookupByLibrary.simpleMessage("Please enter your birthday"),
+        "pleaseEnterYourEmail":
+            MessageLookupByLibrary.simpleMessage("Please enter your email"),
+        "pleaseEnterYourFullName":
+            MessageLookupByLibrary.simpleMessage("Please enter your full name"),
+        "pleaseEnterYourIntro":
+            MessageLookupByLibrary.simpleMessage("Please enter your intro"),
+        "pleaseEnterYourPhoneNumber": MessageLookupByLibrary.simpleMessage(
+            "Please enter your phone number"),
+        "pleaseEnterYourPublicPresentation":
+            MessageLookupByLibrary.simpleMessage(
+                "Please enter your public presentation"),
         "pleaseFillTheFollowingFields": MessageLookupByLibrary.simpleMessage(
             "Please fill the following fields:"),
         "positiveAspectsDescription": MessageLookupByLibrary.simpleMessage(
@@ -180,8 +210,16 @@ class MessageLookup extends MessageLookupByLibrary {
         "preferredLanguage":
             MessageLookupByLibrary.simpleMessage("Preferred language/s"),
         "presential": MessageLookupByLibrary.simpleMessage("Presential"),
+        "privateNotes": MessageLookupByLibrary.simpleMessage("Private Notes"),
         "professionalCertificates":
             MessageLookupByLibrary.simpleMessage("Professional Certificates"),
+        "profileSaved": MessageLookupByLibrary.simpleMessage("Profile saved!"),
+        "profileSavedMessage": MessageLookupByLibrary.simpleMessage(
+            "Your profile has been successfully updated."),
+        "profileUpdatedSuccessfully": MessageLookupByLibrary.simpleMessage(
+            "Profile updated successfully"),
+        "publicPresentation":
+            MessageLookupByLibrary.simpleMessage("Public Presentation"),
         "redoRequestButton":
             MessageLookupByLibrary.simpleMessage("Redo request"),
         "registerAsTherapistButton":
@@ -189,6 +227,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "remote": MessageLookupByLibrary.simpleMessage("Remote"),
         "requestTextFieldHintText": MessageLookupByLibrary.simpleMessage(
             "Enter your request here - Provide as much information as possible about your needs, challenges, and what you\'re looking for in a therapist.   \n\ne.g.:  \nHello, I am a 32-year-old individual looking for a therapist who can relate to my experiences and provide culturally sensitive therapy. I have faced difficulties with anxiety, low self-esteem, and have been finding it hard to socialize lately. I need someone who specializes in Cognitive Behavioral Therapy, and knowledge in astrology would be a plus. I would prefer a therapist of color and..."),
+        "saveChanges": MessageLookupByLibrary.simpleMessage("Save Changes"),
+        "savingChanges":
+            MessageLookupByLibrary.simpleMessage("Saving Changes..."),
         "score": MessageLookupByLibrary.simpleMessage("Score"),
         "searchPrefix": MessageLookupByLibrary.simpleMessage("Search"),
         "seeResultsButton": MessageLookupByLibrary.simpleMessage("See results"),
@@ -201,6 +242,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Select preferred language/s"),
         "sendButton": MessageLookupByLibrary.simpleMessage("Send"),
         "sendingButton": MessageLookupByLibrary.simpleMessage("Sending..."),
+        "settings": MessageLookupByLibrary.simpleMessage("Settings"),
         "settingsButton": MessageLookupByLibrary.simpleMessage("Settings"),
         "settingsScreenTitle": MessageLookupByLibrary.simpleMessage("Settings"),
         "signInWithGoogleButtonLabel":
@@ -252,6 +294,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "unauthorizedAccessMessage": m0,
         "unknownErrorMessage": MessageLookupByLibrary.simpleMessage(
             "An error occurred while trying to process your request. We have reported the issue. Please try again later."),
+        "uploadingImage":
+            MessageLookupByLibrary.simpleMessage("Uploading image..."),
         "userProfile": MessageLookupByLibrary.simpleMessage("User Profile"),
         "welcomeScreenSubtitleDescription": MessageLookupByLibrary.simpleMessage(
             "Your AI-powered partner that helps you find the right therapist for you and your specific needs - worldwide!"),
@@ -260,6 +304,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "yes": MessageLookupByLibrary.simpleMessage("Yes"),
         "youAreCurrentlyOfflineMessage": MessageLookupByLibrary.simpleMessage(
             "You are currently offline. Please check your internet connection."),
-        "yourRequest": MessageLookupByLibrary.simpleMessage("Your request")
+        "yourProfile": MessageLookupByLibrary.simpleMessage("Your profile"),
+        "yourRequest": MessageLookupByLibrary.simpleMessage("Your request"),
+        "yourTherapistProfile":
+            MessageLookupByLibrary.simpleMessage("Your Therapist Profile"),
+        "zipCode": MessageLookupByLibrary.simpleMessage("Zip Code")
       };
 }

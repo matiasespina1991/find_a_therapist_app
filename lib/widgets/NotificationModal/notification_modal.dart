@@ -9,7 +9,7 @@ class NotificationModal {
     required BuildContext context,
     required String title,
     required String message,
-    required VoidCallback onTapConfirm,
+    VoidCallback? onTapConfirm,
   }) {
     showModalBottomSheet(
       enableDrag: false,
@@ -37,7 +37,10 @@ class NotificationModal {
                   child: ElevatedButton(
                     onPressed: () {
                       context.pop();
-                      onTapConfirm();
+                      if (onTapConfirm != null) {
+                        onTapConfirm();
+                      }
+                      ;
                     },
                     child: Text(S.of(context).gotIt),
                   ),

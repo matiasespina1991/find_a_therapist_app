@@ -90,10 +90,10 @@ class S {
     );
   }
 
-  /// `email`
+  /// `Email`
   String get email {
     return Intl.message(
-      'email',
+      'Email',
       name: 'email',
       desc: '',
       args: [],
@@ -1525,6 +1525,316 @@ class S {
     return Intl.message(
       'All therapists',
       name: 'allTherapists',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your Therapist Profile`
+  String get yourTherapistProfile {
+    return Intl.message(
+      'Your Therapist Profile',
+      name: 'yourTherapistProfile',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Personal Info`
+  String get personalInfo {
+    return Intl.message(
+      'Personal Info',
+      name: 'personalInfo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `About me`
+  String get aboutMe {
+    return Intl.message(
+      'About me',
+      name: 'aboutMe',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `First Name`
+  String get firstName {
+    return Intl.message(
+      'First Name',
+      name: 'firstName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter your full name`
+  String get pleaseEnterYourFullName {
+    return Intl.message(
+      'Please enter your full name',
+      name: 'pleaseEnterYourFullName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Last Name`
+  String get lastName {
+    return Intl.message(
+      'Last Name',
+      name: 'lastName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Birthday`
+  String get birthday {
+    return Intl.message(
+      'Birthday',
+      name: 'birthday',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter your birthday`
+  String get pleaseEnterYourBirthday {
+    return Intl.message(
+      'Please enter your birthday',
+      name: 'pleaseEnterYourBirthday',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter your email`
+  String get pleaseEnterYourEmail {
+    return Intl.message(
+      'Please enter your email',
+      name: 'pleaseEnterYourEmail',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Phone`
+  String get phone {
+    return Intl.message(
+      'Phone',
+      name: 'phone',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter your phone number`
+  String get pleaseEnterYourPhoneNumber {
+    return Intl.message(
+      'Please enter your phone number',
+      name: 'pleaseEnterYourPhoneNumber',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Address`
+  String get address {
+    return Intl.message(
+      'Address',
+      name: 'address',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Zip Code`
+  String get zipCode {
+    return Intl.message(
+      'Zip Code',
+      name: 'zipCode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add Specialization/s`
+  String get addSpecializations {
+    return Intl.message(
+      'Add Specialization/s',
+      name: 'addSpecializations',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add Spoken Language/s`
+  String get addSpokenLanguages {
+    return Intl.message(
+      'Add Spoken Language/s',
+      name: 'addSpokenLanguages',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Intro`
+  String get intro {
+    return Intl.message(
+      'Intro',
+      name: 'intro',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter your intro`
+  String get pleaseEnterYourIntro {
+    return Intl.message(
+      'Please enter your intro',
+      name: 'pleaseEnterYourIntro',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Public Presentation`
+  String get publicPresentation {
+    return Intl.message(
+      'Public Presentation',
+      name: 'publicPresentation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter your public presentation`
+  String get pleaseEnterYourPublicPresentation {
+    return Intl.message(
+      'Please enter your public presentation',
+      name: 'pleaseEnterYourPublicPresentation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Private Notes`
+  String get privateNotes {
+    return Intl.message(
+      'Private Notes',
+      name: 'privateNotes',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Save Changes`
+  String get saveChanges {
+    return Intl.message(
+      'Save Changes',
+      name: 'saveChanges',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Saving Changes...`
+  String get savingChanges {
+    return Intl.message(
+      'Saving Changes...',
+      name: 'savingChanges',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Profile saved!`
+  String get profileSaved {
+    return Intl.message(
+      'Profile saved!',
+      name: 'profileSaved',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your profile has been successfully updated.`
+  String get profileSavedMessage {
+    return Intl.message(
+      'Your profile has been successfully updated.',
+      name: 'profileSavedMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error uploading image`
+  String get errorUploadingImage {
+    return Intl.message(
+      'Error uploading image',
+      name: 'errorUploadingImage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Image uploaded`
+  String get imageUploaded {
+    return Intl.message(
+      'Image uploaded',
+      name: 'imageUploaded',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your profile`
+  String get yourProfile {
+    return Intl.message(
+      'Your profile',
+      name: 'yourProfile',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Uploading image...`
+  String get uploadingImage {
+    return Intl.message(
+      'Uploading image...',
+      name: 'uploadingImage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error updating profile`
+  String get errorUpdatingProfile {
+    return Intl.message(
+      'Error updating profile',
+      name: 'errorUpdatingProfile',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Profile updated successfully`
+  String get profileUpdatedSuccessfully {
+    return Intl.message(
+      'Profile updated successfully',
+      name: 'profileUpdatedSuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Settings`
+  String get settings {
+    return Intl.message(
+      'Settings',
+      name: 'settings',
       desc: '',
       args: [],
     );

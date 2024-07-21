@@ -50,6 +50,27 @@ class TherapistModel {
       'lastOnline': lastOnline,
     };
   }
+
+  TherapistModel copyWith({
+    Aspects? aspects,
+    Subscription? subscription,
+    Score? score,
+    TherapistInfo? therapistInfo,
+    bool? isOnline,
+    Timestamp? lastOnline,
+  }) {
+    return TherapistModel(
+      id: id,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+      aspects: aspects ?? this.aspects,
+      subscription: subscription ?? this.subscription,
+      score: score ?? this.score,
+      therapistInfo: therapistInfo ?? this.therapistInfo,
+      isOnline: isOnline ?? this.isOnline,
+      lastOnline: lastOnline ?? this.lastOnline,
+    );
+  }
 }
 
 class Term {

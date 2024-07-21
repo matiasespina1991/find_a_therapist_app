@@ -19,7 +19,6 @@ class TherapistNotifier extends StateNotifier<TherapistState> {
   TherapistNotifier() : super(TherapistState());
 
   Future<void> fetchTherapist(String therapistId) async {
-    print('fetchTherapist: $therapistId');
     state = TherapistState(isLoading: true);
 
     try {
@@ -28,26 +27,32 @@ class TherapistNotifier extends StateNotifier<TherapistState> {
           .doc(therapistId)
           .get();
 
-      print('doc: ${doc.data()}');
-
       if (doc.exists) {
         state = TherapistState(
           therapist: TherapistModel.fromJson(
               doc.data() as Map<String, dynamic>, doc.id),
           isLoading: false,
         );
-        print('b: ${state.therapist}');
       } else {
         state = TherapistState(isLoading: false);
       }
     } catch (e) {
       state = TherapistState(isLoading: false);
     }
-
-    print('c: ${state.therapist}');
   }
 
   void clearTherapist() {
     state = TherapistState();
+  }
+
+  void updateTherapistInfo(Map<String, dynamic> updatedData) {
+    if (state.therapist != null) {
+      final updatedTherapistInfo = TherapistInfo.fromJson(updatedData);
+      state = TherapistState(
+        therapist:
+            state.therapist!.copyWith(therapistInfo: updatedTherapistInfo),
+        isLoading: false,
+      );
+    }
   }
 }
