@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 
 class TherapistModel {
   String id;
@@ -24,17 +25,25 @@ class TherapistModel {
   });
 
   factory TherapistModel.fromJson(Map<String, dynamic> json, String id) {
-    return TherapistModel(
-      id: id,
-      createdAt: json['createdAt'] as Timestamp,
-      updatedAt: json['updatedAt'] as Timestamp,
-      aspects: Aspects.fromJson(json['aspects']),
-      subscription: Subscription.fromJson(json['subscription']),
-      score: Score.fromJson(json['score']),
-      therapistInfo: TherapistInfo.fromJson(json['therapistInfo']),
-      isOnline: json['isOnline'],
-      lastOnline: json['lastOnline'] as Timestamp,
-    );
+    try {
+      return TherapistModel(
+        id: id,
+        createdAt: json['createdAt'] as Timestamp,
+        updatedAt: json['updatedAt'] as Timestamp,
+        aspects: Aspects.fromJson(json['aspects'] as Map<String, dynamic>),
+        subscription:
+            Subscription.fromJson(json['subscription'] as Map<String, dynamic>),
+        score: Score.fromJson(json['score'] as Map<String, dynamic>),
+        therapistInfo: TherapistInfo.fromJson(
+            json['therapistInfo'] as Map<String, dynamic>),
+        isOnline: json['isOnline'] as bool,
+        lastOnline: json['lastOnline'] as Timestamp,
+      );
+    } catch (e, stack) {
+      debugPrint('Error in TherapistModel.fromJson for ID $id: $e');
+      debugPrint('Stack trace: $stack');
+      throw e;
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -83,10 +92,16 @@ class Term {
   });
 
   factory Term.fromJson(Map<String, dynamic> json) {
-    return Term(
-      term: json['term'],
-      public: json['public'],
-    );
+    try {
+      return Term(
+        term: json['term'] as String,
+        public: json['public'] as bool,
+      );
+    } catch (e, stack) {
+      debugPrint('Error in Term.fromJson: $e');
+      debugPrint('Stack trace: $stack');
+      throw e;
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -107,14 +122,20 @@ class Aspects {
   });
 
   factory Aspects.fromJson(Map<String, dynamic> json) {
-    return Aspects(
-      positive: (json['positive'] as List)
-          .map((item) => Term.fromJson(item))
-          .toList(),
-      negative: (json['negative'] as List)
-          .map((item) => Term.fromJson(item))
-          .toList(),
-    );
+    try {
+      return Aspects(
+        positive: (json['positive'] as List)
+            .map((item) => Term.fromJson(item as Map<String, dynamic>))
+            .toList(),
+        negative: (json['negative'] as List)
+            .map((item) => Term.fromJson(item as Map<String, dynamic>))
+            .toList(),
+      );
+    } catch (e, stack) {
+      debugPrint('Error in Aspects.fromJson: $e');
+      debugPrint('Stack trace: $stack');
+      throw e;
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -139,12 +160,18 @@ class Subscription {
   });
 
   factory Subscription.fromJson(Map<String, dynamic> json) {
-    return Subscription(
-      endsAt: json['endsAt'] as Timestamp,
-      plan: json['plan'],
-      startedAt: json['startedAt'] as Timestamp,
-      autoRenewal: json['autoRenewal'],
-    );
+    try {
+      return Subscription(
+        endsAt: json['endsAt'] as Timestamp,
+        plan: json['plan'] as String,
+        startedAt: json['startedAt'] as Timestamp,
+        autoRenewal: json['autoRenewal'] as bool,
+      );
+    } catch (e, stack) {
+      debugPrint('Error in Subscription.fromJson: $e');
+      debugPrint('Stack trace: $stack');
+      throw e;
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -167,10 +194,16 @@ class Score {
   });
 
   factory Score.fromJson(Map<String, dynamic> json) {
-    return Score(
-      rating: (json['rating'] as num).toDouble(),
-      amountRatings: json['amountRatings'],
-    );
+    try {
+      return Score(
+        rating: (json['rating'] as num).toDouble(),
+        amountRatings: json['amountRatings'] as int,
+      );
+    } catch (e, stack) {
+      debugPrint('Error in Score.fromJson: $e');
+      debugPrint('Stack trace: $stack');
+      throw e;
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -182,7 +215,7 @@ class Score {
 }
 
 class TherapistInfo {
-  String birthday;
+  Timestamp birthday;
   String firstName;
   String email;
   String intro;
@@ -219,26 +252,35 @@ class TherapistInfo {
   });
 
   factory TherapistInfo.fromJson(Map<String, dynamic> json) {
-    return TherapistInfo(
-      birthday: json['birthday'],
-      firstName: json['firstName'],
-      intro: json['intro'],
-      lastName: json['lastName'],
-      email: json['email'],
-      location: Location.fromJson(json['location']),
-      meetingType: MeetingType.fromJson(json['meetingType']),
-      phone: Phone.fromJson(json['phone']),
-      privateNotes: json['privateNotes'],
-      profilePictureUrl: ProfilePictureUrl.fromJson(json['profilePictureUrl']),
-      publicPresentation: json['publicPresentation'],
-      specializations: List<String>.from(json['specializations']),
-      spokenLanguages: List<String>.from(json['spokenLanguages']),
-      professionalCertificates: (json['professionalCertificates'] as List)
-          .map((i) => ProfessionalCertificate.fromJson(i))
-          .toList(),
-      title: json['title'],
-      userInfoIsVerified: json['userInfoIsVerified'],
-    );
+    try {
+      return TherapistInfo(
+        birthday: json['birthday'] as Timestamp,
+        firstName: json['firstName'] as String,
+        intro: json['intro'] as String,
+        lastName: json['lastName'] as String,
+        email: json['email'] as String,
+        location: Location.fromJson(json['location'] as Map<String, dynamic>),
+        meetingType:
+            MeetingType.fromJson(json['meetingType'] as Map<String, dynamic>),
+        phone: Phone.fromJson(json['phone'] as Map<String, dynamic>),
+        privateNotes: json['privateNotes'] as String,
+        profilePictureUrl: ProfilePictureUrl.fromJson(
+            json['profilePictureUrl'] as Map<String, dynamic>),
+        publicPresentation: json['publicPresentation'] as String,
+        specializations: List<String>.from(json['specializations'] as List),
+        spokenLanguages: List<String>.from(json['spokenLanguages'] as List),
+        professionalCertificates: (json['professionalCertificates'] as List)
+            .map((i) =>
+                ProfessionalCertificate.fromJson(i as Map<String, dynamic>))
+            .toList(),
+        title: json['title'] as String,
+        userInfoIsVerified: json['userInfoIsVerified'] as bool,
+      );
+    } catch (e, stack) {
+      debugPrint('Error in TherapistInfo.fromJson for ID ${json['id']}: $e');
+      debugPrint('Stack trace: $stack');
+      throw e;
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -282,14 +324,20 @@ class Location {
   });
 
   factory Location.fromJson(Map<String, dynamic> json) {
-    return Location(
-      address: json['address'],
-      city: json['city'],
-      country: json['country'],
-      geolocation: json['geolocation'] as GeoPoint,
-      stateProvince: json['stateProvince'],
-      zip: json['zip'],
-    );
+    try {
+      return Location(
+        address: json['address'] as String,
+        city: json['city'] as String,
+        country: json['country'] as String,
+        geolocation: json['geolocation'] as GeoPoint,
+        stateProvince: json['stateProvince'] as String,
+        zip: json['zip'] as String,
+      );
+    } catch (e, stack) {
+      debugPrint('Error in Location.fromJson: $e');
+      debugPrint('Stack trace: $stack');
+      throw e;
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -314,10 +362,16 @@ class MeetingType {
   });
 
   factory MeetingType.fromJson(Map<String, dynamic> json) {
-    return MeetingType(
-      presential: json['presential'],
-      remote: json['remote'],
-    );
+    try {
+      return MeetingType(
+        presential: json['presential'] as bool,
+        remote: json['remote'] as bool,
+      );
+    } catch (e, stack) {
+      debugPrint('Error in MeetingType.fromJson: $e');
+      debugPrint('Stack trace: $stack');
+      throw e;
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -338,10 +392,16 @@ class Phone {
   });
 
   factory Phone.fromJson(Map<String, dynamic> json) {
-    return Phone(
-      areaCode: json['areaCode'],
-      number: json['number'],
-    );
+    try {
+      return Phone(
+        areaCode: json['areaCode'] as String,
+        number: json['number'] as String,
+      );
+    } catch (e, stack) {
+      debugPrint('Error in Phone.fromJson: $e');
+      debugPrint('Stack trace: $stack');
+      throw e;
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -370,14 +430,20 @@ class ProfessionalCertificate {
   });
 
   factory ProfessionalCertificate.fromJson(Map<String, dynamic> json) {
-    return ProfessionalCertificate(
-      institution: json['institution'],
-      photoUrl: json['photoUrl'],
-      title: json['title'],
-      type: json['type'],
-      verified: json['verified'],
-      yearObtained: json['yearObtained'],
-    );
+    try {
+      return ProfessionalCertificate(
+        institution: json['institution'] as String,
+        photoUrl: json['photoUrl'] as String,
+        title: json['title'] as String,
+        type: json['type'] as String,
+        verified: json['verified'] as bool,
+        yearObtained: json['yearObtained'] as int,
+      );
+    } catch (e, stack) {
+      debugPrint('Error in ProfessionalCertificate.fromJson: $e');
+      debugPrint('Stack trace: $stack');
+      throw e;
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -404,11 +470,17 @@ class ProfilePictureUrl {
   });
 
   factory ProfilePictureUrl.fromJson(Map<String, dynamic> json) {
-    return ProfilePictureUrl(
-      large: json['large'],
-      small: json['small'],
-      thumb: json['thumb'],
-    );
+    try {
+      return ProfilePictureUrl(
+        large: json['large'] as String,
+        small: json['small'] as String,
+        thumb: json['thumb'] as String,
+      );
+    } catch (e, stack) {
+      debugPrint('Error in ProfilePictureUrl.fromJson: $e');
+      debugPrint('Stack trace: $stack');
+      throw e;
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -417,5 +489,32 @@ class ProfilePictureUrl {
       'small': small,
       'thumb': thumb,
     };
+  }
+}
+
+Future<List<TherapistModel>> _fetchTherapists() async {
+  try {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    QuerySnapshot snapshot = await firestore.collection('therapists').get();
+    return snapshot.docs
+        .map((doc) {
+          try {
+            return TherapistModel.fromJson(
+              doc.data() as Map<String, dynamic>,
+              doc.id,
+            );
+          } catch (e, stack) {
+            debugPrint('Error in processing document ID ${doc.id}: $e');
+            debugPrint('Stack trace: $stack');
+            return null;
+          }
+        })
+        .where((doc) => doc != null)
+        .cast<TherapistModel>()
+        .toList();
+  } catch (e, stack) {
+    debugPrint('Failed to get therapists: $e');
+    debugPrint('Stack trace: $stack');
+    return [];
   }
 }

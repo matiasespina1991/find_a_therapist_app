@@ -26,6 +26,7 @@ class _AllTherapistsScreenState extends ConsumerState<AllTherapistsScreen> {
   int currentPage = 0;
   late PageController _pageController;
   late NumberPaginatorController _numberPaginatorController;
+  bool errorsfound = false;
 
   @override
   void initState() {
@@ -89,7 +90,7 @@ class _AllTherapistsScreenState extends ConsumerState<AllTherapistsScreen> {
                 }),
               ),
             );
-          } else if (snapshot.hasError) {
+          } else if (snapshot.hasError || errorsfound) {
             return const Center(child: Text('Failed to load therapists'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(child: Text('No therapists found'));

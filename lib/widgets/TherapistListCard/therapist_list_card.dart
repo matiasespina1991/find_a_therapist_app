@@ -92,7 +92,7 @@ class TherapistListCard extends StatelessWidget {
                                 radius: 40,
                                 backgroundImage: CachedNetworkImageProvider(
                                   therapist
-                                      .therapistInfo.profilePictureUrl.small,
+                                      .therapistInfo.profilePictureUrl.large,
                                 ),
                               ),
                             ),

@@ -134,7 +134,7 @@ class _TherapistPublicProfileScreenState
                                   radius: 40,
                                   backgroundImage: CachedNetworkImageProvider(
                                     widget.therapist.therapistInfo
-                                        .profilePictureUrl.small,
+                                        .profilePictureUrl.large,
                                   ),
                                 ),
                               ),

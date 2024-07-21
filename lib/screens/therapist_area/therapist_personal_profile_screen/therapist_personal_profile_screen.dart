@@ -8,6 +8,7 @@ import 'package:findatherapistapp/widgets/LoadingCircle/loading_circle.dart';
 import 'package:findatherapistapp/widgets/NotificationModal/notification_modal.dart';
 import 'package:findatherapistapp/widgets/NotificationSnackbar/notification_snackbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
@@ -40,7 +41,6 @@ class _TherapistPersonalProfileScreenState
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
-  final TextEditingController _birthdayController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _phoneAreaCodeController =
@@ -70,6 +70,7 @@ class _TherapistPersonalProfileScreenState
   bool uploadingProfilePicture = false;
   bool savingChanges = false;
 
+  Timestamp therapistDateOfBirth = Timestamp.fromDate(DateTime(1990, 1, 1));
   GeoPoint therapistGeolocation = const GeoPoint(0, 0);
 
   late TabController _tabController;
@@ -89,7 +90,6 @@ class _TherapistPersonalProfileScreenState
     _tabController.dispose();
     _firstNameController.dispose();
     _lastNameController.dispose();
-    _birthdayController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
 
@@ -184,7 +184,7 @@ class _TherapistPersonalProfileScreenState
     final Map<String, dynamic> updatedData = {
       'firstName': _firstNameController.text,
       'lastName': _lastNameController.text,
-      'birthday': _birthdayController.text,
+      'birthday': therapistDateOfBirth,
       'email': _emailController.text,
       'phone': {
         'number': _phoneController.text,
@@ -305,8 +305,9 @@ class _TherapistPersonalProfileScreenState
       _privateNotesController.text = therapist.therapistInfo.privateNotes;
     }
 
-    if (_birthdayController.text.isEmpty) {
-      _birthdayController.text = therapist.therapistInfo.birthday;
+    if (_profilePictureUrlController.text.isEmpty) {
+      _profilePictureUrlController.text =
+          therapist.therapistInfo.profilePictureUrl.large;
     }
 
     if (_addressController.text.isEmpty) {
@@ -631,6 +632,24 @@ class _TherapistPersonalProfileScreenState
                                   child: TextFormField(
                                     controller: _phoneAreaCodeController,
                                     keyboardType: TextInputType.phone,
+                                    inputFormatters: [
+                                      LengthLimitingTextInputFormatter(4),
+                                    ],
+                                    decoration: InputDecoration(
+                                      hintText: '000',
+                                      prefixIcon: Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 10),
+                                        child: const Icon(
+                                          Icons.add,
+                                          size: 16,
+                                        ),
+                                      ),
+                                      prefixIconConstraints:
+                                          const BoxConstraints(
+                                        minWidth: 18,
+                                      ),
+                                    ),
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
                                         return 'Please enter your phone area code';
@@ -643,6 +662,9 @@ class _TherapistPersonalProfileScreenState
                                 Expanded(
                                   child: TextFormField(
                                     controller: _phoneController,
+                                    decoration: const InputDecoration(
+                                      hintText: '000 000 0000',
+                                    ),
                                     keyboardType: TextInputType.phone,
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
@@ -657,27 +679,27 @@ class _TherapistPersonalProfileScreenState
                               ],
                             ),
                             const SizedBox(height: 10),
-                            Text(
-                              S.of(context).birthday,
-                              style: labelTextStyle,
-                            ),
-                            const SizedBox(height: 8),
-                            TextFormField(
-                              controller: _birthdayController,
-                              decoration: const InputDecoration(
-                                suffixIcon: Icon(Icons.calendar_today),
-                              ),
-                              readOnly: true,
-                              onTap: () {
-                                // Acción para seleccionar la fecha
-                              },
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return S.of(context).pleaseEnterYourBirthday;
-                                }
-                                return null;
-                              },
-                            ),
+                            // Text(
+                            //   S.of(context).birthday,
+                            //   style: labelTextStyle,
+                            // ),
+                            // const SizedBox(height: 8),
+                            // TextFormField(
+                            //   controller: _birthdayController,
+                            //   decoration: const InputDecoration(
+                            //     suffixIcon: Icon(Icons.calendar_today),
+                            //   ),
+                            //   readOnly: true,
+                            //   onTap: () {
+                            //     // Acción para seleccionar la fecha
+                            //   },
+                            //   validator: (value) {
+                            //     if (value == null || value.isEmpty) {
+                            //       return S.of(context).pleaseEnterYourBirthday;
+                            //     }
+                            //     return null;
+                            //   },
+                            // ),
                             const SizedBox(height: 10),
                             Text(
                               S.of(context).country,
@@ -893,6 +915,9 @@ class _TherapistPersonalProfileScreenState
                             const SizedBox(height: 8),
                             TextFormField(
                               controller: _addressController,
+                              decoration: const InputDecoration(
+                                hintText: '123 Main St.',
+                              ),
                             ),
                             const SizedBox(height: 10),
                             Text(
@@ -902,6 +927,9 @@ class _TherapistPersonalProfileScreenState
                             const SizedBox(height: 8),
                             TextFormField(
                               controller: _zipController,
+                              decoration: const InputDecoration(
+                                hintText: '12345',
+                              ),
                             ),
                             const SizedBox(height: 10),
                             Text(
@@ -935,41 +963,7 @@ class _TherapistPersonalProfileScreenState
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 16),
-                            Row(
-                              children: [
-                                Checkbox(
-                                  value: _presential,
-                                  onChanged: (bool? value) {
-                                    setState(() {
-                                      _presential = value ?? false;
-                                    });
-                                  },
-                                ),
-                                Text(
-                                  S.of(context).presential,
-                                  style:
-                                      Theme.of(context).textTheme.titleMedium,
-                                ),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Checkbox(
-                                  value: _remote,
-                                  onChanged: (bool? value) {
-                                    setState(() {
-                                      _remote = value ?? false;
-                                    });
-                                  },
-                                ),
-                                Text(
-                                  S.of(context).remote,
-                                  style:
-                                      Theme.of(context).textTheme.titleMedium,
-                                ),
-                              ],
-                            ),
+                            const SizedBox(height: 30),
                           ],
                         ),
                       ),
@@ -983,6 +977,51 @@ class _TherapistPersonalProfileScreenState
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          const SizedBox(height: 16),
+                          Text(
+                            '${S.of(context).meetingType}:',
+                            style: labelTextStyle,
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Checkbox(
+                                value: _presential,
+                                onChanged: (bool? value) {
+                                  setState(() {
+                                    _presential = !_presential;
+                                    therapist.therapistInfo.meetingType
+                                            .presential =
+                                        !therapist.therapistInfo.meetingType
+                                            .presential;
+                                  });
+                                },
+                              ),
+                              Text(
+                                S.of(context).presential,
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Checkbox(
+                                value: _remote,
+                                onChanged: (bool? value) {
+                                  setState(() {
+                                    _remote = !_remote;
+                                    therapist.therapistInfo.meetingType.remote =
+                                        !therapist
+                                            .therapistInfo.meetingType.remote;
+                                  });
+                                },
+                              ),
+                              Text(
+                                S.of(context).remote,
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                            ],
+                          ),
                           SizedBox(height: 16),
                           Text(
                             S.of(context).intro,

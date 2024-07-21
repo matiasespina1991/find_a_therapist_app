@@ -1,4 +1,5 @@
 import 'package:animate_do/animate_do.dart';
+import 'package:findatherapistapp/widgets/LoadingCircle/loading_circle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -10,7 +11,6 @@ import '../../../app_settings/app_general_settings.dart';
 import '../../../generated/l10n.dart';
 import '../../../routes/routes.dart';
 import '../../../providers/therapist_provider.dart';
-import '../../../utils/admin/add_current_user_as_therapist.dart';
 
 class WelcomeMainScreen extends ConsumerStatefulWidget {
   const WelcomeMainScreen({super.key});
@@ -134,14 +134,14 @@ class _WelcomeMainScreenState extends ConsumerState<WelcomeMainScreen> {
                               child: AnimatedSwitcher(
                                 duration: const Duration(milliseconds: 500),
                                 child: therapistState.isLoading
-                                    ? const CircularProgressIndicator()
+                                    ? const SizedBox(
+                                        width: 18,
+                                        height: 18,
+                                        child: LoadingCircle(
+                                          strokeWidth: 3,
+                                        ))
                                     : Text(goToTherapistAreaButtonText),
                               )),
-                          // ElevatedButton(
-                          //     onPressed: () {
-                          //       addTherapist();
-                          //     },
-                          //     child: Text('Add Therapist')),
                           const SizedBox(height: 10),
                         ],
                       ),
