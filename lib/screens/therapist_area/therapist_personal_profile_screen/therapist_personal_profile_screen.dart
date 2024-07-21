@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:country_state_city/models/city.dart';
+import 'package:country_state_city/models/state.dart' as state_utils;
 import 'package:findatherapistapp/services/firestore_service.dart';
 import 'package:findatherapistapp/widgets/LoadingCircle/loading_circle.dart';
 import 'package:findatherapistapp/widgets/NotificationModal/notification_modal.dart';
@@ -16,7 +18,6 @@ import 'package:findatherapistapp/providers/therapist_provider.dart';
 import 'package:findatherapistapp/routes/routes.dart';
 import 'package:findatherapistapp/services/profile_service.dart';
 import 'package:country_picker/country_picker.dart';
-import 'package:dash_flags/dash_flags.dart' as dashFlags;
 import '../../../generated/l10n.dart';
 import '../../../utils/functions/profile_utils.dart';
 import '../../../utils/functions/show_city_state_selection_modal.dart';
@@ -42,14 +43,16 @@ class _TherapistPersonalProfileScreenState
   final TextEditingController _birthdayController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _bioController = TextEditingController();
+  final TextEditingController _phoneAreaCodeController =
+      TextEditingController();
+  final TextEditingController _introController = TextEditingController();
   final TextEditingController _publicPresentationController =
       TextEditingController();
   final TextEditingController _privateNotesController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _cityCodeController = TextEditingController();
   final TextEditingController _countryCodeController = TextEditingController();
-  final TextEditingController _stateCodeProvinceController =
+  final TextEditingController _stateProvinceCodeController =
       TextEditingController();
   final TextEditingController countryNameController = TextEditingController();
   final TextEditingController stateProvinceNameController =
@@ -66,7 +69,8 @@ class _TherapistPersonalProfileScreenState
   File? _selectedImage;
   bool uploadingProfilePicture = false;
   bool savingChanges = false;
-  bool _showShadow = true;
+
+  GeoPoint therapistGeolocation = const GeoPoint(0, 0);
 
   late TabController _tabController;
   String? defaultCountry;
@@ -88,15 +92,21 @@ class _TherapistPersonalProfileScreenState
     _birthdayController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
-    _bioController.dispose();
+
+    _introController.dispose();
     _publicPresentationController.dispose();
     _privateNotesController.dispose();
     _addressController.dispose();
     _cityCodeController.dispose();
     _countryCodeController.dispose();
-    _stateCodeProvinceController.dispose();
+    _stateProvinceCodeController.dispose();
+    cityNameController.dispose();
+    stateProvinceNameController.dispose();
+    countryNameController.dispose();
     _zipController.dispose();
     _profilePictureUrlController.dispose();
+    _titleController.dispose();
+
     super.dispose();
   }
 
@@ -110,10 +120,13 @@ class _TherapistPersonalProfileScreenState
         _selectedImage = imageFile;
       });
 
-      NotificationSnackbar.showSnackBar(
-          message: S.of(context).imageUploadedSuccessfully,
-          variant: 'success',
-          duration: 'short');
+      if (mounted) {
+        NotificationSnackbar.showSnackBar(
+            message: S.of(context).imageUploadedSuccessfully,
+            variant: 'success',
+            duration: 'short');
+      }
+
       final downloadUrl =
           await uploadProfilePicture(_selectedImage!, 'therapist');
 
@@ -175,19 +188,18 @@ class _TherapistPersonalProfileScreenState
       'email': _emailController.text,
       'phone': {
         'number': _phoneController.text,
-        'areaCode': '',
+        'areaCode': _phoneAreaCodeController.text,
       },
-      'intro': _bioController.text,
+      'intro': _introController.text,
       'publicPresentation': _publicPresentationController.text,
       'privateNotes': _privateNotesController.text,
       'location': {
         'address': _addressController.text,
         'city': _cityCodeController.text,
         'country': _countryCodeController.text,
-        'stateProvince': _stateCodeProvinceController.text,
+        'stateProvince': stateProvinceNameController.text,
         'zip': _zipController.text,
-        'geolocation': const GeoPoint(
-            0.0, 0.0) // Asegúrate de manejar la geolocalización si es necesario
+        'geolocation': therapistGeolocation,
       },
       'specializations': _specializations,
       'spokenLanguages': _spokenLanguages,
@@ -263,7 +275,6 @@ class _TherapistPersonalProfileScreenState
 
     therapistId = therapist.id;
 
-    // Solo actualizar los controladores si están vacíos para evitar sobrescribir los cambios locales
     if (_firstNameController.text.isEmpty) {
       _firstNameController.text = therapist.therapistInfo.firstName;
     }
@@ -271,15 +282,20 @@ class _TherapistPersonalProfileScreenState
       _lastNameController.text = therapist.therapistInfo.lastName;
     }
 
-    if (_birthdayController.text.isEmpty) {
-      _birthdayController.text = therapist.therapistInfo.birthday;
-    }
-
     if (_emailController.text.isEmpty) {
       _emailController.text = therapist.therapistInfo.email;
     }
-    if (_bioController.text.isEmpty) {
-      _bioController.text = therapist.therapistInfo.intro;
+
+    if (_phoneController.text.isEmpty) {
+      _phoneController.text = therapist.therapistInfo.phone.number;
+    }
+
+    if (_phoneAreaCodeController.text.isEmpty) {
+      _phoneAreaCodeController.text = therapist.therapistInfo.phone.areaCode;
+    }
+
+    if (_introController.text.isEmpty) {
+      _introController.text = therapist.therapistInfo.intro;
     }
     if (_publicPresentationController.text.isEmpty) {
       _publicPresentationController.text =
@@ -288,6 +304,11 @@ class _TherapistPersonalProfileScreenState
     if (_privateNotesController.text.isEmpty) {
       _privateNotesController.text = therapist.therapistInfo.privateNotes;
     }
+
+    if (_birthdayController.text.isEmpty) {
+      _birthdayController.text = therapist.therapistInfo.birthday;
+    }
+
     if (_addressController.text.isEmpty) {
       _addressController.text = therapist.therapistInfo.location.address;
     }
@@ -296,10 +317,19 @@ class _TherapistPersonalProfileScreenState
     }
     if (_countryCodeController.text.isEmpty) {
       _countryCodeController.text = therapist.therapistInfo.location.country;
+      countryNameController.text = CountryLocalizations.of(context)!
+          .countryName(countryCode: therapist.therapistInfo.location.country)!;
     }
-    if (_stateCodeProvinceController.text.isEmpty) {
-      _stateCodeProvinceController.text =
+    if (_stateProvinceCodeController.text.isEmpty) {
+      _stateProvinceCodeController.text =
           therapist.therapistInfo.location.stateProvince;
+      stateProvinceNameController.text =
+          therapist.therapistInfo.location.stateProvince;
+    }
+
+    if (therapistGeolocation.latitude == 0 &&
+        therapistGeolocation.longitude == 0) {
+      therapistGeolocation = therapist.therapistInfo.location.geolocation;
     }
     if (_zipController.text.isEmpty) {
       _zipController.text = therapist.therapistInfo.location.zip;
@@ -325,7 +355,7 @@ class _TherapistPersonalProfileScreenState
       useTopAppBar: true,
       actions: [
         IconButton(
-          icon: Icon(Icons.settings),
+          icon: const Icon(Icons.settings),
           onPressed: () {
             context.push(Routes.settingsScreen.path);
           },
@@ -530,15 +560,15 @@ class _TherapistPersonalProfileScreenState
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const SizedBox(height: 16),
-                            Text(
-                              'Title',
-                              style: labelTextStyle,
-                            ),
-                            const SizedBox(height: 8),
-                            TextFormField(
-                              controller: _titleController,
-                            ),
+                            // const SizedBox(height: 16),
+                            // Text(
+                            //   'Title',
+                            //   style: labelTextStyle,
+                            // ),
+                            // const SizedBox(height: 8),
+                            // TextFormField(
+                            //   controller: _titleController,
+                            // ),
                             const SizedBox(height: 16),
                             Text(
                               S.of(context).firstName,
@@ -590,21 +620,41 @@ class _TherapistPersonalProfileScreenState
                               S.of(context).phone,
                               style: labelTextStyle,
                             ),
-                            const SizedBox(height: 8),
-                            TextFormField(
-                              controller: _phoneController,
-                              decoration: const InputDecoration(
-                                suffixIcon: Icon(Icons.arrow_drop_down),
-                              ),
-                              keyboardType: TextInputType.phone,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return S
-                                      .of(context)
-                                      .pleaseEnterYourPhoneNumber;
-                                }
-                                return null;
-                              },
+                            Row(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  constraints: const BoxConstraints(
+                                    maxWidth: 80,
+                                  ),
+                                  child: TextFormField(
+                                    controller: _phoneAreaCodeController,
+                                    keyboardType: TextInputType.phone,
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please enter your phone area code';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ),
+                                SizedBox(width: 10),
+                                Expanded(
+                                  child: TextFormField(
+                                    controller: _phoneController,
+                                    keyboardType: TextInputType.phone,
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return S
+                                            .of(context)
+                                            .pleaseEnterYourPhoneNumber;
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ),
+                              ],
                             ),
                             const SizedBox(height: 10),
                             Text(
@@ -657,12 +707,21 @@ class _TherapistPersonalProfileScreenState
                                     setState(() {
                                       if (_countryCodeController.text !=
                                           country.countryCode) {
-                                        _stateCodeProvinceController.clear();
-                                        _cityCodeController.clear();
+                                        stateProvinceNameController.text = '';
+                                        _stateProvinceCodeController.text = '';
+                                        _cityCodeController.text = '';
+                                        cityNameController.text = '';
+
+                                        therapist.therapistInfo.location
+                                            .stateProvince = '';
+                                        therapist.therapistInfo.location.city =
+                                            '';
                                       }
 
                                       _countryCodeController.text =
                                           country.countryCode;
+                                      countryNameController.text =
+                                          country.nameLocalized!;
                                       defaultCountry = country.countryCode;
                                     });
                                   },
@@ -670,24 +729,30 @@ class _TherapistPersonalProfileScreenState
                               },
                               child: AbsorbPointer(
                                 child: TextFormField(
-                                  controller: _countryCodeController,
+                                  textAlign: _countryCodeController.text.isEmpty
+                                      ? TextAlign.center
+                                      : TextAlign.start,
+                                  controller: countryNameController,
                                   decoration: InputDecoration(
-                                    hintText: 'United States',
+                                    hintText: '< Select >',
+                                    hintStyle: TextStyle(
+                                      color: _countryCodeController.text.isEmpty
+                                          ? Colors.black
+                                          : (isDarkMode
+                                              ? ThemeSettings
+                                                  .hintTextColor.darkModePrimary
+                                              : ThemeSettings.hintTextColor
+                                                  .lightModePrimary),
+                                    ),
                                     prefixIcon: _countryCodeController
                                             .text.isEmpty
                                         ? null
                                         : Padding(
                                             padding: const EdgeInsets.only(
-                                                right: 10, left: 5),
+                                                left: 15, right: 8),
                                             child: getDashFlagByCountryCode(
                                                 _countryCodeController.text),
                                           ),
-
-                                    // Padding(
-                                    //   padding: const EdgeInsets.only(left: 15),
-                                    //   child: getDashFlagByCountryCode(
-                                    //       _countryController.text),
-                                    // ),
                                     prefixIconConstraints: const BoxConstraints(
                                       minWidth: 41,
                                       minHeight: 20,
@@ -709,19 +774,56 @@ class _TherapistPersonalProfileScreenState
                                   type: 'state',
                                   country: _countryCodeController.text,
                                   onSelect: (selectedItem) {
+                                    state_utils.State stateProvinceSelected =
+                                        selectedItem;
+
                                     setState(() {
-                                      _stateCodeProvinceController.text =
-                                          selectedItem.name;
+                                      _stateProvinceCodeController.text =
+                                          stateProvinceSelected.isoCode;
+                                      stateProvinceNameController.text =
+                                          stateProvinceSelected.name;
                                       _cityCodeController.clear();
+
+                                      if (stateProvinceSelected.latitude !=
+                                              null &&
+                                          stateProvinceSelected.longitude !=
+                                              null) {
+                                        therapistGeolocation = GeoPoint(
+                                            double.parse(stateProvinceSelected
+                                                .latitude!),
+                                            double.parse(stateProvinceSelected
+                                                .longitude!));
+                                      }
                                     });
                                   },
                                 );
                               },
                               child: AbsorbPointer(
                                 child: TextFormField(
-                                  controller: _stateCodeProvinceController,
+                                  textAlign:
+                                      _stateProvinceCodeController.text.isEmpty
+                                          ? TextAlign.center
+                                          : TextAlign.start,
+                                  controller: stateProvinceNameController,
                                   decoration: InputDecoration(
-                                    hintText: '< ${S.of(context).all} >',
+                                    filled: _stateProvinceCodeController
+                                            .text.isEmpty
+                                        ? false
+                                        : true,
+                                    hintText: _stateProvinceCodeController
+                                            .text.isEmpty
+                                        ? '< Select >'
+                                        : '',
+                                    hintStyle: TextStyle(
+                                      color: _stateProvinceCodeController
+                                              .text.isEmpty
+                                          ? Colors.black
+                                          : (isDarkMode
+                                              ? ThemeSettings
+                                                  .hintTextColor.darkModePrimary
+                                              : ThemeSettings.hintTextColor
+                                                  .lightModePrimary),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -738,20 +840,47 @@ class _TherapistPersonalProfileScreenState
                                   context,
                                   type: 'city',
                                   country: _countryCodeController.text,
-                                  state: _stateCodeProvinceController.text,
+                                  state: _stateProvinceCodeController.text,
                                   onSelect: (selectedItem) {
+                                    City citySelected = selectedItem;
                                     setState(() {
                                       _cityCodeController.text =
-                                          selectedItem.name;
+                                          citySelected.name;
+
+                                      if (citySelected.latitude != null &&
+                                          citySelected.longitude != null) {
+                                        therapistGeolocation = GeoPoint(
+                                            double.parse(
+                                                citySelected.latitude!),
+                                            double.parse(
+                                                citySelected.longitude!));
+                                      }
                                     });
                                   },
                                 );
                               },
                               child: AbsorbPointer(
                                 child: TextFormField(
+                                  textAlign: _cityCodeController.text.isEmpty
+                                      ? TextAlign.center
+                                      : TextAlign.start,
                                   controller: _cityCodeController,
                                   decoration: InputDecoration(
-                                    hintText: '< ${S.of(context).all} >',
+                                    filled: _cityCodeController.text.isEmpty
+                                        ? false
+                                        : true,
+                                    hintText: _cityCodeController.text.isEmpty
+                                        ? '< Select >'
+                                        : '',
+                                    hintStyle: TextStyle(
+                                      color: _cityCodeController.text.isEmpty
+                                          ? Colors.black
+                                          : (isDarkMode
+                                              ? ThemeSettings
+                                                  .hintTextColor.darkModePrimary
+                                              : ThemeSettings.hintTextColor
+                                                  .lightModePrimary),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -861,7 +990,7 @@ class _TherapistPersonalProfileScreenState
                           ),
                           SizedBox(height: 8),
                           TextFormField(
-                            controller: _bioController,
+                            controller: _introController,
                             maxLines: 3,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
