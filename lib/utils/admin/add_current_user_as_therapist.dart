@@ -31,18 +31,19 @@ Future<void> addTherapist() async {
         "zip": ""
       },
       "firstName": "",
-      "userInfoIsVerified": false,
       "lastName": "",
+      "birthday": "",
+      "phone": {"areaCode": "", "number": ""},
       "specializations": [],
       "spokenLanguages": [],
       "professionalCertificates": [],
       "profilePictureUrl": {"large": "", "small": "", "thumb": ""},
-      "meetingType": {"presential": false, "remote": false}
+      "meetingType": {"presential": false, "remote": false},
+      "title": "",
+      "userInfoIsVerified": false
     },
     "isOnline": false,
     "lastOnline": Timestamp.now(),
-    "phone": {"areaCode": "", "number": ""},
-    "title": ""
   };
 
   // Guardar en Firestore

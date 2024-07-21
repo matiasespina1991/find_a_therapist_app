@@ -9,6 +9,7 @@ class TherapistModel {
   Score score;
   TherapistInfo therapistInfo;
   bool isOnline;
+  Timestamp lastOnline;
 
   TherapistModel({
     required this.id,
@@ -19,6 +20,7 @@ class TherapistModel {
     required this.score,
     required this.therapistInfo,
     required this.isOnline,
+    required this.lastOnline,
   });
 
   factory TherapistModel.fromJson(Map<String, dynamic> json, String id) {
@@ -31,6 +33,7 @@ class TherapistModel {
       score: Score.fromJson(json['score']),
       therapistInfo: TherapistInfo.fromJson(json['therapistInfo']),
       isOnline: json['isOnline'],
+      lastOnline: json['lastOnline'] as Timestamp,
     );
   }
 
@@ -44,6 +47,7 @@ class TherapistModel {
       'score': score.toJson(),
       'therapistInfo': therapistInfo.toJson(),
       'isOnline': isOnline,
+      'lastOnline': lastOnline,
     };
   }
 }
@@ -157,68 +161,80 @@ class Score {
 }
 
 class TherapistInfo {
-  String intro;
-  String publicPresentation;
-  String privateNotes;
-  Location location;
+  String birthday;
   String firstName;
-  bool userInfoIsVerified;
+  String intro;
   String lastName;
+  Location location;
+  MeetingType meetingType;
+  Phone phone;
+  String privateNotes;
+  ProfilePictureUrl profilePictureUrl;
+  String publicPresentation;
   List<String> specializations;
   List<String> spokenLanguages;
   List<ProfessionalCertificate> professionalCertificates;
-  ProfilePictureUrl profilePictureUrl;
-  MeetingType meetingType;
+  String title;
+  bool userInfoIsVerified;
 
   TherapistInfo({
-    required this.intro,
-    required this.publicPresentation,
-    required this.privateNotes,
-    required this.location,
+    required this.birthday,
     required this.firstName,
-    required this.userInfoIsVerified,
+    required this.intro,
     required this.lastName,
+    required this.location,
+    required this.meetingType,
+    required this.phone,
+    required this.privateNotes,
+    required this.profilePictureUrl,
+    required this.publicPresentation,
     required this.specializations,
     required this.spokenLanguages,
     required this.professionalCertificates,
-    required this.profilePictureUrl,
-    required this.meetingType,
+    required this.title,
+    required this.userInfoIsVerified,
   });
 
   factory TherapistInfo.fromJson(Map<String, dynamic> json) {
     return TherapistInfo(
-      intro: json['intro'],
-      publicPresentation: json['publicPresentation'],
-      privateNotes: json['privateNotes'],
-      location: Location.fromJson(json['location']),
+      birthday: json['birthday'],
       firstName: json['firstName'],
-      userInfoIsVerified: json['userInfoIsVerified'],
+      intro: json['intro'],
       lastName: json['lastName'],
+      location: Location.fromJson(json['location']),
+      meetingType: MeetingType.fromJson(json['meetingType']),
+      phone: Phone.fromJson(json['phone']),
+      privateNotes: json['privateNotes'],
+      profilePictureUrl: ProfilePictureUrl.fromJson(json['profilePictureUrl']),
+      publicPresentation: json['publicPresentation'],
       specializations: List<String>.from(json['specializations']),
       spokenLanguages: List<String>.from(json['spokenLanguages']),
       professionalCertificates: (json['professionalCertificates'] as List)
           .map((i) => ProfessionalCertificate.fromJson(i))
           .toList(),
-      profilePictureUrl: ProfilePictureUrl.fromJson(json['profilePictureUrl']),
-      meetingType: MeetingType.fromJson(json['meetingType']),
+      title: json['title'],
+      userInfoIsVerified: json['userInfoIsVerified'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'intro': intro,
-      'publicPresentation': publicPresentation,
-      'privateNotes': privateNotes,
-      'location': location.toJson(),
+      'birthday': birthday,
       'firstName': firstName,
-      'userInfoIsVerified': userInfoIsVerified,
+      'intro': intro,
       'lastName': lastName,
+      'location': location.toJson(),
+      'meetingType': meetingType.toJson(),
+      'phone': phone.toJson(),
+      'privateNotes': privateNotes,
+      'profilePictureUrl': profilePictureUrl.toJson(),
+      'publicPresentation': publicPresentation,
       'specializations': specializations,
       'spokenLanguages': spokenLanguages,
       'professionalCertificates':
           professionalCertificates.map((i) => i.toJson()).toList(),
-      'profilePictureUrl': profilePictureUrl.toJson(),
-      'meetingType': meetingType.toJson(),
+      'title': title,
+      'userInfoIsVerified': userInfoIsVerified,
     };
   }
 }
@@ -259,6 +275,54 @@ class Location {
       'geolocation': geolocation,
       'stateProvince': stateProvince,
       'zip': zip,
+    };
+  }
+}
+
+class MeetingType {
+  bool presential;
+  bool remote;
+
+  MeetingType({
+    required this.presential,
+    required this.remote,
+  });
+
+  factory MeetingType.fromJson(Map<String, dynamic> json) {
+    return MeetingType(
+      presential: json['presential'],
+      remote: json['remote'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'presential': presential,
+      'remote': remote,
+    };
+  }
+}
+
+class Phone {
+  String areaCode;
+  String number;
+
+  Phone({
+    required this.areaCode,
+    required this.number,
+  });
+
+  factory Phone.fromJson(Map<String, dynamic> json) {
+    return Phone(
+      areaCode: json['areaCode'],
+      number: json['number'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'areaCode': areaCode,
+      'number': number,
     };
   }
 }
@@ -327,30 +391,6 @@ class ProfilePictureUrl {
       'large': large,
       'small': small,
       'thumb': thumb,
-    };
-  }
-}
-
-class MeetingType {
-  bool presential;
-  bool remote;
-
-  MeetingType({
-    required this.presential,
-    required this.remote,
-  });
-
-  factory MeetingType.fromJson(Map<String, dynamic> json) {
-    return MeetingType(
-      presential: json['presential'],
-      remote: json['remote'],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'presential': presential,
-      'remote': remote,
     };
   }
 }

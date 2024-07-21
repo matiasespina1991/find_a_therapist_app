@@ -10,6 +10,7 @@ import '../../../app_settings/app_general_settings.dart';
 import '../../../generated/l10n.dart';
 import '../../../routes/routes.dart';
 import '../../../providers/therapist_provider.dart';
+import '../../../utils/admin/add_current_user_as_therapist.dart';
 
 class WelcomeMainScreen extends ConsumerStatefulWidget {
   const WelcomeMainScreen({super.key});
@@ -44,6 +45,8 @@ class _WelcomeMainScreenState extends ConsumerState<WelcomeMainScreen> {
         buttonText = S.of(context).registerAsTherapistButton;
       }
     }
+
+    // print('therapistState.therapist: ${therapistState.therapist}');
 
     return AppScaffold(
       isProtected: true,
@@ -130,6 +133,11 @@ class _WelcomeMainScreenState extends ConsumerState<WelcomeMainScreen> {
                                 minimumSize: const Size(double.infinity, 47),
                               ),
                               child: Text(buttonText)),
+                          // ElevatedButton(
+                          //     onPressed: () {
+                          //       addTherapist();
+                          //     },
+                          //     child: Text('Add Therapist')),
                           const SizedBox(height: 10),
                         ],
                       ),

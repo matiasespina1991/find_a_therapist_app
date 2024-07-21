@@ -19,12 +19,16 @@ class TherapistNotifier extends StateNotifier<TherapistState> {
   TherapistNotifier() : super(TherapistState());
 
   Future<void> fetchTherapist(String therapistId) async {
+    print('fetchTherapist: $therapistId');
     state = TherapistState(isLoading: true);
+
     try {
       DocumentSnapshot doc = await FirestoreService.instance
           .collection('therapists')
           .doc(therapistId)
           .get();
+
+      print('doc: ${doc.data()}');
 
       if (doc.exists) {
         state = TherapistState(
@@ -32,12 +36,15 @@ class TherapistNotifier extends StateNotifier<TherapistState> {
               doc.data() as Map<String, dynamic>, doc.id),
           isLoading: false,
         );
+        print('b: ${state.therapist}');
       } else {
         state = TherapistState(isLoading: false);
       }
     } catch (e) {
       state = TherapistState(isLoading: false);
     }
+
+    print('c: ${state.therapist}');
   }
 
   void clearTherapist() {
