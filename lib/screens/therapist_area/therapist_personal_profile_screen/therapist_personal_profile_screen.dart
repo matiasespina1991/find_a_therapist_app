@@ -35,6 +35,7 @@ class _TherapistPersonalProfileScreenState
   final _formKey = GlobalKey<FormState>();
 
   late String? therapistId;
+  final TextEditingController _titleController = TextEditingController();
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _birthdayController = TextEditingController();
@@ -245,6 +246,8 @@ class _TherapistPersonalProfileScreenState
         ref.watch(themeProvider).themeMode == ThemeMode.dark;
     final therapistState = ref.watch(therapistProvider);
     final therapist = therapistState.therapist;
+    final labelTextStyle =
+        Theme.of(context).textTheme.titleMedium?.copyWith(fontSize: 15);
 
     if (therapist == null) {
       return const Center(child: CircularProgressIndicator());
@@ -301,8 +304,6 @@ class _TherapistPersonalProfileScreenState
     _remote = therapist.therapistInfo.meetingType.remote;
     _specializations = therapist.therapistInfo.specializations;
     _spokenLanguages = therapist.therapistInfo.spokenLanguages;
-    final labelTextStyle =
-        Theme.of(context).textTheme.titleMedium?.copyWith(fontSize: 15);
 
     return AppScaffold(
       ignoreGlobalPadding: true,
@@ -345,117 +346,133 @@ class _TherapistPersonalProfileScreenState
                     builder:
                         (BuildContext context, BoxConstraints constraints) {
                       double top = constraints.biggest.height;
-                      return FlexibleSpaceBar(
-                        centerTitle: true,
-                        background: Column(
-                          children: [
-                            const SizedBox(height: 20),
-                            Stack(
-                              fit: StackFit.loose,
-                              alignment: Alignment.topCenter,
-                              clipBehavior: Clip.none,
-                              children: [
-                                ClipOval(
-                                  child: Material(
-                                    color: Colors.transparent,
-                                    child: InkWell(
-                                      splashColor: Colors.black.withAlpha(30),
-                                      onTap: _pickImageFromGallery,
-                                      child: AnimatedContainer(
-                                        clipBehavior: Clip.hardEdge,
-                                        duration: Duration(milliseconds: 100),
-                                        margin: EdgeInsets.only(
-                                          top: top > 160.0 ? 0.0 : 17.0,
-                                        ),
-                                        width: top > 160.0 ? 140.0 : 80.0,
-                                        height: top > 160.0 ? 140.0 : 80.0,
-                                        decoration: BoxDecoration(
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color:
-                                                  Colors.grey.withOpacity(0.1),
-                                              blurRadius: 1,
-                                              offset: const Offset(0, 1),
-                                            ),
-                                          ],
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                            color: Colors.white,
-                                            width: 4,
-                                          ),
-                                        ),
-                                        child: Ink(
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            shape: BoxShape.circle,
-                                            image: _selectedImage != null
-                                                ? DecorationImage(
-                                                    image: AssetImage(
-                                                      _selectedImage!.path,
-                                                    ),
-                                                    fit: BoxFit.cover,
-                                                  )
-                                                : therapist
-                                                        .therapistInfo
-                                                        .profilePictureUrl
-                                                        .large
-                                                        .isEmpty
-                                                    ? const DecorationImage(
-                                                        image: AssetImage(
-                                                          'lib/assets/placeholders/default_profile_picture.jpg',
-                                                        ),
-                                                        fit: BoxFit.cover,
-                                                      )
-                                                    : DecorationImage(
-                                                        image:
-                                                            CachedNetworkImageProvider(
-                                                          therapist
-                                                              .therapistInfo
-                                                              .profilePictureUrl
-                                                              .large,
-                                                        ),
-                                                        fit: BoxFit.cover,
-                                                      ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                if (top > 160.0)
-                                  Positioned(
-                                    right: -4,
-                                    top: 10,
-                                    child: Container(
-                                      padding: const EdgeInsets.all(0),
-                                      width: 35,
-                                      height: 35,
-                                      decoration: const BoxDecoration(
-                                        border:
-                                            Border.fromBorderSide(BorderSide(
-                                          color: Colors.black26,
-                                          width: 3,
-                                        )),
-                                        color: Colors.white,
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: Center(
-                                        child: IconButton(
-                                          padding: EdgeInsets.zero,
-                                          icon: const Icon(
-                                            Icons.camera_alt,
-                                            size: 19,
-                                          ),
-                                          color: Colors.black54,
-                                          onPressed:
-                                              _pickImageFromCamera, // Llamar a la nueva función aquí
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            ),
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: isDarkMode
+                              ? ThemeSettings
+                                  .scaffoldBackgroundColor.darkModePrimary
+                              : ThemeSettings
+                                  .scaffoldBackgroundColor.lightModePrimary,
+                          boxShadow: [
+                            if (innerBoxIsScrolled)
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.08),
+                                blurRadius: 1.0,
+                                offset: Offset(0, 0.8),
+                              ),
                           ],
+                        ),
+                        child: FlexibleSpaceBar(
+                          centerTitle: true,
+                          background: Column(
+                            children: [
+                              const SizedBox(height: 20),
+                              Stack(
+                                fit: StackFit.loose,
+                                alignment: Alignment.topCenter,
+                                clipBehavior: Clip.none,
+                                children: [
+                                  ClipOval(
+                                    child: Material(
+                                      color: Colors.transparent,
+                                      child: InkWell(
+                                        splashColor: Colors.black.withAlpha(30),
+                                        onTap: _pickImageFromGallery,
+                                        child: AnimatedContainer(
+                                          clipBehavior: Clip.hardEdge,
+                                          duration: Duration(milliseconds: 100),
+                                          margin: EdgeInsets.only(
+                                            top: top > 160.0 ? 0.0 : 17.0,
+                                          ),
+                                          width: top > 160.0 ? 140.0 : 80.0,
+                                          height: top > 160.0 ? 140.0 : 80.0,
+                                          decoration: BoxDecoration(
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.grey
+                                                    .withOpacity(0.1),
+                                                blurRadius: 1,
+                                                offset: const Offset(0, 1),
+                                              ),
+                                            ],
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                              color: Colors.white,
+                                              width: 4,
+                                            ),
+                                          ),
+                                          child: Ink(
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              shape: BoxShape.circle,
+                                              image: _selectedImage != null
+                                                  ? DecorationImage(
+                                                      image: AssetImage(
+                                                        _selectedImage!.path,
+                                                      ),
+                                                      fit: BoxFit.cover,
+                                                    )
+                                                  : therapist
+                                                          .therapistInfo
+                                                          .profilePictureUrl
+                                                          .large
+                                                          .isEmpty
+                                                      ? const DecorationImage(
+                                                          image: AssetImage(
+                                                            'lib/assets/placeholders/default_profile_picture.jpg',
+                                                          ),
+                                                          fit: BoxFit.cover,
+                                                        )
+                                                      : DecorationImage(
+                                                          image:
+                                                              CachedNetworkImageProvider(
+                                                            therapist
+                                                                .therapistInfo
+                                                                .profilePictureUrl
+                                                                .large,
+                                                          ),
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  if (top > 160.0)
+                                    Positioned(
+                                      right: -4,
+                                      top: 10,
+                                      child: Container(
+                                        padding: const EdgeInsets.all(0),
+                                        width: 35,
+                                        height: 35,
+                                        decoration: const BoxDecoration(
+                                          border:
+                                              Border.fromBorderSide(BorderSide(
+                                            color: Colors.black26,
+                                            width: 3,
+                                          )),
+                                          color: Colors.white,
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: Center(
+                                          child: IconButton(
+                                            padding: EdgeInsets.zero,
+                                            icon: const Icon(
+                                              Icons.camera_alt,
+                                              size: 19,
+                                            ),
+                                            color: Colors.black54,
+                                            onPressed: _pickImageFromCamera,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     },
@@ -495,6 +512,17 @@ class _TherapistPersonalProfileScreenState
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            const SizedBox(height: 16),
+                            Text(
+                              'Title',
+
+                              ///localize
+                              style: labelTextStyle,
+                            ),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: _titleController,
+                            ),
                             const SizedBox(height: 16),
                             Text(
                               S.of(context).firstName,
@@ -765,21 +793,24 @@ class _TherapistPersonalProfileScreenState
               color: Theme.of(context).scaffoldBackgroundColor,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 6.0, // ajusta la intensidad de la sombra
-                  offset: Offset(0, -2), // sombra hacia arriba
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 1.0,
+                  offset: Offset(0, -0.8),
                 ),
               ],
             ),
             child: ElevatedButton(
               onPressed: savingChanges ? null : _saveChanges,
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.symmetric(vertical: 16),
+              ),
               child: savingChanges
                   ? Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(S.of(context).savingChanges),
                         SizedBox(width: 8),
-                        SizedBox(
+                        const SizedBox(
                             width: 12,
                             height: 12,
                             child: LoadingCircle(
@@ -788,9 +819,6 @@ class _TherapistPersonalProfileScreenState
                       ],
                     )
                   : Text(S.of(context).saveChanges),
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(vertical: 16),
-              ),
             ),
           ),
         ],
