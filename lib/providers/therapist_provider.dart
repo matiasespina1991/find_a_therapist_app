@@ -18,6 +18,8 @@ class TherapistNotifier extends StateNotifier<TherapistModel?> {
           .doc(therapistId)
           .get();
 
+      print('Therapist fetched: ${doc.data()}');
+
       if (doc.exists) {
         state =
             TherapistModel.fromJson(doc.data() as Map<String, dynamic>, doc.id);

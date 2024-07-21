@@ -226,6 +226,7 @@ class AuthorizationProvider extends ChangeNotifier {
 
     debugPrint(
         'Current user is a registered User: $_isUser, Current user is a registered Therapist: $_isTherapist');
+
     notifyListeners();
   }
 

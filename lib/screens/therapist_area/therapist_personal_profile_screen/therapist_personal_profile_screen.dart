@@ -7,8 +7,10 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../widgets/AppScaffold/app_scaffold.dart';
 import '../../../app_settings/theme_settings.dart';
 import '../../../providers/providers_all.dart';
+import '../../../providers/therapist_provider.dart';
 import '../../../routes/routes.dart';
 import '../../../utils/functions/images_utils.dart';
+import '../../../models/therapist_model.dart';
 
 class TherapistPersonalProfileScreen extends ConsumerStatefulWidget {
   const TherapistPersonalProfileScreen({super.key});
@@ -52,6 +54,13 @@ class _TherapistPersonalProfileScreenState
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+
+    final _authProvider = ref.read(authProvider);
+    if (_authProvider.user != null) {
+      ref
+          .read(therapistProvider.notifier)
+          .fetchTherapist(_authProvider.user!.uid);
+    }
   }
 
   @override
@@ -121,17 +130,36 @@ class _TherapistPersonalProfileScreenState
     final bool isDarkMode =
         ref.watch(themeProvider).themeMode == ThemeMode.dark;
     final _authProvider = ref.watch(authProvider);
+    final therapist = ref.watch(therapistProvider);
 
-    // Verificación de si es terapeuta
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!_authProvider.isTherapist) {
-        context.go(Routes.welcomeMainScreen.path);
-      }
-    });
+    if (_authProvider.user == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
-    final labelTextStyle = Theme.of(context).textTheme.titleMedium?.copyWith(
-          fontSize: 15,
-        );
+    if (therapist == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    _firstNameController.text = therapist.therapistInfo.firstName;
+    _lastNameController.text = therapist.therapistInfo.lastName;
+    _bioController.text = therapist.therapistInfo.intro;
+    _publicPresentationController.text =
+        therapist.therapistInfo.publicPresentation;
+    _privateNotesController.text = therapist.therapistInfo.privateNotes;
+    _addressController.text = therapist.therapistInfo.location.address;
+    _cityController.text = therapist.therapistInfo.location.city;
+    _countryController.text = therapist.therapistInfo.location.country;
+    _stateProvinceController.text =
+        therapist.therapistInfo.location.stateProvince;
+    _zipController.text = therapist.therapistInfo.location.zip;
+    _profilePictureUrlController.text =
+        therapist.therapistInfo.profilePictureUrl.large;
+    _presential = therapist.therapistInfo.meetingType.presential;
+    _remote = therapist.therapistInfo.meetingType.remote;
+    _specializations = therapist.therapistInfo.specializations;
+    _spokenLanguages = therapist.therapistInfo.spokenLanguages;
+
+    final labelTextStyle = Theme.of(context).textTheme.titleMedium;
 
     return AppScaffold(
       ignoreGlobalPadding: true,
@@ -184,44 +212,47 @@ class _TherapistPersonalProfileScreenState
                               color: Colors.transparent,
                               child: InkWell(
                                 splashColor: Colors.black.withAlpha(30),
-                                onTap: () {
-                                  // Acción al presionar la imagen de perfil
-                                },
-                                child: InkWell(
-                                  splashColor: Colors.black.withAlpha(30),
-                                  onTap: _pickImageFromGallery,
-                                  child: AnimatedContainer(
-                                    clipBehavior: Clip.hardEdge,
-                                    duration: Duration(milliseconds: 100),
-                                    margin: EdgeInsets.only(
-                                      top: top > 160.0 ? 0.0 : 17.0,
+                                onTap: _pickImageFromGallery,
+                                child: AnimatedContainer(
+                                  clipBehavior: Clip.hardEdge,
+                                  duration: Duration(milliseconds: 100),
+                                  margin: EdgeInsets.only(
+                                    top: top > 160.0 ? 0.0 : 17.0,
+                                  ),
+                                  width: top > 160.0 ? 140.0 : 80.0,
+                                  height: top > 160.0 ? 140.0 : 80.0,
+                                  decoration: BoxDecoration(
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.1),
+                                        blurRadius: 1,
+                                        offset: const Offset(0, 1),
+                                      ),
+                                    ],
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Colors.white,
+                                      width: 4,
                                     ),
-                                    width: top > 160.0 ? 140.0 : 80.0,
-                                    height: top > 160.0 ? 140.0 : 80.0,
+                                  ),
+                                  child: Ink(
                                     decoration: BoxDecoration(
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.grey.withOpacity(0.1),
-                                          blurRadius: 1,
-                                          offset: const Offset(0, 1),
-                                        ),
-                                      ],
                                       shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: Colors.white,
-                                        width: 4,
-                                      ),
-                                    ),
-                                    child: Ink(
-                                      decoration: const BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        image: DecorationImage(
-                                          image: AssetImage(
-                                            'lib/assets/placeholders/default_profile_picture.jpg',
-                                          ),
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
+                                      image: therapist.therapistInfo
+                                              .profilePictureUrl.large.isEmpty
+                                          ? const DecorationImage(
+                                              image: AssetImage(
+                                                'lib/assets/placeholders/default_profile_picture.jpg',
+                                              ),
+                                              fit: BoxFit.cover,
+                                            )
+                                          : DecorationImage(
+                                              image: NetworkImage(
+                                                therapist.therapistInfo
+                                                    .profilePictureUrl.large,
+                                              ),
+                                              fit: BoxFit.cover,
+                                            ),
                                     ),
                                   ),
                                 ),
