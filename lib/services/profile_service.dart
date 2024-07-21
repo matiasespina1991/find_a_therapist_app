@@ -10,14 +10,14 @@ final profileServiceProvider = Provider((ref) => ProfileService());
 class ProfileService {
   final FirebaseFirestore _firestore = FirestoreService.instance;
 
-  Future<void> updateProfile({
+  Future<bool> updateProfile({
     required String profileTarget,
     required String userId,
     required Map<String, dynamic> data,
     File? profilePicture,
   }) async {
+    bool success = true;
     try {
-      // Upload profile picture if exists
       if (profilePicture != null) {
         final downloadUrl =
             await uploadProfilePicture(profilePicture, profileTarget);
@@ -29,16 +29,17 @@ class ProfileService {
           };
         }
       }
-      print('data: $data');
-      // Update the profile data in Firestore
       await _firestore
           .collection(profileTarget == 'therapist' ? 'therapists' : 'users')
           .doc(userId)
           .update(data);
       debugPrint('Profile updated successfully.');
+      return success;
     } catch (e) {
       debugPrint('Error updating profile: $e');
-      throw e;
+      success = false;
+
+      return success;
     }
   }
 }

@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:findatherapistapp/services/firestore_service.dart';
 import 'package:findatherapistapp/widgets/LoadingCircle/loading_circle.dart';
 import 'package:findatherapistapp/widgets/NotificationModal/notification_modal.dart';
+import 'package:findatherapistapp/widgets/NotificationSnackbar/notification_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -17,6 +18,7 @@ import 'package:findatherapistapp/providers/therapist_provider.dart';
 import 'package:findatherapistapp/routes/routes.dart';
 import 'package:findatherapistapp/services/profile_service.dart';
 
+import '../../../generated/l10n.dart';
 import '../../../utils/functions/profile_utils.dart';
 
 class TherapistPersonalProfileScreen extends ConsumerStatefulWidget {
@@ -57,9 +59,11 @@ class _TherapistPersonalProfileScreenState
   File? _selectedImage;
   bool uploadingProfilePicture = false;
   bool savingChanges = false;
+  bool _showShadow = true;
 
   late TabController _tabController;
 
+  @override
   @override
   void initState() {
     super.initState();
@@ -96,6 +100,11 @@ class _TherapistPersonalProfileScreenState
       setState(() {
         _selectedImage = imageFile;
       });
+
+      NotificationSnackbar.showSnackBar(
+          message: S.of(context).imageUploadedSuccessfully,
+          variant: 'success',
+          duration: 'short');
       final downloadUrl =
           await uploadProfilePicture(_selectedImage!, 'therapist');
 
@@ -104,7 +113,7 @@ class _TherapistPersonalProfileScreenState
           _profilePictureUrlController.text = downloadUrl;
         });
 
-        debugPrint('Image uploaded: $downloadUrl');
+        debugPrint('Image uploaded successfully');
       } else {
         debugPrint('Error uploading image');
       }
@@ -112,12 +121,15 @@ class _TherapistPersonalProfileScreenState
   }
 
   Future<void> _pickImageFromCamera() async {
-    final imageFile = await pickImage(ImageSource.camera);
+    final imageFile = await pickImage(ImageSource.camera,
+        preferredCamera: CameraDevice.front);
 
     if (imageFile != null) {
       setState(() {
         _selectedImage = imageFile;
       });
+
+      debugPrint('Image uploaded successfully');
       final downloadUrl =
           await uploadProfilePicture(_selectedImage!, 'therapist');
 
@@ -126,18 +138,21 @@ class _TherapistPersonalProfileScreenState
           _profilePictureUrlController.text = downloadUrl;
         });
 
-        debugPrint('Image uploaded: $downloadUrl');
+        NotificationSnackbar.showSnackBar(
+            message: S.of(context).imageUploadedSuccessfully,
+            variant: 'success',
+            duration: 'short');
       }
     }
   }
 
   Future<void> _saveChanges() async {
+    bool isDarkMode = ref.watch(themeProvider).themeMode == ThemeMode.dark;
     setState(() {
       savingChanges = true;
     });
     final profileService = ref.read(profileServiceProvider);
 
-    // Obtener el documento actual del terapeuta
     final currentDoc = await FirestoreService.instance
         .collection('therapists')
         .doc(therapistId)
@@ -183,22 +198,36 @@ class _TherapistPersonalProfileScreenState
     };
 
     try {
-      await profileService.updateProfile(
+      bool therapistDataUploadedSuccesfully =
+          await profileService.updateProfile(
         profileTarget: 'therapist',
         userId: therapistId!,
         data: {'therapistInfo': updatedData},
         profilePicture: _selectedImage,
       );
-      debugPrint('Profile updated successfully');
 
-      ref.read(therapistProvider.notifier).updateTherapistInfo(updatedData);
+      if (therapistDataUploadedSuccesfully) {
+        debugPrint('Profile updated successfully');
 
-      if (mounted) {
-        NotificationModal.successfulModal(
-          context: context,
-          title: 'Profile saved!',
-          message: 'Your profile has been successfully updated.',
-        );
+        ref.read(therapistProvider.notifier).updateTherapistInfo(updatedData);
+
+        if (mounted) {
+          NotificationModal.successfulModal(
+            context: context,
+            title: S.of(context).profileSaved,
+            message: S.of(context).profileSavedMessage,
+          );
+        }
+      } else {
+        debugPrint('Error updating profile');
+        if (mounted) {
+          NotificationModal.errorModal(
+            icon: isDarkMode ? Icons.error_outline : Icons.error,
+            context: context,
+            title: S.of(context).errorSavingProfile,
+            message: S.of(context).errorSavingProfileMessage,
+          );
+        }
       }
     } catch (e) {
       debugPrint('Error updating profile: $e');
@@ -229,6 +258,14 @@ class _TherapistPersonalProfileScreenState
     }
     if (_lastNameController.text.isEmpty) {
       _lastNameController.text = therapist.therapistInfo.lastName;
+    }
+
+    if (_birthdayController.text.isEmpty) {
+      _birthdayController.text = therapist.therapistInfo.birthday;
+    }
+
+    if (_emailController.text.isEmpty) {
+      _emailController.text = therapist.therapistInfo.email;
     }
     if (_bioController.text.isEmpty) {
       _bioController.text = therapist.therapistInfo.intro;
@@ -264,7 +301,8 @@ class _TherapistPersonalProfileScreenState
     _remote = therapist.therapistInfo.meetingType.remote;
     _specializations = therapist.therapistInfo.specializations;
     _spokenLanguages = therapist.therapistInfo.spokenLanguages;
-    final labelTextStyle = Theme.of(context).textTheme.titleMedium;
+    final labelTextStyle =
+        Theme.of(context).textTheme.titleMedium?.copyWith(fontSize: 15);
 
     return AppScaffold(
       ignoreGlobalPadding: true,
@@ -277,7 +315,7 @@ class _TherapistPersonalProfileScreenState
       },
       hideFloatingSpeedDialMenu: true,
       scrollPhysics: const NeverScrollableScrollPhysics(),
-      appBarTitle: "Your Therapist Profile",
+      appBarTitle: S.of(context).yourTherapistProfile,
       centerTitle: true,
       useTopAppBar: true,
       actions: [
@@ -432,11 +470,11 @@ class _TherapistPersonalProfileScreenState
                     labelStyle: Theme.of(context).textTheme.titleMedium,
                     labelPadding:
                         const EdgeInsets.symmetric(vertical: 0, horizontal: 12),
-                    tabs: const [
+                    tabs: [
                       Tab(
-                        text: 'Personal Info',
+                        text: S.of(context).personalInfo,
                       ),
-                      Tab(text: 'About me'),
+                      Tab(text: S.of(context).aboutMe),
                     ],
                   ),
                 ),
@@ -459,7 +497,7 @@ class _TherapistPersonalProfileScreenState
                           children: [
                             const SizedBox(height: 16),
                             Text(
-                              'First Name',
+                              S.of(context).firstName,
                               style: labelTextStyle,
                             ),
                             const SizedBox(height: 8),
@@ -467,14 +505,14 @@ class _TherapistPersonalProfileScreenState
                               controller: _firstNameController,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Please enter your full name';
+                                  return S.of(context).pleaseEnterYourFullName;
                                 }
                                 return null;
                               },
                             ),
                             const SizedBox(height: 10),
                             Text(
-                              'Last Name',
+                              S.of(context).lastName,
                               style: labelTextStyle,
                             ),
                             const SizedBox(height: 8),
@@ -482,14 +520,14 @@ class _TherapistPersonalProfileScreenState
                               controller: _lastNameController,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Please enter your full name';
+                                  return S.of(context).pleaseEnterYourFullName;
                                 }
                                 return null;
                               },
                             ),
                             const SizedBox(height: 10),
                             Text(
-                              'Birthday',
+                              S.of(context).birthday,
                               style: labelTextStyle,
                             ),
                             const SizedBox(height: 8),
@@ -504,14 +542,14 @@ class _TherapistPersonalProfileScreenState
                               },
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Please enter your birthday';
+                                  return S.of(context).pleaseEnterYourBirthday;
                                 }
                                 return null;
                               },
                             ),
                             const SizedBox(height: 10),
                             Text(
-                              'Email',
+                              S.of(context).email,
                               style: labelTextStyle,
                             ),
                             const SizedBox(height: 8),
@@ -520,14 +558,14 @@ class _TherapistPersonalProfileScreenState
                               keyboardType: TextInputType.emailAddress,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Please enter your email';
+                                  return S.of(context).pleaseEnterYourEmail;
                                 }
                                 return null;
                               },
                             ),
                             const SizedBox(height: 10),
                             Text(
-                              'Phone',
+                              S.of(context).phone,
                               style: labelTextStyle,
                             ),
                             const SizedBox(height: 8),
@@ -539,14 +577,16 @@ class _TherapistPersonalProfileScreenState
                               keyboardType: TextInputType.phone,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Please enter your phone number';
+                                  return S
+                                      .of(context)
+                                      .pleaseEnterYourPhoneNumber;
                                 }
                                 return null;
                               },
                             ),
                             const SizedBox(height: 10),
                             Text(
-                              'Address',
+                              S.of(context).address,
                               style: labelTextStyle,
                             ),
                             const SizedBox(height: 8),
@@ -554,14 +594,14 @@ class _TherapistPersonalProfileScreenState
                               controller: _addressController,
                             ),
                             const SizedBox(height: 10),
-                            Text('City', style: labelTextStyle),
+                            Text(S.of(context).city, style: labelTextStyle),
                             const SizedBox(height: 8),
                             TextFormField(
                               controller: _cityController,
                             ),
                             const SizedBox(height: 10),
                             Text(
-                              'Country',
+                              S.of(context).country,
                               style: labelTextStyle,
                             ),
                             const SizedBox(height: 8),
@@ -570,7 +610,7 @@ class _TherapistPersonalProfileScreenState
                             ),
                             const SizedBox(height: 10),
                             Text(
-                              'State/Province',
+                              S.of(context).stateProvince,
                               style: labelTextStyle,
                             ),
                             const SizedBox(height: 8),
@@ -579,7 +619,7 @@ class _TherapistPersonalProfileScreenState
                             ),
                             const SizedBox(height: 10),
                             Text(
-                              'Zip Code',
+                              S.of(context).zipCode,
                               style: labelTextStyle,
                             ),
                             const SizedBox(height: 8),
@@ -588,7 +628,7 @@ class _TherapistPersonalProfileScreenState
                             ),
                             const SizedBox(height: 10),
                             Text(
-                              'Add Specialization/s',
+                              S.of(context).addSpecializations,
                               style: labelTextStyle,
                             ),
                             const SizedBox(height: 8),
@@ -604,7 +644,7 @@ class _TherapistPersonalProfileScreenState
                             ),
                             const SizedBox(height: 10),
                             Text(
-                              'Add Spoken Language/s',
+                              S.of(context).addSpokenLanguages,
                               style: labelTextStyle,
                             ),
                             const SizedBox(height: 8),
@@ -630,7 +670,7 @@ class _TherapistPersonalProfileScreenState
                                   },
                                 ),
                                 Text(
-                                  'Presential',
+                                  S.of(context).presential,
                                   style:
                                       Theme.of(context).textTheme.titleMedium,
                                 ),
@@ -647,7 +687,7 @@ class _TherapistPersonalProfileScreenState
                                   },
                                 ),
                                 Text(
-                                  'Remote',
+                                  S.of(context).remote,
                                   style:
                                       Theme.of(context).textTheme.titleMedium,
                                 ),
@@ -668,7 +708,7 @@ class _TherapistPersonalProfileScreenState
                         children: [
                           SizedBox(height: 16),
                           Text(
-                            'Intro',
+                            S.of(context).intro,
                             style: labelTextStyle,
                           ),
                           SizedBox(height: 8),
@@ -677,14 +717,14 @@ class _TherapistPersonalProfileScreenState
                             maxLines: 3,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Please enter your intro';
+                                return S.of(context).pleaseEnterYourIntro;
                               }
                               return null;
                             },
                           ),
                           const SizedBox(height: 10),
                           Text(
-                            'Public Presentation',
+                            S.of(context).publicPresentation,
                             style: labelTextStyle,
                           ),
                           SizedBox(height: 8),
@@ -693,14 +733,16 @@ class _TherapistPersonalProfileScreenState
                             maxLines: 8,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Please enter your public presentation';
+                                return S
+                                    .of(context)
+                                    .pleaseEnterYourPublicPresentation;
                               }
                               return null;
                             },
                           ),
                           const SizedBox(height: 10),
                           Text(
-                            'Private Notes',
+                            S.of(context).privateNotes,
                             style: labelTextStyle,
                           ),
                           SizedBox(height: 8),
@@ -719,13 +761,23 @@ class _TherapistPersonalProfileScreenState
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16.0),
+            decoration: BoxDecoration(
+              color: Theme.of(context).scaffoldBackgroundColor,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 6.0, // ajusta la intensidad de la sombra
+                  offset: Offset(0, -2), // sombra hacia arriba
+                ),
+              ],
+            ),
             child: ElevatedButton(
               onPressed: savingChanges ? null : _saveChanges,
               child: savingChanges
                   ? Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Text('Saving Changes...'),
+                      children: [
+                        Text(S.of(context).savingChanges),
                         SizedBox(width: 8),
                         SizedBox(
                             width: 12,
@@ -735,7 +787,7 @@ class _TherapistPersonalProfileScreenState
                             ))
                       ],
                     )
-                  : const Text('Save Changes'),
+                  : Text(S.of(context).saveChanges),
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.symmetric(vertical: 16),
               ),

@@ -990,6 +990,16 @@ class S {
     );
   }
 
+  /// `Go to my therapist profile`
+  String get goToMyTherapistProfileButton {
+    return Intl.message(
+      'Go to my therapist profile',
+      name: 'goToMyTherapistProfileButton',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Welcome to `
   String get welcomeToPrefix {
     return Intl.message(
@@ -1530,6 +1540,16 @@ class S {
     );
   }
 
+  /// `Image uploaded successfully.`
+  String get imageUploadedSuccessfully {
+    return Intl.message(
+      'Image uploaded successfully.',
+      name: 'imageUploadedSuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Your Therapist Profile`
   String get yourTherapistProfile {
     return Intl.message(
@@ -1770,6 +1790,26 @@ class S {
     );
   }
 
+  /// `Error saving profile`
+  String get errorSavingProfile {
+    return Intl.message(
+      'Error saving profile',
+      name: 'errorSavingProfile',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `There was an error trying to your profile. Please try again later.`
+  String get errorSavingProfileMessage {
+    return Intl.message(
+      'There was an error trying to your profile. Please try again later.',
+      name: 'errorSavingProfileMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Error uploading image`
   String get errorUploadingImage {
     return Intl.message(
@@ -1835,6 +1875,16 @@ class S {
     return Intl.message(
       'Settings',
       name: 'settings',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Loading...`
+  String get loading {
+    return Intl.message(
+      'Loading...',
+      name: 'loading',
       desc: '',
       args: [],
     );

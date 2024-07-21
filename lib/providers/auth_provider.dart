@@ -115,7 +115,13 @@ class AuthorizationProvider extends ChangeNotifier {
   }
 
   Future<void> setAuthToken(String token) async {
-    await storage.write(key: 'auth_token', value: token);
+    try {
+      await storage.write(key: 'auth_token', value: token);
+      _authToken = token;
+      notifyListeners();
+    } catch (error) {
+      debugPrint('Error during setting auth token: $error');
+    }
     _authToken = token;
     notifyListeners();
   }

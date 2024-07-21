@@ -95,6 +95,7 @@
         "welcomeScreenSubtitleDescription": "Your AI-powered partner that helps you find the right therapist for you and your specific needs - worldwide!",
       "findYourTherapistButton": "Find your therapist",
       "registerAsTherapistButton": "Register as a therapist",
+      "goToMyTherapistProfileButton": "Go to my therapist profile",
       "welcomeToPrefix": "Welcome to ",
       "aspectsDetectedByAi": "Aspects detected by AI:",
       "findingMatches": "Finding matches...",
@@ -155,7 +156,7 @@
                      "meetingType": "Meeting type",
                      "allTherapists": "All therapists",
 
-
+            "imageUploadedSuccessfully": "Image uploaded successfully.",
             "yourTherapistProfile": "Your Therapist Profile",
              "personalInfo": "Personal Info",
              "aboutMe": "About me",
@@ -186,13 +187,16 @@
              "savingChanges": "Saving Changes...",
              "profileSaved": "Profile saved!",
              "profileSavedMessage": "Your profile has been successfully updated.",
+             "errorSavingProfile": "Error saving profile",
+             "errorSavingProfileMessage": "There was an error trying to your profile. Please try again later.",
              "errorUploadingImage": "Error uploading image",
              "imageUploaded": "Image uploaded",
              "yourProfile": "Your profile",
              "uploadingImage": "Uploading image...",
              "errorUpdatingProfile": "Error updating profile",
              "profileUpdatedSuccessfully": "Profile updated successfully",
-             "settings": "Settings"
+             "settings": "Settings",
+             "loading": "Loading..."
 
 
 

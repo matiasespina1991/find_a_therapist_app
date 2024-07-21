@@ -37,16 +37,15 @@ class _WelcomeMainScreenState extends ConsumerState<WelcomeMainScreen> {
     final double deviceHeight = MediaQuery.of(context).size.height;
     final therapistState = ref.watch(therapistProvider);
 
-    String buttonText = 'loading...';
+    String goToTherapistAreaButtonText = S.of(context).loading;
     if (!therapistState.isLoading) {
       if (therapistState.therapist != null) {
-        buttonText = 'Go to my therapist profile';
+        goToTherapistAreaButtonText =
+            S.of(context).goToMyTherapistProfileButton;
       } else {
-        buttonText = S.of(context).registerAsTherapistButton;
+        goToTherapistAreaButtonText = S.of(context).registerAsTherapistButton;
       }
     }
-
-    // print('therapistState.therapist: ${therapistState.therapist}');
 
     return AppScaffold(
       isProtected: true,
@@ -132,7 +131,12 @@ class _WelcomeMainScreenState extends ConsumerState<WelcomeMainScreen> {
                               style: ElevatedButton.styleFrom(
                                 minimumSize: const Size(double.infinity, 47),
                               ),
-                              child: Text(buttonText)),
+                              child: AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 500),
+                                child: therapistState.isLoading
+                                    ? const CircularProgressIndicator()
+                                    : Text(goToTherapistAreaButtonText),
+                              )),
                           // ElevatedButton(
                           //     onPressed: () {
                           //       addTherapist();

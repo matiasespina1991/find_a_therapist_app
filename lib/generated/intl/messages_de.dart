@@ -63,6 +63,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "emailLabel": MessageLookupByLibrary.simpleMessage("E-MAIL"),
         "emptyFields":
             MessageLookupByLibrary.simpleMessage("Einige Felder sind leer"),
+        "errorSavingProfile": MessageLookupByLibrary.simpleMessage(
+            "Fehler beim Speichern des Profils"),
+        "errorSavingProfileMessage": MessageLookupByLibrary.simpleMessage(
+            "Es gab einen Fehler beim Speichern Ihres Profils. Bitte versuchen Sie es erneut."),
         "errorSigningInWithGoogleSnackbarMessage":
             MessageLookupByLibrary.simpleMessage(
                 "Es gab einen Fehler bei der Anmeldung mit Google. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support."),
@@ -118,6 +122,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Passwort vergessen?"),
         "generativeAiErrorMessage": MessageLookupByLibrary.simpleMessage(
             "Es gab einen Fehler beim Versuch, Ihre Anfrage zu verarbeiten. Wir haben das Problem gemeldet. Bitte versuchen Sie es später erneut."),
+        "goToMyTherapistProfileButton": MessageLookupByLibrary.simpleMessage(
+            "Zu meinem Therapeutenprofil gehen"),
         "goToNextStep":
             MessageLookupByLibrary.simpleMessage("Zum nächsten Schritt gehen"),
         "gotIt": MessageLookupByLibrary.simpleMessage("Verstanden"),
@@ -125,6 +131,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Startbildschirm"),
         "imageUploaded":
             MessageLookupByLibrary.simpleMessage("Bild hochgeladen"),
+        "imageUploadedSuccessfully": MessageLookupByLibrary.simpleMessage(
+            "Bild erfolgreich hochgeladen."),
         "inputsSectionTitle": MessageLookupByLibrary.simpleMessage("Eingaben"),
         "intro": MessageLookupByLibrary.simpleMessage("Einführung"),
         "invalidEmailMessage": MessageLookupByLibrary.simpleMessage(
@@ -142,6 +150,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "lightMode": MessageLookupByLibrary.simpleMessage("Hellmodus"),
         "lightModeDarkMode":
             MessageLookupByLibrary.simpleMessage("Hell-/Dunkelmodus"),
+        "loading": MessageLookupByLibrary.simpleMessage("Laden..."),
         "location": MessageLookupByLibrary.simpleMessage("Ort"),
         "loginButton": MessageLookupByLibrary.simpleMessage("Anmelden"),
         "loginErrorMessage": MessageLookupByLibrary.simpleMessage(

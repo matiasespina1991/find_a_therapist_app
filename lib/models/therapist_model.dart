@@ -184,6 +184,7 @@ class Score {
 class TherapistInfo {
   String birthday;
   String firstName;
+  String email;
   String intro;
   String lastName;
   Location location;
@@ -201,6 +202,7 @@ class TherapistInfo {
   TherapistInfo({
     required this.birthday,
     required this.firstName,
+    required this.email,
     required this.intro,
     required this.lastName,
     required this.location,
@@ -222,6 +224,7 @@ class TherapistInfo {
       firstName: json['firstName'],
       intro: json['intro'],
       lastName: json['lastName'],
+      email: json['email'],
       location: Location.fromJson(json['location']),
       meetingType: MeetingType.fromJson(json['meetingType']),
       phone: Phone.fromJson(json['phone']),
@@ -242,6 +245,7 @@ class TherapistInfo {
     return {
       'birthday': birthday,
       'firstName': firstName,
+      'email': email,
       'intro': intro,
       'lastName': lastName,
       'location': location.toJson(),

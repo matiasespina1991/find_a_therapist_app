@@ -96,6 +96,9 @@
           "welcomeScreenSubtitleDescription": "Dein AI-Partner, der dir hilft, den richtigen Therapeuten für dich und deine spezifischen Bedürfnisse zu finden, egal wo auf der Welt!",
           "findYourTherapistButton": "Finde deinen Therapeuten",
          "registerAsTherapistButton": "Als Therapeut registrieren",
+         "goToMyTherapistProfileButton": "Zu meinem Therapeutenprofil gehen",
+
+
          "welcomeToPrefix": "Willkommen bei ",
          "aspectsDetectedByAi": "Aspekte, die von AI erkannt wurden:",
           "findingMatches": "Suche...",
@@ -153,7 +156,9 @@
             "presential": "Präsent",
             "meetingType": "Treffen",
             "allTherapists": "Alle Therapeuten",
-
+            "imageUploadedSuccessfully": "Bild erfolgreich hochgeladen.",
+              "errorSavingProfile": "Fehler beim Speichern des Profils",
+              "errorSavingProfileMessage":  "Es gab einen Fehler beim Speichern Ihres Profils. Bitte versuchen Sie es erneut.",
              "yourTherapistProfile": "Dein Therapeutenprofil",
               "personalInfo": "Persönliche Informationen",
               "aboutMe": "Über mich",
@@ -190,5 +195,6 @@
               "uploadingImage": "Bild wird hochgeladen...",
               "errorUpdatingProfile": "Fehler beim Aktualisieren des Profils",
               "profileUpdatedSuccessfully": "Profil erfolgreich aktualisiert",
-              "settings": "Einstellungen"
+              "settings": "Einstellungen",
+              "loading": "Laden..."
 }

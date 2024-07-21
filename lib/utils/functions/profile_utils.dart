@@ -21,9 +21,12 @@ Future<String?> uploadProfilePicture(
   }
 }
 
-Future<File?> pickImage(ImageSource source) async {
+Future<File?> pickImage(ImageSource source,
+    {CameraDevice? preferredCamera}) async {
   final picker = ImagePicker();
-  final pickedFile = await picker.pickImage(source: source);
+  final pickedFile = await picker.pickImage(
+      source: source,
+      preferredCameraDevice: preferredCamera ?? CameraDevice.rear);
 
   if (pickedFile != null) {
     return File(pickedFile.path);

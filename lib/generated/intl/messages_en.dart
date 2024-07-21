@@ -61,6 +61,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "emailLabel": MessageLookupByLibrary.simpleMessage("EMAIL"),
         "emptyFields":
             MessageLookupByLibrary.simpleMessage("Some fields are empty"),
+        "errorSavingProfile":
+            MessageLookupByLibrary.simpleMessage("Error saving profile"),
+        "errorSavingProfileMessage": MessageLookupByLibrary.simpleMessage(
+            "There was an error trying to your profile. Please try again later."),
         "errorSigningInWithGoogleSnackbarMessage":
             MessageLookupByLibrary.simpleMessage(
                 "There was an error signing in with Google. Please try again or contact support."),
@@ -115,10 +119,14 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Forgot your password?"),
         "generativeAiErrorMessage": MessageLookupByLibrary.simpleMessage(
             "An error occurred while trying to process your request. We have reported the issue. Please try again later."),
+        "goToMyTherapistProfileButton":
+            MessageLookupByLibrary.simpleMessage("Go to my therapist profile"),
         "goToNextStep": MessageLookupByLibrary.simpleMessage("Go to next step"),
         "gotIt": MessageLookupByLibrary.simpleMessage("Got it"),
         "homeScreenTitle": MessageLookupByLibrary.simpleMessage("Home Screen"),
         "imageUploaded": MessageLookupByLibrary.simpleMessage("Image uploaded"),
+        "imageUploadedSuccessfully": MessageLookupByLibrary.simpleMessage(
+            "Image uploaded successfully."),
         "inputsSectionTitle": MessageLookupByLibrary.simpleMessage("Inputs"),
         "intro": MessageLookupByLibrary.simpleMessage("Intro"),
         "invalidEmailMessage": MessageLookupByLibrary.simpleMessage(
@@ -136,6 +144,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "lightMode": MessageLookupByLibrary.simpleMessage("Light Mode"),
         "lightModeDarkMode":
             MessageLookupByLibrary.simpleMessage("Light Mode/Dark Mode"),
+        "loading": MessageLookupByLibrary.simpleMessage("Loading..."),
         "location": MessageLookupByLibrary.simpleMessage("Location"),
         "loginButton": MessageLookupByLibrary.simpleMessage("Login"),
         "loginErrorMessage": MessageLookupByLibrary.simpleMessage(

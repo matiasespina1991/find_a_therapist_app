@@ -57,7 +57,8 @@ class NotificationModal {
     required BuildContext context,
     required String title,
     required String message,
-    required VoidCallback onTapConfirm,
+    IconData? icon,
+    VoidCallback? onTapConfirm,
   }) {
     showModalBottomSheet(
       enableDrag: false,
@@ -72,7 +73,10 @@ class NotificationModal {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  Text(':(', style: TextStyle(fontSize: 35)),
+                  icon != null
+                      ? Container(
+                          child: Icon(icon, size: 65, color: Colors.red))
+                      : Text(':(', style: TextStyle(fontSize: 35)),
                   const SizedBox(height: 20),
                   Text(title, style: Theme.of(context).textTheme.headlineSmall),
                   const SizedBox(height: 8),
@@ -85,7 +89,9 @@ class NotificationModal {
                     child: ElevatedButton(
                       onPressed: () {
                         context.pop();
-                        onTapConfirm();
+                        if (onTapConfirm != null) {
+                          onTapConfirm();
+                        }
                       },
                       child: Text(S.of(context).gotIt),
                     ),

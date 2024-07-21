@@ -28,9 +28,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "_locale": MessageLookupByLibrary.simpleMessage("es"),
         "aboutMe": MessageLookupByLibrary.simpleMessage("Sobre mí"),
         "addSpecializations":
-            MessageLookupByLibrary.simpleMessage("Agregar Especialización/es"),
+            MessageLookupByLibrary.simpleMessage("Agregar especialización/es"),
         "addSpokenLanguages":
-            MessageLookupByLibrary.simpleMessage("Agregar Idioma/s Hablado/s"),
+            MessageLookupByLibrary.simpleMessage("Agregar idioma/s hablado/s"),
         "address": MessageLookupByLibrary.simpleMessage("Dirección"),
         "all": MessageLookupByLibrary.simpleMessage("Todos"),
         "allTherapists":
@@ -40,7 +40,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "back": MessageLookupByLibrary.simpleMessage("Atrás"),
         "backToInternetConnection":
             MessageLookupByLibrary.simpleMessage("Estás de vuelta en línea"),
-        "birthday": MessageLookupByLibrary.simpleMessage("Fecha de Nacimiento"),
+        "birthday": MessageLookupByLibrary.simpleMessage("Fecha de nacimiento"),
         "buttonsSectionTitle": MessageLookupByLibrary.simpleMessage("Botones"),
         "cancel": MessageLookupByLibrary.simpleMessage("Cancelar"),
         "cancelButton": MessageLookupByLibrary.simpleMessage("Cancelar"),
@@ -58,11 +58,15 @@ class MessageLookup extends MessageLookupByLibrary {
         "darkMode": MessageLookupByLibrary.simpleMessage("Modo oscuro"),
         "elevatedButtonLabel":
             MessageLookupByLibrary.simpleMessage("Botón Elevado"),
-        "email": MessageLookupByLibrary.simpleMessage("Correo Electrónico"),
+        "email": MessageLookupByLibrary.simpleMessage("E-Mail"),
         "emailHintText": MessageLookupByLibrary.simpleMessage("Email"),
         "emailLabel": MessageLookupByLibrary.simpleMessage("EMAIL"),
         "emptyFields":
             MessageLookupByLibrary.simpleMessage("Algunos campos están vacíos"),
+        "errorSavingProfile":
+            MessageLookupByLibrary.simpleMessage("Error al guardar el perfil"),
+        "errorSavingProfileMessage": MessageLookupByLibrary.simpleMessage(
+            "Hubo un error al guardar tu perfil. Por favor, inténtalo de nuevo más tarde."),
         "errorSigningInWithGoogleSnackbarMessage":
             MessageLookupByLibrary.simpleMessage(
                 "Hubo un error al iniciar sesión con Google. Por favor, inténtelo de nuevo o contacte con el soporte."),
@@ -119,12 +123,16 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("¿Olvidaste tu contraseña?"),
         "generativeAiErrorMessage": MessageLookupByLibrary.simpleMessage(
             "Ocurrió un error al intentar procesar su solicitud. Hemos reportado el problema. Por favor, inténtelo nuevamente más tarde."),
+        "goToMyTherapistProfileButton":
+            MessageLookupByLibrary.simpleMessage("Ir a mi perfil de terapeuta"),
         "goToNextStep":
             MessageLookupByLibrary.simpleMessage("Ir al siguiente paso"),
         "gotIt": MessageLookupByLibrary.simpleMessage("Entendido"),
         "homeScreenTitle":
             MessageLookupByLibrary.simpleMessage("Pantalla Principal"),
         "imageUploaded": MessageLookupByLibrary.simpleMessage("Imagen subida"),
+        "imageUploadedSuccessfully":
+            MessageLookupByLibrary.simpleMessage("Imagen subida exitosamente."),
         "inputsSectionTitle": MessageLookupByLibrary.simpleMessage("Entradas"),
         "intro": MessageLookupByLibrary.simpleMessage("Introducción"),
         "invalidEmailMessage": MessageLookupByLibrary.simpleMessage(
@@ -142,6 +150,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "lightMode": MessageLookupByLibrary.simpleMessage("Modo claro"),
         "lightModeDarkMode":
             MessageLookupByLibrary.simpleMessage("Modo claro / modo oscuro"),
+        "loading": MessageLookupByLibrary.simpleMessage("Cargando..."),
         "location": MessageLookupByLibrary.simpleMessage("Ubicación"),
         "loginButton": MessageLookupByLibrary.simpleMessage("Iniciar sesión"),
         "loginErrorMessage": MessageLookupByLibrary.simpleMessage(
@@ -194,7 +203,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "passwordHintText": MessageLookupByLibrary.simpleMessage("Contraseña"),
         "passwordLabel": MessageLookupByLibrary.simpleMessage("CONTRASEÑA"),
         "personalInfo":
-            MessageLookupByLibrary.simpleMessage("Información Personal"),
+            MessageLookupByLibrary.simpleMessage("Datos personales"),
         "phone": MessageLookupByLibrary.simpleMessage("Teléfono"),
         "pleaseEnterYourBirthday": MessageLookupByLibrary.simpleMessage(
             "Por favor, ingresa tu fecha de nacimiento"),
@@ -218,7 +227,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "preferredLanguage":
             MessageLookupByLibrary.simpleMessage("Idioma/s preferido/s"),
         "presential": MessageLookupByLibrary.simpleMessage("Presencial"),
-        "privateNotes": MessageLookupByLibrary.simpleMessage("Notas Privadas"),
+        "privateNotes": MessageLookupByLibrary.simpleMessage("Notas privadas"),
         "professionalCertificates":
             MessageLookupByLibrary.simpleMessage("Certificados"),
         "profileSaved":
@@ -228,7 +237,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "profileUpdatedSuccessfully": MessageLookupByLibrary.simpleMessage(
             "Perfil actualizado exitosamente"),
         "publicPresentation":
-            MessageLookupByLibrary.simpleMessage("Presentación Pública"),
+            MessageLookupByLibrary.simpleMessage("Presentación pública"),
         "redoRequestButton":
             MessageLookupByLibrary.simpleMessage("Rehacer solicitud"),
         "registerAsTherapistButton":
@@ -236,9 +245,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "remote": MessageLookupByLibrary.simpleMessage("Remoto"),
         "requestTextFieldHintText": MessageLookupByLibrary.simpleMessage(
             "Escribe tu solicitud aquí - Proporciona tanta información como sea posible sobre tus necesidades, desafíos y lo que buscas en un terapeuta.  \n\np.ej:   \nHola, soy una persona de 32 años que busca un terapeuta que pueda relacionarse con mis experiencias y brindar terapia culturalmente sensible. He enfrentado dificultades con la ansiedad, baja autoestima y últimamente me ha sido difícil socializar. Necesito a alguien que se especialice en Terapia Cognitivo-Conductual, y que tenga conocimientos en astrología sería un plus. Preferiría un terapeuta de color y..."),
-        "saveChanges": MessageLookupByLibrary.simpleMessage("Guardar Cambios"),
+        "saveChanges": MessageLookupByLibrary.simpleMessage("Guardar cambios"),
         "savingChanges":
-            MessageLookupByLibrary.simpleMessage("Guardando Cambios..."),
+            MessageLookupByLibrary.simpleMessage("Guardando gambios..."),
         "score": MessageLookupByLibrary.simpleMessage("Valoración"),
         "searchPrefix": MessageLookupByLibrary.simpleMessage("Buscar "),
         "seeResultsButton":
@@ -300,7 +309,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Campo de Texto de Ejemplo"),
         "theRequestInputShouldNotBeEmpty": MessageLookupByLibrary.simpleMessage(
             "El cuadro del texto de solicitud no debe estar vacío."),
-        "therapistAboutMe": MessageLookupByLibrary.simpleMessage("Sobre mí"),
+        "therapistAboutMe":
+            MessageLookupByLibrary.simpleMessage("Acerca de mí"),
         "therapistProfile":
             MessageLookupByLibrary.simpleMessage("Perfil de terapeuta"),
         "unableToLoginNoInternet":
@@ -325,7 +335,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "yourProfile": MessageLookupByLibrary.simpleMessage("Tu perfil"),
         "yourRequest": MessageLookupByLibrary.simpleMessage("Tu solicitud"),
         "yourTherapistProfile":
-            MessageLookupByLibrary.simpleMessage("Tu Perfil de Terapeuta"),
-        "zipCode": MessageLookupByLibrary.simpleMessage("Código Postal")
+            MessageLookupByLibrary.simpleMessage("Tu perfil de terapeuta"),
+        "zipCode": MessageLookupByLibrary.simpleMessage("Código postal")
       };
 }
