@@ -1,5 +1,3 @@
-// lib/screens/therapist_area/therapist_personal_profile_screen.dart
-
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -17,9 +15,12 @@ import 'package:findatherapistapp/providers/providers_all.dart';
 import 'package:findatherapistapp/providers/therapist_provider.dart';
 import 'package:findatherapistapp/routes/routes.dart';
 import 'package:findatherapistapp/services/profile_service.dart';
-
+import 'package:country_picker/country_picker.dart';
+import 'package:dash_flags/dash_flags.dart' as dashFlags;
 import '../../../generated/l10n.dart';
 import '../../../utils/functions/profile_utils.dart';
+import '../../../utils/functions/show_city_state_selection_modal.dart';
+import '../../../utils/ui/get_dash_flag_by_country_code.dart';
 
 class TherapistPersonalProfileScreen extends ConsumerStatefulWidget {
   const TherapistPersonalProfileScreen({super.key});
@@ -46,10 +47,15 @@ class _TherapistPersonalProfileScreenState
       TextEditingController();
   final TextEditingController _privateNotesController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
-  final TextEditingController _cityController = TextEditingController();
-  final TextEditingController _countryController = TextEditingController();
-  final TextEditingController _stateProvinceController =
+  final TextEditingController _cityCodeController = TextEditingController();
+  final TextEditingController _countryCodeController = TextEditingController();
+  final TextEditingController _stateCodeProvinceController =
       TextEditingController();
+  final TextEditingController countryNameController = TextEditingController();
+  final TextEditingController stateProvinceNameController =
+      TextEditingController();
+  final TextEditingController cityNameController = TextEditingController();
+
   final TextEditingController _zipController = TextEditingController();
   final TextEditingController _profilePictureUrlController =
       TextEditingController();
@@ -63,12 +69,14 @@ class _TherapistPersonalProfileScreenState
   bool _showShadow = true;
 
   late TabController _tabController;
+  String? defaultCountry;
 
   @override
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    stateProvinceNameController.text = '';
   }
 
   @override
@@ -84,9 +92,9 @@ class _TherapistPersonalProfileScreenState
     _publicPresentationController.dispose();
     _privateNotesController.dispose();
     _addressController.dispose();
-    _cityController.dispose();
-    _countryController.dispose();
-    _stateProvinceController.dispose();
+    _cityCodeController.dispose();
+    _countryCodeController.dispose();
+    _stateCodeProvinceController.dispose();
     _zipController.dispose();
     _profilePictureUrlController.dispose();
     super.dispose();
@@ -174,9 +182,9 @@ class _TherapistPersonalProfileScreenState
       'privateNotes': _privateNotesController.text,
       'location': {
         'address': _addressController.text,
-        'city': _cityController.text,
-        'country': _countryController.text,
-        'stateProvince': _stateProvinceController.text,
+        'city': _cityCodeController.text,
+        'country': _countryCodeController.text,
+        'stateProvince': _stateCodeProvinceController.text,
         'zip': _zipController.text,
         'geolocation': const GeoPoint(
             0.0, 0.0) // Asegúrate de manejar la geolocalización si es necesario
@@ -283,22 +291,18 @@ class _TherapistPersonalProfileScreenState
     if (_addressController.text.isEmpty) {
       _addressController.text = therapist.therapistInfo.location.address;
     }
-    if (_cityController.text.isEmpty) {
-      _cityController.text = therapist.therapistInfo.location.city;
+    if (_cityCodeController.text.isEmpty) {
+      _cityCodeController.text = therapist.therapistInfo.location.city;
     }
-    if (_countryController.text.isEmpty) {
-      _countryController.text = therapist.therapistInfo.location.country;
+    if (_countryCodeController.text.isEmpty) {
+      _countryCodeController.text = therapist.therapistInfo.location.country;
     }
-    if (_stateProvinceController.text.isEmpty) {
-      _stateProvinceController.text =
+    if (_stateCodeProvinceController.text.isEmpty) {
+      _stateCodeProvinceController.text =
           therapist.therapistInfo.location.stateProvince;
     }
     if (_zipController.text.isEmpty) {
       _zipController.text = therapist.therapistInfo.location.zip;
-    }
-    if (_profilePictureUrlController.text.isEmpty) {
-      _profilePictureUrlController.text =
-          therapist.therapistInfo.profilePictureUrl.large;
     }
     _presential = therapist.therapistInfo.meetingType.presential;
     _remote = therapist.therapistInfo.meetingType.remote;
@@ -527,16 +531,14 @@ class _TherapistPersonalProfileScreenState
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const SizedBox(height: 16),
-                            // Text(
-                            //   'Title',
-                            //
-                            //   ///localize
-                            //   style: labelTextStyle,
-                            // ),
-                            // const SizedBox(height: 8),
-                            // TextFormField(
-                            //   controller: _titleController,
-                            // ),
+                            Text(
+                              'Title',
+                              style: labelTextStyle,
+                            ),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: _titleController,
+                            ),
                             const SizedBox(height: 16),
                             Text(
                               S.of(context).firstName,
@@ -627,55 +629,150 @@ class _TherapistPersonalProfileScreenState
                               },
                             ),
                             const SizedBox(height: 10),
-                            Container(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  // const SizedBox(height: 10),
-                                  Text(
-                                    S.of(context).country,
-                                    style: labelTextStyle,
+                            Text(
+                              S.of(context).country,
+                              style: labelTextStyle,
+                            ),
+                            const SizedBox(height: 8),
+                            GestureDetector(
+                              onTap: () {
+                                showCountryPicker(
+                                  context: context,
+                                  showPhoneCode: false,
+                                  favorite: defaultCountry != null
+                                      ? [defaultCountry!]
+                                      : null,
+                                  countryListTheme: CountryListThemeData(
+                                    bottomSheetHeight:
+                                        MediaQuery.of(context).size.height *
+                                            0.85,
+                                    textStyle: const TextStyle(
+                                        height: 2, fontSize: 16.5),
                                   ),
-                                  const SizedBox(height: 8),
-                                  TextFormField(
-                                    controller: _countryController,
+                                  customFlagBuilder: (Country country) {
+                                    return getDashFlagByCountryCode(
+                                        country.countryCode);
+                                  },
+                                  onSelect: (Country country) {
+                                    setState(() {
+                                      if (_countryCodeController.text !=
+                                          country.countryCode) {
+                                        _stateCodeProvinceController.clear();
+                                        _cityCodeController.clear();
+                                      }
+
+                                      _countryCodeController.text =
+                                          country.countryCode;
+                                      defaultCountry = country.countryCode;
+                                    });
+                                  },
+                                );
+                              },
+                              child: AbsorbPointer(
+                                child: TextFormField(
+                                  controller: _countryCodeController,
+                                  decoration: InputDecoration(
+                                    hintText: 'United States',
+                                    prefixIcon: _countryCodeController
+                                            .text.isEmpty
+                                        ? null
+                                        : Padding(
+                                            padding: const EdgeInsets.only(
+                                                right: 10, left: 5),
+                                            child: getDashFlagByCountryCode(
+                                                _countryCodeController.text),
+                                          ),
+
+                                    // Padding(
+                                    //   padding: const EdgeInsets.only(left: 15),
+                                    //   child: getDashFlagByCountryCode(
+                                    //       _countryController.text),
+                                    // ),
+                                    prefixIconConstraints: const BoxConstraints(
+                                      minWidth: 41,
+                                      minHeight: 20,
+                                    ),
                                   ),
-                                  const SizedBox(height: 10),
-                                  Text(
-                                    S.of(context).stateProvince,
-                                    style: labelTextStyle,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  TextFormField(
-                                    controller: _stateProvinceController,
-                                  ),
-                                  const SizedBox(height: 10),
-                                  Text(S.of(context).city,
-                                      style: labelTextStyle),
-                                  const SizedBox(height: 8),
-                                  TextFormField(
-                                    controller: _cityController,
-                                  ),
-                                  const SizedBox(height: 10),
-                                  Text(
-                                    S.of(context).address,
-                                    style: labelTextStyle,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  TextFormField(
-                                    controller: _addressController,
-                                  ),
-                                  const SizedBox(height: 10),
-                                  Text(
-                                    S.of(context).zipCode,
-                                    style: labelTextStyle,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  TextFormField(
-                                    controller: _zipController,
-                                  ),
-                                ],
+                                ),
                               ),
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              S.of(context).stateProvince,
+                              style: labelTextStyle,
+                            ),
+                            const SizedBox(height: 8),
+                            GestureDetector(
+                              onTap: () {
+                                showCityStateSelectionModal(
+                                  context,
+                                  type: 'state',
+                                  country: _countryCodeController.text,
+                                  onSelect: (selectedItem) {
+                                    setState(() {
+                                      _stateCodeProvinceController.text =
+                                          selectedItem.name;
+                                      _cityCodeController.clear();
+                                    });
+                                  },
+                                );
+                              },
+                              child: AbsorbPointer(
+                                child: TextFormField(
+                                  controller: _stateCodeProvinceController,
+                                  decoration: InputDecoration(
+                                    hintText: '< ${S.of(context).all} >',
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              S.of(context).city,
+                              style: labelTextStyle,
+                            ),
+                            const SizedBox(height: 8),
+                            GestureDetector(
+                              onTap: () {
+                                showCityStateSelectionModal(
+                                  context,
+                                  type: 'city',
+                                  country: _countryCodeController.text,
+                                  state: _stateCodeProvinceController.text,
+                                  onSelect: (selectedItem) {
+                                    setState(() {
+                                      _cityCodeController.text =
+                                          selectedItem.name;
+                                    });
+                                  },
+                                );
+                              },
+                              child: AbsorbPointer(
+                                child: TextFormField(
+                                  controller: _cityCodeController,
+                                  decoration: InputDecoration(
+                                    hintText: '< ${S.of(context).all} >',
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              S.of(context).address,
+                              style: labelTextStyle,
+                            ),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: _addressController,
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              S.of(context).zipCode,
+                              style: labelTextStyle,
+                            ),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: _zipController,
                             ),
                             const SizedBox(height: 10),
                             Text(
