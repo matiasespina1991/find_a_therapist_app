@@ -1,38 +1,46 @@
-import 'package:findatherapistapp/services/firestore_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/therapist_model.dart';
+import '../services/firestore_service.dart';
+
+class TherapistState {
+  final TherapistModel? therapist;
+  final bool isLoading;
+
+  TherapistState({this.therapist, this.isLoading = false});
+}
 
 final therapistProvider =
-    StateNotifierProvider<TherapistNotifier, TherapistModel?>((ref) {
+    StateNotifierProvider<TherapistNotifier, TherapistState>((ref) {
   return TherapistNotifier();
 });
 
-class TherapistNotifier extends StateNotifier<TherapistModel?> {
-  TherapistNotifier() : super(null);
+class TherapistNotifier extends StateNotifier<TherapistState> {
+  TherapistNotifier() : super(TherapistState());
 
   Future<void> fetchTherapist(String therapistId) async {
+    state = TherapistState(isLoading: true);
     try {
       DocumentSnapshot doc = await FirestoreService.instance
           .collection('therapists')
           .doc(therapistId)
           .get();
 
-      print('Therapist fetched: ${doc.data()}');
-
       if (doc.exists) {
-        state =
-            TherapistModel.fromJson(doc.data() as Map<String, dynamic>, doc.id);
+        state = TherapistState(
+          therapist: TherapistModel.fromJson(
+              doc.data() as Map<String, dynamic>, doc.id),
+          isLoading: false,
+        );
       } else {
-        state = null;
+        state = TherapistState(isLoading: false);
       }
     } catch (e) {
-      print('Error fetching therapist: $e');
-      state = null;
+      state = TherapistState(isLoading: false);
     }
   }
 
   void clearTherapist() {
-    state = null;
+    state = TherapistState();
   }
 }

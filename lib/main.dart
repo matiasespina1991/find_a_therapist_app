@@ -1,6 +1,6 @@
 import 'package:country_picker/country_picker.dart';
+import 'package:findatherapistapp/providers/therapist_provider.dart';
 import 'package:findatherapistapp/routes/routes.dart';
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -44,6 +44,14 @@ class MyApp extends ConsumerWidget {
     final themeNotifier = ref.watch(themeProvider);
     final localeNotifier = ref.watch(localeProvider);
     final isDarkMode = themeNotifier.themeMode == ThemeMode.dark;
+
+    ref.listen(authProvider, (previous, next) {
+      if (next.user != null) {
+        Future(() {
+          ref.read(therapistProvider.notifier).fetchTherapist(next.user!.uid);
+        });
+      }
+    });
 
     return SkeletonizerConfig(
       data: SkeletonizerConfigData(

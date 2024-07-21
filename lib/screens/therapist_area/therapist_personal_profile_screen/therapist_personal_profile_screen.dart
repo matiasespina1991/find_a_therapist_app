@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -54,13 +53,6 @@ class _TherapistPersonalProfileScreenState
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-
-    final _authProvider = ref.read(authProvider);
-    if (_authProvider.user != null) {
-      ref
-          .read(therapistProvider.notifier)
-          .fetchTherapist(_authProvider.user!.uid);
-    }
   }
 
   @override
@@ -129,12 +121,8 @@ class _TherapistPersonalProfileScreenState
   Widget build(BuildContext context) {
     final bool isDarkMode =
         ref.watch(themeProvider).themeMode == ThemeMode.dark;
-    final _authProvider = ref.watch(authProvider);
-    final therapist = ref.watch(therapistProvider);
-
-    if (_authProvider.user == null) {
-      return const Center(child: CircularProgressIndicator());
-    }
+    final therapistState = ref.watch(therapistProvider);
+    final therapist = therapistState.therapist;
 
     if (therapist == null) {
       return const Center(child: CircularProgressIndicator());

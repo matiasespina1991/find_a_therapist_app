@@ -1,17 +1,15 @@
 import 'package:animate_do/animate_do.dart';
-import 'package:findatherapistapp/app_settings/app_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:findatherapistapp/app_settings/app_general_settings.dart';
+import 'package:findatherapistapp/app_settings/app_info.dart';
 import 'package:findatherapistapp/widgets/AppScaffold/app_scaffold.dart';
-
+import '../../../app_settings/app_general_settings.dart';
 import '../../../generated/l10n.dart';
 import '../../../routes/routes.dart';
-import '../../../utils/admin/add_current_user_as_therapist.dart';
-import '../../../utils/admin/add_current_user_to_database.dart';
+import '../../../providers/therapist_provider.dart';
 
 class WelcomeMainScreen extends ConsumerStatefulWidget {
   const WelcomeMainScreen({super.key});
@@ -27,14 +25,26 @@ class _WelcomeMainScreenState extends ConsumerState<WelcomeMainScreen> {
   static const bool isLoading = false;
 
   @override
-  void initState() {
-    super.initState();
+  void dispose() {
+    isDialOpen.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     ///device height
     final double deviceHeight = MediaQuery.of(context).size.height;
+    final therapistState = ref.watch(therapistProvider);
+
+    String buttonText = 'loading...';
+    if (!therapistState.isLoading) {
+      if (therapistState.therapist != null) {
+        buttonText = 'Go to my therapist profile';
+      } else {
+        buttonText = S.of(context).registerAsTherapistButton;
+      }
+    }
+
     return AppScaffold(
       isProtected: true,
       ignoreGlobalPadding: true,
@@ -105,16 +115,22 @@ class _WelcomeMainScreenState extends ConsumerState<WelcomeMainScreen> {
                               )),
                           const SizedBox(height: 10),
                           OutlinedButton(
-                              onPressed: () {
-                                context
-                                    .push(Routes.therapistProfileScreen.path);
-                                // updateALLTherapistAspects();
-                              },
+                              onPressed: therapistState.isLoading
+                                  ? null
+                                  : () {
+                                      if (therapistState.therapist != null) {
+                                        context.push(
+                                            Routes.therapistProfileScreen.path);
+                                      } else {
+                                        // context.push(Routes
+                                        //     .registerTherapistScreen.path);
+                                      }
+                                    },
                               style: ElevatedButton.styleFrom(
                                 minimumSize: const Size(double.infinity, 47),
                               ),
-                              child: Text(
-                                  S.of(context).registerAsTherapistButton)),
+                              child: Text(buttonText)),
+                          const SizedBox(height: 10),
                         ],
                       ),
                     ),
@@ -122,12 +138,6 @@ class _WelcomeMainScreenState extends ConsumerState<WelcomeMainScreen> {
                 ),
               ),
             ),
-            ElevatedButton(
-                onPressed: () {
-                  addTherapist();
-                  createUser();
-                },
-                child: Text('Add Therapist and user')),
             const SizedBox(height: 15),
           ],
         ),

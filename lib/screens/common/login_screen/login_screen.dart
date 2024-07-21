@@ -33,6 +33,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _attemptingLogin = false;
 
   @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _emailFocusNode.dispose();
+    _passwordFocusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final bool isDarkMode =
         ref.watch(themeProvider).themeMode == ThemeMode.dark;
@@ -130,7 +139,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       visible: AuthConfig.allowGoogleSignIn,
                       child: Column(
                         children: [
-                          const SizedBox(height: 22.0),
+                          const SizedBox(height: 17.0),
                           SignInButton(Buttons.google,
                               elevation: ThemeSettings.buttonsElevation,
                               padding: const EdgeInsets.all(5.5),
