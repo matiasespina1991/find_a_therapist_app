@@ -483,15 +483,29 @@ class _TherapistPersonalProfileScreenState
                     splashFactory: null,
                     controller: _tabController,
                     tabAlignment: TabAlignment.center,
+                    indicator: BoxDecoration(
+                        color: isDarkMode
+                            ? ThemeSettings.primaryTextColor.darkModePrimary
+                                .withOpacity(0.9)
+                            : ThemeSettings.primaryTextColor.lightModePrimary
+                                .withOpacity(0.8),
+                        borderRadius: BorderRadius.only(
+                          bottomRight: Radius.circular(2),
+                          bottomLeft: Radius.circular(2),
+                          topLeft: Radius.circular(2),
+                          topRight: Radius.circular(2),
+                        )),
+                    indicatorPadding: const EdgeInsets.only(top: 44),
+                    indicatorColor: ThemeSettings.seedColor.withOpacity(0.7),
                     dividerColor: Colors.transparent,
                     labelStyle: Theme.of(context).textTheme.titleMedium,
                     labelPadding:
                         const EdgeInsets.symmetric(vertical: 0, horizontal: 12),
-                    tabs: [
+                    tabs: const [
                       Tab(
-                        text: S.of(context).personalInfo,
+                        text: 'Personal Info',
                       ),
-                      Tab(text: S.of(context).aboutMe),
+                      Tab(text: 'About me'),
                     ],
                   ),
                 ),
@@ -513,16 +527,16 @@ class _TherapistPersonalProfileScreenState
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const SizedBox(height: 16),
-                            Text(
-                              'Title',
-
-                              ///localize
-                              style: labelTextStyle,
-                            ),
-                            const SizedBox(height: 8),
-                            TextFormField(
-                              controller: _titleController,
-                            ),
+                            // Text(
+                            //   'Title',
+                            //
+                            //   ///localize
+                            //   style: labelTextStyle,
+                            // ),
+                            // const SizedBox(height: 8),
+                            // TextFormField(
+                            //   controller: _titleController,
+                            // ),
                             const SizedBox(height: 16),
                             Text(
                               S.of(context).firstName,
@@ -549,28 +563,6 @@ class _TherapistPersonalProfileScreenState
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return S.of(context).pleaseEnterYourFullName;
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                              S.of(context).birthday,
-                              style: labelTextStyle,
-                            ),
-                            const SizedBox(height: 8),
-                            TextFormField(
-                              controller: _birthdayController,
-                              decoration: const InputDecoration(
-                                suffixIcon: Icon(Icons.calendar_today),
-                              ),
-                              readOnly: true,
-                              onTap: () {
-                                // Acción para seleccionar la fecha
-                              },
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return S.of(context).pleaseEnterYourBirthday;
                                 }
                                 return null;
                               },
@@ -614,45 +606,76 @@ class _TherapistPersonalProfileScreenState
                             ),
                             const SizedBox(height: 10),
                             Text(
-                              S.of(context).address,
+                              S.of(context).birthday,
                               style: labelTextStyle,
                             ),
                             const SizedBox(height: 8),
                             TextFormField(
-                              controller: _addressController,
+                              controller: _birthdayController,
+                              decoration: const InputDecoration(
+                                suffixIcon: Icon(Icons.calendar_today),
+                              ),
+                              readOnly: true,
+                              onTap: () {
+                                // Acción para seleccionar la fecha
+                              },
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return S.of(context).pleaseEnterYourBirthday;
+                                }
+                                return null;
+                              },
                             ),
                             const SizedBox(height: 10),
-                            Text(S.of(context).city, style: labelTextStyle),
-                            const SizedBox(height: 8),
-                            TextFormField(
-                              controller: _cityController,
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                              S.of(context).country,
-                              style: labelTextStyle,
-                            ),
-                            const SizedBox(height: 8),
-                            TextFormField(
-                              controller: _countryController,
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                              S.of(context).stateProvince,
-                              style: labelTextStyle,
-                            ),
-                            const SizedBox(height: 8),
-                            TextFormField(
-                              controller: _stateProvinceController,
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                              S.of(context).zipCode,
-                              style: labelTextStyle,
-                            ),
-                            const SizedBox(height: 8),
-                            TextFormField(
-                              controller: _zipController,
+                            Container(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // const SizedBox(height: 10),
+                                  Text(
+                                    S.of(context).country,
+                                    style: labelTextStyle,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  TextFormField(
+                                    controller: _countryController,
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Text(
+                                    S.of(context).stateProvince,
+                                    style: labelTextStyle,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  TextFormField(
+                                    controller: _stateProvinceController,
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Text(S.of(context).city,
+                                      style: labelTextStyle),
+                                  const SizedBox(height: 8),
+                                  TextFormField(
+                                    controller: _cityController,
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Text(
+                                    S.of(context).address,
+                                    style: labelTextStyle,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  TextFormField(
+                                    controller: _addressController,
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Text(
+                                    S.of(context).zipCode,
+                                    style: labelTextStyle,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  TextFormField(
+                                    controller: _zipController,
+                                  ),
+                                ],
+                              ),
                             ),
                             const SizedBox(height: 10),
                             Text(

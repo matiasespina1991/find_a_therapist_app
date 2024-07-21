@@ -52,7 +52,7 @@ class _WelcomeMainScreenState extends ConsumerState<WelcomeMainScreen> {
       ignoreGlobalPadding: true,
       appBarTitle: S.of(context).homeScreenTitle,
       body: SizedBox(
-        height: deviceHeight - 180,
+        height: deviceHeight - 150,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[

@@ -24,6 +24,8 @@ import '../../../models/gemini_tags_response_model.dart';
 import '../../../providers/providers_all.dart';
 import '../../../routes/routes.dart';
 import '../../../utils/debug/error_code_to_text.dart';
+import '../../../utils/functions/show_city_state_selection_modal.dart';
+import '../../../utils/locale/get_localized_language_names.dart';
 import '../../../utils/ui/get_dash_flag_by_country_code.dart';
 import '../../../widgets/AppScaffold/app_scaffold.dart';
 import '../../../generated/l10n.dart';
@@ -94,21 +96,14 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _languageController.text = _getLocalizedLanguageNames(selectedLanguages);
+    _languageController.text =
+        getLocalizedLanguagesNames(context, languageCodes: selectedLanguages);
     if (therapistFilters.location.country == null) {
       countryInputController.text = '< Select a country >';
     } else {
       countryInputController.text =
           ' ${CountryLocalizations.of(context)?.countryName(countryCode: therapistFilters.location.country)}';
     }
-  }
-
-  String _getLocalizedLanguageNames(List<String> languageCodes) {
-    return languageCodes
-        .map((code) => LocaleNames.of(context)!.nameOf(code) != null
-            ? toCapitalCase(LocaleNames.of(context)!.nameOf(code)!)
-            : code)
-        .join(', ');
   }
 
   void _initializeSpeech() async {
@@ -208,38 +203,6 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
       _isImprovingTranscription = false;
       _requestLastText = improvedText;
     });
-  }
-
-  void _showLocationSelectionModal(BuildContext context, String type) {
-    showModalBottomSheet(
-      isScrollControlled: true,
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.8,
-      ),
-      useSafeArea: true,
-      context: context,
-      builder: (BuildContext context) {
-        return LocationSelectionModal(
-          type: type,
-          therapistFilters: therapistFilters,
-          stateProvinceInputController: stateProvinceInputController,
-          onSelect: (selectedItem) {
-            setState(() {
-              if (type == 'state') {
-                therapistFilters.location.state = selectedItem.isoCode;
-                stateProvinceInputController.text = selectedItem.name;
-                therapistFilters.location.city = null;
-                cityInputController.clear();
-              } else if (type == 'city') {
-                therapistFilters.location.city = selectedItem.name;
-                cityInputController.text = selectedItem.name;
-              }
-            });
-          },
-          cityInputController: cityInputController,
-        );
-      },
-    );
   }
 
   @override
@@ -536,7 +499,21 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                     visible: therapistFilters.location.enabled,
                     child: GestureDetector(
                       onTap: () {
-                        _showLocationSelectionModal(context, 'state');
+                        showCityStateSelectionModal(
+                          context,
+                          type: 'state',
+                          country: therapistFilters.location.country!,
+                          onSelect: (selectedItem) {
+                            setState(() {
+                              therapistFilters.location.state =
+                                  selectedItem.isoCode;
+                              stateProvinceInputController.text =
+                                  selectedItem.name;
+                              therapistFilters.location.city = null;
+                              cityInputController.clear();
+                            });
+                          },
+                        );
                       },
                       child: AbsorbPointer(
                         child: Column(
@@ -584,7 +561,19 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                         therapistFilters.location.state != null,
                     child: GestureDetector(
                       onTap: () {
-                        _showLocationSelectionModal(context, 'city');
+                        showCityStateSelectionModal(
+                          context,
+                          type: 'city',
+                          country: therapistFilters.location.country!,
+                          state: therapistFilters.location.state,
+                          onSelect: (selectedItem) {
+                            setState(() {
+                              therapistFilters.location.city =
+                                  selectedItem.name;
+                              cityInputController.text = selectedItem.name;
+                            });
+                          },
+                        );
                       },
                       child: AbsorbPointer(
                         child: Column(
@@ -936,8 +925,8 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                               });
                               setState(() {
                                 _languageController.text =
-                                    _getLocalizedLanguageNames(
-                                        selectedLanguages);
+                                    getLocalizedLanguagesNames(context,
+                                        languageCodes: selectedLanguages);
                               });
                             },
                           );

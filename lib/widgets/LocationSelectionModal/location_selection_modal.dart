@@ -13,17 +13,16 @@ import '../ModalTopChip/modal_top_chip.dart';
 
 class LocationSelectionModal extends StatefulWidget {
   final String type;
-  final UserRequestFilters therapistFilters;
-  final TextEditingController stateProvinceInputController;
-  final TextEditingController cityInputController;
+  // final UserRequestFilters? therapistFilters;
+  final String country;
+  final String? state;
   final Function(dynamic) onSelect;
 
   const LocationSelectionModal({
     super.key,
     required this.type,
-    required this.therapistFilters,
-    required this.stateProvinceInputController,
-    required this.cityInputController,
+    required this.country,
+    this.state,
     required this.onSelect,
   });
 
@@ -40,6 +39,10 @@ class _LocationSelectionModalState extends State<LocationSelectionModal> {
   @override
   void initState() {
     super.initState();
+
+    if (widget.type == 'city' && widget.state == null) {
+      debugPrint('ERROR: You must provide a state when type is city.');
+    }
     searchController = TextEditingController();
     _fetchData();
   }
@@ -52,14 +55,13 @@ class _LocationSelectionModalState extends State<LocationSelectionModal> {
 
   Future<void> _fetchData() async {
     if (widget.type == 'state') {
-      items = await _getStates(widget.therapistFilters.location.country);
+      items = await _getStates(widget.country);
 
       setState(() {
         fetchFinished = true;
       });
     } else if (widget.type == 'city') {
-      items = await _getCities(widget.therapistFilters.location.country,
-          widget.therapistFilters.location.state!);
+      items = await _getCities(widget.country, widget.state!);
 
       setState(() {
         fetchFinished = true;
