@@ -196,5 +196,11 @@
               "errorUpdatingProfile": "Fehler beim Aktualisieren des Profils",
               "profileUpdatedSuccessfully": "Profil erfolgreich aktualisiert",
               "settings": "Einstellungen",
-              "loading": "Laden..."
+              "loading": "Laden...",
+              "noRatingsYet": "Noch keine Bewertungen",
+              "selectHint": "Wählen",
+               "pleaseEnterPhoneAreaCode": "Bitte geben Sie die Vorwahl ein",
+               "contactEmail": "Kontakt E-Mail",
+                "privateNotesDescription": "Diese Notizen sind privat und werden nicht öffentlich gemacht. Sie helfen jedoch der KI, genauere Übereinstimmungen zu finden.",
+                "contactInfo": "Kontaktinformationen"
 }

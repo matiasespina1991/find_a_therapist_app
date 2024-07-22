@@ -47,6 +47,7 @@ class ThemeAppBar extends ConsumerWidget implements PreferredSizeWidget {
       title: Text(
         title ?? '',
         style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.w600,
               fontSize: 19,
               color: isDarkMode
                   ? ThemeSettings.appbarOnBackgroundColor.darkModePrimary

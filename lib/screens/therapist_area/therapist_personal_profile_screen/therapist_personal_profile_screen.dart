@@ -1,8 +1,11 @@
 import 'dart:io';
+import 'package:advanced_chips_input/advanced_chips_input.dart';
+import 'package:animate_do/animate_do.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:country_state_city/models/city.dart';
 import 'package:country_state_city/models/state.dart' as state_utils;
+import 'package:country_state_city/utils/state_utils.dart';
 import 'package:findatherapistapp/services/firestore_service.dart';
 import 'package:findatherapistapp/widgets/LoadingCircle/loading_circle.dart';
 import 'package:findatherapistapp/widgets/NotificationModal/notification_modal.dart';
@@ -22,6 +25,10 @@ import 'package:country_picker/country_picker.dart';
 import '../../../generated/l10n.dart';
 import '../../../utils/functions/profile_utils.dart';
 import '../../../utils/functions/show_city_state_selection_modal.dart';
+import '../../../utils/locale/all_locales_list.dart';
+import '../../../utils/locale/build_language_text_with_flag.dart';
+import '../../../utils/locale/get_localized_language_names.dart';
+import '../../../utils/locale/show_language_selection_modal.dart';
 import '../../../utils/ui/get_dash_flag_by_country_code.dart';
 
 class TherapistPersonalProfileScreen extends ConsumerStatefulWidget {
@@ -62,8 +69,14 @@ class _TherapistPersonalProfileScreenState
   final TextEditingController _zipController = TextEditingController();
   final TextEditingController _profilePictureUrlController =
       TextEditingController();
+
+  final TextEditingController _specializationsController =
+      TextEditingController();
+
+  TextEditingController _languageController = TextEditingController();
+
+  List<String> selectedLanguages = ['en'];
   List<String> _specializations = [];
-  List<String> _spokenLanguages = [];
   bool _presential = false;
   bool _remote = false;
   File? _selectedImage;
@@ -81,7 +94,20 @@ class _TherapistPersonalProfileScreenState
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    stateProvinceNameController.text = '';
+
+    selectedLanguages =
+        ref.read(therapistProvider).therapist?.therapistInfo.spokenLanguages ??
+            ['en'];
+    // _languageController.text =
+    //     getLocalizedLanguagesNames(context, languageCodes: selectedLanguages);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    _languageController.text =
+        getLocalizedLanguagesNames(context, languageCodes: selectedLanguages);
   }
 
   @override
@@ -91,8 +117,9 @@ class _TherapistPersonalProfileScreenState
     _firstNameController.dispose();
     _lastNameController.dispose();
     _emailController.dispose();
+    _specializationsController.dispose();
     _phoneController.dispose();
-
+    _languageController.dispose();
     _introController.dispose();
     _publicPresentationController.dispose();
     _privateNotesController.dispose();
@@ -108,6 +135,14 @@ class _TherapistPersonalProfileScreenState
     _titleController.dispose();
 
     super.dispose();
+  }
+
+  void _updateSelectedLanguages(List<String> languages) {
+    setState(() {
+      selectedLanguages = languages;
+      _languageController.text =
+          getLocalizedLanguagesNames(context, languageCodes: selectedLanguages);
+    });
   }
 
   Future<void> _pickImageFromGallery() async {
@@ -202,7 +237,7 @@ class _TherapistPersonalProfileScreenState
         'geolocation': therapistGeolocation,
       },
       'specializations': _specializations,
-      'spokenLanguages': _spokenLanguages,
+      'spokenLanguages': selectedLanguages,
       'meetingType': {
         'presential': _presential,
         'remote': _remote,
@@ -266,8 +301,10 @@ class _TherapistPersonalProfileScreenState
         ref.watch(themeProvider).themeMode == ThemeMode.dark;
     final therapistState = ref.watch(therapistProvider);
     final therapist = therapistState.therapist;
-    final labelTextStyle =
-        Theme.of(context).textTheme.titleMedium?.copyWith(fontSize: 15);
+    final labelTextStyle = Theme.of(context)
+        .textTheme
+        .titleMedium
+        ?.copyWith(fontSize: 15, fontWeight: FontWeight.w600);
 
     if (therapist == null) {
       return const Center(child: CircularProgressIndicator());
@@ -292,6 +329,10 @@ class _TherapistPersonalProfileScreenState
 
     if (_phoneAreaCodeController.text.isEmpty) {
       _phoneAreaCodeController.text = therapist.therapistInfo.phone.areaCode;
+    }
+
+    if (_specializationsController.text.isEmpty) {
+      _specializationsController.text = "Psichologist Counselor";
     }
 
     if (_introController.text.isEmpty) {
@@ -324,6 +365,7 @@ class _TherapistPersonalProfileScreenState
     if (_stateProvinceCodeController.text.isEmpty) {
       _stateProvinceCodeController.text =
           therapist.therapistInfo.location.stateProvince;
+
       stateProvinceNameController.text =
           therapist.therapistInfo.location.stateProvince;
     }
@@ -338,7 +380,6 @@ class _TherapistPersonalProfileScreenState
     _presential = therapist.therapistInfo.meetingType.presential;
     _remote = therapist.therapistInfo.meetingType.remote;
     _specializations = therapist.therapistInfo.specializations;
-    _spokenLanguages = therapist.therapistInfo.spokenLanguages;
 
     return AppScaffold(
       ignoreGlobalPadding: true,
@@ -407,67 +448,72 @@ class _TherapistPersonalProfileScreenState
                                 alignment: Alignment.topCenter,
                                 clipBehavior: Clip.none,
                                 children: [
-                                  ClipOval(
-                                    child: Material(
-                                      color: Colors.transparent,
-                                      child: InkWell(
-                                        splashColor: Colors.black.withAlpha(30),
-                                        onTap: _pickImageFromGallery,
-                                        child: AnimatedContainer(
-                                          clipBehavior: Clip.hardEdge,
-                                          duration: Duration(milliseconds: 100),
-                                          margin: EdgeInsets.only(
-                                            top: top > 160.0 ? 0.0 : 17.0,
-                                          ),
-                                          width: top > 160.0 ? 140.0 : 80.0,
-                                          height: top > 160.0 ? 140.0 : 80.0,
-                                          decoration: BoxDecoration(
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.grey
-                                                    .withOpacity(0.1),
-                                                blurRadius: 1,
-                                                offset: const Offset(0, 1),
-                                              ),
-                                            ],
-                                            shape: BoxShape.circle,
-                                            border: Border.all(
-                                              color: Colors.white,
-                                              width: 4,
+                                  FadeIn(
+                                    delay: const Duration(milliseconds: 300),
+                                    child: ClipOval(
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          splashColor:
+                                              Colors.black.withAlpha(30),
+                                          onTap: _pickImageFromGallery,
+                                          child: AnimatedContainer(
+                                            clipBehavior: Clip.hardEdge,
+                                            duration:
+                                                Duration(milliseconds: 100),
+                                            margin: EdgeInsets.only(
+                                              top: top > 160.0 ? 0.0 : 17.0,
                                             ),
-                                          ),
-                                          child: Ink(
+                                            width: top > 160.0 ? 140.0 : 80.0,
+                                            height: top > 160.0 ? 140.0 : 80.0,
                                             decoration: BoxDecoration(
-                                              color: Colors.white,
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.grey
+                                                      .withOpacity(0.1),
+                                                  blurRadius: 1,
+                                                  offset: const Offset(0, 1),
+                                                ),
+                                              ],
                                               shape: BoxShape.circle,
-                                              image: _selectedImage != null
-                                                  ? DecorationImage(
-                                                      image: AssetImage(
-                                                        _selectedImage!.path,
-                                                      ),
-                                                      fit: BoxFit.cover,
-                                                    )
-                                                  : therapist
-                                                          .therapistInfo
-                                                          .profilePictureUrl
-                                                          .large
-                                                          .isEmpty
-                                                      ? const DecorationImage(
-                                                          image: AssetImage(
-                                                            'lib/assets/placeholders/default_profile_picture.jpg',
-                                                          ),
-                                                          fit: BoxFit.cover,
-                                                        )
-                                                      : DecorationImage(
-                                                          image:
-                                                              CachedNetworkImageProvider(
-                                                            therapist
-                                                                .therapistInfo
-                                                                .profilePictureUrl
-                                                                .large,
-                                                          ),
-                                                          fit: BoxFit.cover,
+                                              border: Border.all(
+                                                color: Colors.white,
+                                                width: 4,
+                                              ),
+                                            ),
+                                            child: Ink(
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                shape: BoxShape.circle,
+                                                image: _selectedImage != null
+                                                    ? DecorationImage(
+                                                        image: AssetImage(
+                                                          _selectedImage!.path,
                                                         ),
+                                                        fit: BoxFit.cover,
+                                                      )
+                                                    : therapist
+                                                            .therapistInfo
+                                                            .profilePictureUrl
+                                                            .large
+                                                            .isEmpty
+                                                        ? const DecorationImage(
+                                                            image: AssetImage(
+                                                              'lib/assets/placeholders/default_profile_picture.jpg',
+                                                            ),
+                                                            fit: BoxFit.cover,
+                                                          )
+                                                        : DecorationImage(
+                                                            image:
+                                                                CachedNetworkImageProvider(
+                                                              therapist
+                                                                  .therapistInfo
+                                                                  .profilePictureUrl
+                                                                  .large,
+                                                            ),
+                                                            fit: BoxFit.cover,
+                                                          ),
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -478,28 +524,30 @@ class _TherapistPersonalProfileScreenState
                                     Positioned(
                                       right: -4,
                                       top: 10,
-                                      child: Container(
-                                        padding: const EdgeInsets.all(0),
-                                        width: 35,
-                                        height: 35,
-                                        decoration: const BoxDecoration(
-                                          border:
-                                              Border.fromBorderSide(BorderSide(
-                                            color: Colors.black26,
-                                            width: 3,
-                                          )),
-                                          color: Colors.white,
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: Center(
-                                          child: IconButton(
-                                            padding: EdgeInsets.zero,
-                                            icon: const Icon(
-                                              Icons.camera_alt,
-                                              size: 19,
+                                      child: FadeIn(
+                                        child: Container(
+                                          padding: const EdgeInsets.all(0),
+                                          width: 35,
+                                          height: 35,
+                                          decoration: const BoxDecoration(
+                                            border: Border.fromBorderSide(
+                                                BorderSide(
+                                              color: Colors.black26,
+                                              width: 3,
+                                            )),
+                                            color: Colors.white,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: Center(
+                                            child: IconButton(
+                                              padding: EdgeInsets.zero,
+                                              icon: const Icon(
+                                                Icons.camera_alt,
+                                                size: 19,
+                                              ),
+                                              color: Colors.black54,
+                                              onPressed: _pickImageFromCamera,
                                             ),
-                                            color: Colors.black54,
-                                            onPressed: _pickImageFromCamera,
                                           ),
                                         ),
                                       ),
@@ -524,23 +572,26 @@ class _TherapistPersonalProfileScreenState
                                 .withOpacity(0.9)
                             : ThemeSettings.primaryTextColor.lightModePrimary
                                 .withOpacity(0.8),
-                        borderRadius: BorderRadius.only(
+                        borderRadius: const BorderRadius.only(
                           bottomRight: Radius.circular(2),
                           bottomLeft: Radius.circular(2),
                           topLeft: Radius.circular(2),
                           topRight: Radius.circular(2),
                         )),
-                    indicatorPadding: const EdgeInsets.only(top: 44),
+                    indicatorPadding: const EdgeInsets.only(top: 45),
                     indicatorColor: ThemeSettings.seedColor.withOpacity(0.7),
                     dividerColor: Colors.transparent,
-                    labelStyle: Theme.of(context).textTheme.titleMedium,
+                    labelStyle:
+                        Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
                     labelPadding:
                         const EdgeInsets.symmetric(vertical: 0, horizontal: 12),
-                    tabs: const [
+                    tabs: [
                       Tab(
-                        text: 'Personal Info',
+                        text: S.of(context).contactInfo,
                       ),
-                      Tab(text: 'About me'),
+                      Tab(text: S.of(context).aboutMe),
                     ],
                   ),
                 ),
@@ -602,7 +653,7 @@ class _TherapistPersonalProfileScreenState
                             ),
                             const SizedBox(height: 10),
                             Text(
-                              S.of(context).email,
+                              S.of(context).contactEmail,
                               style: labelTextStyle,
                             ),
                             const SizedBox(height: 8),
@@ -635,24 +686,24 @@ class _TherapistPersonalProfileScreenState
                                     inputFormatters: [
                                       LengthLimitingTextInputFormatter(4),
                                     ],
-                                    decoration: InputDecoration(
+                                    decoration: const InputDecoration(
                                       hintText: '000',
                                       prefixIcon: Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 10),
-                                        child: const Icon(
+                                        padding: EdgeInsets.only(left: 10),
+                                        child: Icon(
                                           Icons.add,
                                           size: 16,
                                         ),
                                       ),
-                                      prefixIconConstraints:
-                                          const BoxConstraints(
+                                      prefixIconConstraints: BoxConstraints(
                                         minWidth: 18,
                                       ),
                                     ),
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
-                                        return 'Please enter your phone area code';
+                                        return S
+                                            .of(context)
+                                            .pleaseEnterPhoneAreaCode;
                                       }
                                       return null;
                                     },
@@ -756,7 +807,7 @@ class _TherapistPersonalProfileScreenState
                                       : TextAlign.start,
                                   controller: countryNameController,
                                   decoration: InputDecoration(
-                                    hintText: '< Select >',
+                                    hintText: '< ${S.of(context).selectHint} >',
                                     hintStyle: TextStyle(
                                       color: _countryCodeController.text.isEmpty
                                           ? Colors.black
@@ -834,7 +885,7 @@ class _TherapistPersonalProfileScreenState
                                         : true,
                                     hintText: _stateProvinceCodeController
                                             .text.isEmpty
-                                        ? '< Select >'
+                                        ? '< ${S.of(context).selectHint} >'
                                         : '',
                                     hintStyle: TextStyle(
                                       color: _stateProvinceCodeController
@@ -892,7 +943,7 @@ class _TherapistPersonalProfileScreenState
                                         ? false
                                         : true,
                                     hintText: _cityCodeController.text.isEmpty
-                                        ? '< Select >'
+                                        ? '< ${S.of(context).selectHint} >'
                                         : '',
                                     hintStyle: TextStyle(
                                       color: _cityCodeController.text.isEmpty
@@ -931,38 +982,7 @@ class _TherapistPersonalProfileScreenState
                                 hintText: '12345',
                               ),
                             ),
-                            const SizedBox(height: 10),
-                            Text(
-                              S.of(context).addSpecializations,
-                              style: labelTextStyle,
-                            ),
-                            const SizedBox(height: 8),
-                            TextFormField(
-                              decoration: InputDecoration(
-                                suffixIcon: IconButton(
-                                  icon: const Icon(Icons.add),
-                                  onPressed: () {
-                                    // Acción para agregar especialización
-                                  },
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                              S.of(context).addSpokenLanguages,
-                              style: labelTextStyle,
-                            ),
-                            const SizedBox(height: 8),
-                            TextFormField(
-                              decoration: InputDecoration(
-                                suffixIcon: IconButton(
-                                  icon: Icon(Icons.add),
-                                  onPressed: () {
-                                    // Acción para agregar idioma hablado
-                                  },
-                                ),
-                              ),
-                            ),
+
                             const SizedBox(height: 30),
                           ],
                         ),
@@ -977,6 +997,148 @@ class _TherapistPersonalProfileScreenState
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          const SizedBox(height: 10),
+                          Text(
+                            S.of(context).addSpecializations,
+                            style: labelTextStyle,
+                          ),
+                          const SizedBox(height: 10),
+                          AdvancedChipsInput(
+                            paddingInsideWidgetContainer: EdgeInsets.zero,
+                            controller: _specializationsController,
+                            onSubmitted: (specializations) {
+                              // setState(() {
+                              //   _specializations.add(specializations);
+                              // });
+                            },
+                            deleteIcon: Padding(
+                              padding: const EdgeInsets.only(left: 7),
+                              child: const Icon(
+                                Icons.cancel,
+                                size: 18,
+                              ),
+                            ),
+                            marginBetweenChips:
+                                EdgeInsets.only(bottom: 13, top: 2, right: 5),
+                            paddingInsideChipContainer: const EdgeInsets.only(
+                                left: 15, right: 15, top: 8, bottom: 8),
+                            textFormFieldStyle: TextFormFieldStyle(
+                              enableSuggestions: false,
+                              decoration: InputDecoration(
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      ThemeSettings.inputsBorderRadius,
+                                  borderSide: BorderSide(
+                                    color: isDarkMode
+                                        ? ThemeSettings
+                                            .primaryTextColor.darkModePrimary
+                                        : ThemeSettings
+                                            .primaryTextColor.lightModePrimary,
+                                  ),
+                                ),
+                                hintText: S.of(context).addSpecializations,
+                                hintStyle: TextStyle(
+                                  color: isDarkMode
+                                      ? ThemeSettings
+                                          .hintTextColor.darkModePrimary
+                                      : ThemeSettings
+                                          .hintTextColor.lightModePrimary,
+                                ),
+                              ),
+                            ),
+                            separatorCharacter: ' ',
+                            placeChipsSectionAbove: true,
+                            chipContainerDecoration: BoxDecoration(
+                              border: Border.all(
+                                width: 1,
+                                color: isDarkMode
+                                    ? ThemeSettings
+                                        .primaryTextColor.darkModePrimary
+                                    : ThemeSettings
+                                        .primaryTextColor.lightModePrimary,
+                              ),
+                              color: isDarkMode
+                                  ? ThemeSettings
+                                      .inputBackgroundColor.darkModePrimary
+                                  : ThemeSettings
+                                      .inputBackgroundColor.lightModePrimary,
+                              borderRadius: ThemeSettings.inputsBorderRadius,
+                            ),
+                            chipTextStyle: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                                color: isDarkMode
+                                    ? ThemeSettings
+                                        .primaryTextColor.darkModePrimary
+                                    : ThemeSettings
+                                        .primaryTextColor.lightModePrimary),
+                            validateInput: true,
+                            validateInputMethod: (value) {
+                              if (value.length < 3) {
+                                return 'Input should be at least 3 characters long';
+                              }
+                              return null;
+                            },
+                            onChipDeleted: (chipText, index) {
+                              print('Deleted chip: $chipText at index $index');
+                            },
+                          ),
+                          // TextFormField(
+                          //   decoration: InputDecoration(
+                          //     suffixIcon: IconButton(
+                          //       icon: const Icon(Icons.add),
+                          //       onPressed: () {
+                          //         // Acción para agregar especialización
+                          //       },
+                          //     ),
+                          //   ),
+                          // ),
+                          const SizedBox(height: 10),
+                          Text(
+                            S.of(context).addSpokenLanguages,
+                            style: labelTextStyle,
+                          ),
+                          const SizedBox(height: 10),
+                          GestureDetector(
+                            onTap: () => showLanguageSelectionModal(
+                              context,
+                              selectedLanguages: selectedLanguages,
+                              onLanguagesSelected: _updateSelectedLanguages,
+                            ),
+                            child: AbsorbPointer(
+                              child: Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 13, horizontal: 12),
+                                decoration: BoxDecoration(
+                                  color: isDarkMode
+                                      ? ThemeSettings
+                                          .inputBackgroundColor.darkModePrimary
+                                      : ThemeSettings.inputBackgroundColor
+                                          .lightModePrimary,
+                                  border: Border.all(
+                                      color: isDarkMode
+                                          ? ThemeSettings
+                                              .primaryTextColor.darkModePrimary
+                                          : ThemeSettings.primaryTextColor
+                                              .lightModePrimary),
+                                  borderRadius:
+                                      ThemeSettings.inputsBorderRadius,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Flexible(
+                                        child: buildLanguageText(context,
+                                            selectedLanguages:
+                                                selectedLanguages)),
+                                    const Icon(Icons.add, size: 23),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
                           const SizedBox(height: 16),
                           Text(
                             '${S.of(context).meetingType}:',
@@ -1046,6 +1208,7 @@ class _TherapistPersonalProfileScreenState
                           SizedBox(height: 8),
                           TextFormField(
                             controller: _publicPresentationController,
+                            scrollPhysics: const ClampingScrollPhysics(),
                             maxLines: 8,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
@@ -1056,15 +1219,37 @@ class _TherapistPersonalProfileScreenState
                               return null;
                             },
                           ),
-                          const SizedBox(height: 10),
-                          Text(
-                            S.of(context).privateNotes,
-                            style: labelTextStyle,
+                          Divider(),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                S.of(context).privateNotes,
+                                style: labelTextStyle,
+                              ),
+                              Text(
+                                  ' (${S.of(context).privateNotesDescription})',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium
+                                      ?.copyWith(
+                                        fontSize: 15,
+                                      )),
+                            ],
                           ),
                           SizedBox(height: 8),
-                          TextFormField(
-                            controller: _privateNotesController,
-                            maxLines: 6,
+                          Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Colors.red.withOpacity(0.3)!,
+                                width: 8,
+                              ),
+                              borderRadius: BorderRadius.circular(18),
+                            ),
+                            child: TextFormField(
+                              controller: _privateNotesController,
+                              maxLines: 6,
+                            ),
                           ),
                         ],
                       ),

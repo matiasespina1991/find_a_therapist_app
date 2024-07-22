@@ -1580,10 +1580,10 @@ class S {
     );
   }
 
-  /// `First Name`
+  /// `First name`
   String get firstName {
     return Intl.message(
-      'First Name',
+      'First name',
       name: 'firstName',
       desc: '',
       args: [],
@@ -1600,30 +1600,30 @@ class S {
     );
   }
 
-  /// `Last Name`
+  /// `Last name`
   String get lastName {
     return Intl.message(
-      'Last Name',
+      'Last name',
       name: 'lastName',
       desc: '',
       args: [],
     );
   }
 
-  /// `Birthday`
+  /// `Date of birth`
   String get birthday {
     return Intl.message(
-      'Birthday',
+      'Date of birth',
       name: 'birthday',
       desc: '',
       args: [],
     );
   }
 
-  /// `Please enter your birthday`
+  /// `Please enter your date of birth`
   String get pleaseEnterYourBirthday {
     return Intl.message(
-      'Please enter your birthday',
+      'Please enter your date of birth',
       name: 'pleaseEnterYourBirthday',
       desc: '',
       args: [],
@@ -1885,6 +1885,66 @@ class S {
     return Intl.message(
       'Loading...',
       name: 'loading',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No ratings yet`
+  String get noRatingsYet {
+    return Intl.message(
+      'No ratings yet',
+      name: 'noRatingsYet',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select`
+  String get selectHint {
+    return Intl.message(
+      'Select',
+      name: 'selectHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter your phone area code`
+  String get pleaseEnterPhoneAreaCode {
+    return Intl.message(
+      'Please enter your phone area code',
+      name: 'pleaseEnterPhoneAreaCode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Contact email`
+  String get contactEmail {
+    return Intl.message(
+      'Contact email',
+      name: 'contactEmail',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `These notes are private and will not be publicly disclosed. But they will help the AI find more accurate matches.`
+  String get privateNotesDescription {
+    return Intl.message(
+      'These notes are private and will not be publicly disclosed. But they will help the AI find more accurate matches.',
+      name: 'privateNotesDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Contact Info`
+  String get contactInfo {
+    return Intl.message(
+      'Contact Info',
+      name: 'contactInfo',
       desc: '',
       args: [],
     );

@@ -53,6 +53,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "chipTwoLabel": MessageLookupByLibrary.simpleMessage("Chip Zwei"),
         "chipsSectionTitle": MessageLookupByLibrary.simpleMessage("Chips"),
         "city": MessageLookupByLibrary.simpleMessage("Stadt"),
+        "contactEmail": MessageLookupByLibrary.simpleMessage("Kontakt E-Mail"),
+        "contactInfo":
+            MessageLookupByLibrary.simpleMessage("Kontaktinformationen"),
         "continueButton": MessageLookupByLibrary.simpleMessage("Weiter"),
         "country": MessageLookupByLibrary.simpleMessage("Land"),
         "darkMode": MessageLookupByLibrary.simpleMessage("Dunkelmodus"),
@@ -181,6 +184,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Du hast versucht, dich anzumelden, aber du hast keine Internetverbindung. Bitte verbinde dich mit dem Internet und versuche es erneut."),
         "noJsonFoundInResponseTextMessage": MessageLookupByLibrary.simpleMessage(
             "Es gab einen Fehler beim Versuch, Ihre Anfrage zu verarbeiten. Wir haben das Problem gemeldet. Bitte versuchen Sie es später erneut."),
+        "noRatingsYet":
+            MessageLookupByLibrary.simpleMessage("Noch keine Bewertungen"),
         "noResultsAvailableForSelectedCountryState":
             MessageLookupByLibrary.simpleMessage(
                 "Keine Ergebnisse für das ausgewählte Land/Bundesland gefunden."),
@@ -205,6 +210,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "personalInfo":
             MessageLookupByLibrary.simpleMessage("Persönliche Informationen"),
         "phone": MessageLookupByLibrary.simpleMessage("Telefon"),
+        "pleaseEnterPhoneAreaCode": MessageLookupByLibrary.simpleMessage(
+            "Bitte geben Sie die Vorwahl ein"),
         "pleaseEnterYourBirthday": MessageLookupByLibrary.simpleMessage(
             "Bitte gib dein Geburtsdatum ein"),
         "pleaseEnterYourEmail": MessageLookupByLibrary.simpleMessage(
@@ -228,6 +235,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Bevorzugte Sprache/n"),
         "presential": MessageLookupByLibrary.simpleMessage("Präsenz"),
         "privateNotes": MessageLookupByLibrary.simpleMessage("Private Notizen"),
+        "privateNotesDescription": MessageLookupByLibrary.simpleMessage(
+            "Diese Notizen sind privat und werden nicht öffentlich gemacht. Sie helfen jedoch der KI, genauere Übereinstimmungen zu finden."),
         "professionalCertificates":
             MessageLookupByLibrary.simpleMessage("Berufszertifikate"),
         "profileSaved":
@@ -259,6 +268,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Wählen Sie ein Land"),
         "selectAStateProvince": MessageLookupByLibrary.simpleMessage(
             "Wählen Sie ein Bundesland/Provinz"),
+        "selectHint": MessageLookupByLibrary.simpleMessage("Wählen"),
         "selectPreferredLanguage": MessageLookupByLibrary.simpleMessage(
             "Wählen Sie bevorzugte Sprache/n"),
         "sendButton": MessageLookupByLibrary.simpleMessage("Senden"),

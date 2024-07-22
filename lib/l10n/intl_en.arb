@@ -160,11 +160,11 @@
             "yourTherapistProfile": "Your Therapist Profile",
              "personalInfo": "Personal Info",
              "aboutMe": "About me",
-             "firstName": "First Name",
+             "firstName": "First name",
              "pleaseEnterYourFullName": "Please enter your full name",
-             "lastName": "Last Name",
-             "birthday": "Birthday",
-             "pleaseEnterYourBirthday": "Please enter your birthday",
+             "lastName": "Last name",
+             "birthday": "Date of birth",
+             "pleaseEnterYourBirthday": "Please enter your date of birth",
              "email": "Email",
              "pleaseEnterYourEmail": "Please enter your email",
              "phone": "Phone",
@@ -196,7 +196,13 @@
              "errorUpdatingProfile": "Error updating profile",
              "profileUpdatedSuccessfully": "Profile updated successfully",
              "settings": "Settings",
-             "loading": "Loading..."
+             "loading": "Loading...",
+             "noRatingsYet": "No ratings yet",
+             "selectHint": "Select",
+             "pleaseEnterPhoneAreaCode": "Please enter your phone area code",
+             "contactEmail": "Contact email",
+             "privateNotesDescription": "These notes are private and will not be publicly disclosed. But they will help the AI find more accurate matches.",
+             "contactInfo": "Contact Info"
 
 
 

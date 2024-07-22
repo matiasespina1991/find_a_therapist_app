@@ -38,7 +38,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "back": MessageLookupByLibrary.simpleMessage("Back"),
         "backToInternetConnection":
             MessageLookupByLibrary.simpleMessage("You are back online"),
-        "birthday": MessageLookupByLibrary.simpleMessage("Birthday"),
+        "birthday": MessageLookupByLibrary.simpleMessage("Date of birth"),
         "buttonsSectionTitle": MessageLookupByLibrary.simpleMessage("Buttons"),
         "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
         "cancelButton": MessageLookupByLibrary.simpleMessage("Cancel"),
@@ -51,6 +51,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "chipTwoLabel": MessageLookupByLibrary.simpleMessage("Chip Two"),
         "chipsSectionTitle": MessageLookupByLibrary.simpleMessage("Chips"),
         "city": MessageLookupByLibrary.simpleMessage("City"),
+        "contactEmail": MessageLookupByLibrary.simpleMessage("Contact email"),
+        "contactInfo": MessageLookupByLibrary.simpleMessage("Contact Info"),
         "continueButton": MessageLookupByLibrary.simpleMessage("Continue"),
         "country": MessageLookupByLibrary.simpleMessage("Country"),
         "darkMode": MessageLookupByLibrary.simpleMessage("Dark Mode"),
@@ -114,7 +116,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Find your therapist"),
         "findingMatches":
             MessageLookupByLibrary.simpleMessage("Finding matches..."),
-        "firstName": MessageLookupByLibrary.simpleMessage("First Name"),
+        "firstName": MessageLookupByLibrary.simpleMessage("First name"),
         "forgotPasswordButton":
             MessageLookupByLibrary.simpleMessage("Forgot your password?"),
         "generativeAiErrorMessage": MessageLookupByLibrary.simpleMessage(
@@ -140,7 +142,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "invalidPasswordTooShortMessage": MessageLookupByLibrary.simpleMessage(
             "Password must be at least 6 characters long."),
         "languages": MessageLookupByLibrary.simpleMessage("Languages"),
-        "lastName": MessageLookupByLibrary.simpleMessage("Last Name"),
+        "lastName": MessageLookupByLibrary.simpleMessage("Last name"),
         "lightMode": MessageLookupByLibrary.simpleMessage("Light Mode"),
         "lightModeDarkMode":
             MessageLookupByLibrary.simpleMessage("Light Mode/Dark Mode"),
@@ -174,6 +176,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "You tried to login but you don\'t have internet connection. Please connect to the internet and try again."),
         "noJsonFoundInResponseTextMessage": MessageLookupByLibrary.simpleMessage(
             "There was an error trying to process your request. We have reported the issue. Please try again later."),
+        "noRatingsYet": MessageLookupByLibrary.simpleMessage("No ratings yet"),
         "noResultsAvailableForSelectedCountryState":
             MessageLookupByLibrary.simpleMessage(
                 "No results available for the selected country/state."),
@@ -197,8 +200,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "passwordLabel": MessageLookupByLibrary.simpleMessage("PASSWORD"),
         "personalInfo": MessageLookupByLibrary.simpleMessage("Personal Info"),
         "phone": MessageLookupByLibrary.simpleMessage("Phone"),
-        "pleaseEnterYourBirthday":
-            MessageLookupByLibrary.simpleMessage("Please enter your birthday"),
+        "pleaseEnterPhoneAreaCode": MessageLookupByLibrary.simpleMessage(
+            "Please enter your phone area code"),
+        "pleaseEnterYourBirthday": MessageLookupByLibrary.simpleMessage(
+            "Please enter your date of birth"),
         "pleaseEnterYourEmail":
             MessageLookupByLibrary.simpleMessage("Please enter your email"),
         "pleaseEnterYourFullName":
@@ -220,6 +225,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Preferred language/s"),
         "presential": MessageLookupByLibrary.simpleMessage("Presential"),
         "privateNotes": MessageLookupByLibrary.simpleMessage("Private Notes"),
+        "privateNotesDescription": MessageLookupByLibrary.simpleMessage(
+            "These notes are private and will not be publicly disclosed. But they will help the AI find more accurate matches."),
         "professionalCertificates":
             MessageLookupByLibrary.simpleMessage("Professional Certificates"),
         "profileSaved": MessageLookupByLibrary.simpleMessage("Profile saved!"),
@@ -247,6 +254,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Select a country"),
         "selectAStateProvince":
             MessageLookupByLibrary.simpleMessage("Select a state/province"),
+        "selectHint": MessageLookupByLibrary.simpleMessage("Select"),
         "selectPreferredLanguage":
             MessageLookupByLibrary.simpleMessage("Select preferred language/s"),
         "sendButton": MessageLookupByLibrary.simpleMessage("Send"),

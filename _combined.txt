@@ -78,6 +78,7 @@
 │   │   ├── locale_provider.dart
 │   │   ├── providers_all.dart
 │   │   ├── theme_provider.dart
+│   │   ├── therapist_provider.dart
 │   │   ├── therapists_languages_provider.dart
 │   │   └── translate_profiles_providers.dart
 │   ├── routes
@@ -106,6 +107,7 @@
 │   │   ├── error_reporting_service.dart
 │   │   ├── firestore_service.dart
 │   │   ├── gemini_service.dart
+│   │   ├── profile_service.dart
 │   │   ├── profiles_translate_delegate.dart
 │   │   └── speech_to_text_service.dart
 │   ├── theme
@@ -119,6 +121,7 @@
 │   │   │   ├── _list_of_new_therapists.dart
 │   │   │   ├── add_current_user_as_therapist.dart
 │   │   │   ├── add_current_user_to_database.dart
+│   │   │   ├── add_email_prop_to_all_therapists.dart
 │   │   │   ├── add_terms_as_subcategory.dart
 │   │   │   ├── add_therapist.dart
 │   │   │   ├── add_therapists_in_batch.dart
@@ -135,7 +138,13 @@
 │   │   │   ├── log_configurations.dart
 │   │   │   └── notify_that_app_is_runing_in_debug_mode.dart
 │   │   ├── functions
-│   │   │   └── images_utils.dart
+│   │   │   ├── profile_utils.dart
+│   │   │   └── show_city_state_selection_modal.dart
+│   │   ├── locale
+│   │   │   ├── all_locales_list.dart
+│   │   │   ├── build_language_text_with_flag.dart
+│   │   │   ├── get_localized_language_names.dart
+│   │   │   └── show_language_selection_modal.dart
 │   │   ├── ui
 │   │   │   └── get_dash_flag_by_country_code.dart
 │   │   └── validation
@@ -172,7 +181,7 @@
 ├── rename_imports.sh
 └── template_app.iml
 
-61 directories, 112 files
+62 directories, 120 files
 ///// pubspec.yaml /////
 name: findatherapistapp
 description: "An app to easily find the perfect therapist."
@@ -338,6 +347,7 @@ dependencies:
 #  firebase_database: ^11.0.1
 #  # Firebase Storage is a Flutter plugin to use the Firebase Cloud Storage API and allow uploading, downloading, and deleting files in the cloud.
   firebase_storage: ^12.0.1
+  advanced_chips_input: ^0.1.5
 #  # Firebase Messaging is a Flutter plugin to use the Firebase Cloud Messaging (FCM) API and allow sending push notifications to Android and iOS users.
 #  firebase_messaging: ^15.0.1
 #  # Firebase In-App Messaging is a Flutter plugin to use the Firebase In-App Messaging API and allow sending in-app messages to Android and iOS users.
@@ -446,8 +456,8 @@ class AuthConfig {
 
 ///// lib/main.dart /////
 import 'package:country_picker/country_picker.dart';
+import 'package:findatherapistapp/providers/therapist_provider.dart';
 import 'package:findatherapistapp/routes/routes.dart';
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -491,6 +501,14 @@ class MyApp extends ConsumerWidget {
     final themeNotifier = ref.watch(themeProvider);
     final localeNotifier = ref.watch(localeProvider);
     final isDarkMode = themeNotifier.themeMode == ThemeMode.dark;
+
+    ref.listen(authProvider, (previous, next) {
+      if (next.user != null) {
+        Future(() {
+          ref.read(therapistProvider.notifier).fetchTherapist(next.user!.uid);
+        });
+      }
+    });
 
     return SkeletonizerConfig(
       data: SkeletonizerConfigData(
@@ -566,10 +584,12 @@ final therapistsLanguagesProvider =
     ChangeNotifierProvider((ref) => TherapistsLanguagesProvider());
 
 ///// lib/providers/auth_provider.dart /////
+import 'package:findatherapistapp/services/firestore_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:findatherapistapp/app_settings/app_general_settings.dart';
 import 'package:findatherapistapp/app_settings/auth_config.dart';
 
@@ -582,6 +602,8 @@ class AuthorizationProvider extends ChangeNotifier {
   String? _authToken;
   User? _user;
   bool _isLoading = true;
+  bool _isUser = false;
+  bool _isTherapist = false;
 
   AuthorizationProvider() {
     _initializeUser();
@@ -590,12 +612,15 @@ class AuthorizationProvider extends ChangeNotifier {
   String? get authToken => _authToken;
   User? get user => _user;
   bool get isLoading => _isLoading;
+  bool get isUser => _isUser;
+  bool get isTherapist => _isTherapist;
 
   Future<void> _initializeUser() async {
     if (AuthConfig.useFirebase) {
       _user = _firebaseAuth?.currentUser;
       if (_user != null) {
         _authToken = _user!.uid;
+        await _checkUserRole(_user!.uid);
       }
     } else {
       _authToken = await storage.read(key: 'auth_token');
@@ -618,7 +643,7 @@ class AuthorizationProvider extends ChangeNotifier {
         if (_user != null) {
           _authToken = _user?.uid;
           await setAuthToken(_authToken!);
-          notifyListeners();
+          await _checkUserRole(_user!.uid);
         }
       }
     }
@@ -633,6 +658,7 @@ class AuthorizationProvider extends ChangeNotifier {
         if (_user != null) {
           _authToken = _user?.uid;
           await setAuthToken(_authToken!);
+          await _checkUserRole(_user!.uid);
         }
       } else {
         _user = null;
@@ -647,6 +673,7 @@ class AuthorizationProvider extends ChangeNotifier {
       if (_user != null) {
         _authToken = _user?.uid;
         await setAuthToken(_authToken!);
+        await _checkUserRole(_user!.uid);
         notifyListeners();
       }
     }
@@ -674,7 +701,13 @@ class AuthorizationProvider extends ChangeNotifier {
   }
 
   Future<void> setAuthToken(String token) async {
-    await storage.write(key: 'auth_token', value: token);
+    try {
+      await storage.write(key: 'auth_token', value: token);
+      _authToken = token;
+      notifyListeners();
+    } catch (error) {
+      debugPrint('Error during setting auth token: $error');
+    }
     _authToken = token;
     notifyListeners();
   }
@@ -719,6 +752,7 @@ class AuthorizationProvider extends ChangeNotifier {
         _authToken = authResult.user!.uid;
         _user = authResult.user;
         await setAuthToken(_authToken!);
+        await _checkUserRole(_user!.uid);
       } else {
         _authToken = email;
         await setAuthToken(_authToken!);
@@ -757,6 +791,7 @@ class AuthorizationProvider extends ChangeNotifier {
             _authToken = authResult?.user!.uid;
             _user = authResult?.user;
             await setAuthToken(_authToken!);
+            await _checkUserRole(_user!.uid);
           } else {
             _authToken = googleAuth.accessToken;
             await setAuthToken(_authToken!);
@@ -775,6 +810,30 @@ class AuthorizationProvider extends ChangeNotifier {
       }
     }
     return success;
+  }
+
+  Future<void> _checkUserRole(String userId) async {
+    _isUser = await checkIfUserExists(userId);
+    _isTherapist = await checkIfTherapistExists(userId);
+
+    debugPrint(
+        'Current user is a registered User: $_isUser, Current user is a registered Therapist: $_isTherapist');
+
+    notifyListeners();
+  }
+
+  Future<bool> checkIfUserExists(String userId) async {
+    DocumentSnapshot userDoc =
+        await FirestoreService.instance.collection('users').doc(userId).get();
+    return userDoc.exists;
+  }
+
+  Future<bool> checkIfTherapistExists(String userId) async {
+    DocumentSnapshot therapistDoc = await FirestoreService.instance
+        .collection('therapists')
+        .doc(userId)
+        .get();
+    return therapistDoc.exists;
   }
 }
 
@@ -1138,455 +1197,9 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
   }
 }
 
-///// lib/screens/common/login_screen/login_screen.dart /////
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'package:sign_in_button/sign_in_button.dart';
-import 'package:findatherapistapp/app_settings/auth_config.dart';
-import 'package:findatherapistapp/generated/l10n.dart';
-
-import '../../../app_settings/theme_settings.dart';
-import '../../../providers/providers_all.dart';
-import '../../../routes/routes.dart';
-import '../../../utils/validation/is_email_valid.dart';
-import '../../../widgets/AppScaffold/app_scaffold.dart';
-import '../../../widgets/NotificationModal/notification_modal.dart';
-import '../../../widgets/NotificationSnackbar/notification_snackbar.dart';
-import '../../../widgets/ThemeInputTextField/theme_input_text_field.dart';
-
-class LoginScreen extends ConsumerStatefulWidget {
-  const LoginScreen({super.key});
-
-  @override
-  ConsumerState<LoginScreen> createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends ConsumerState<LoginScreen> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final FocusNode _emailFocusNode = FocusNode();
-  final FocusNode _passwordFocusNode = FocusNode();
-  bool _isEmailValid = true;
-  bool _isPasswordValid = true;
-  final int minPasswordLength = 6;
-  bool _attemptingLogin = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final bool isDarkMode =
-        ref.watch(themeProvider).themeMode == ThemeMode.dark;
-
-    return AppScaffold(
-      appBarTitle: S.of(context).loginScreenTitle,
-      isProtected: false,
-      useSafeArea: false,
-      hideFloatingSpeedDialMenu: true,
-      backgroundAnimation: ThemeSettings.primaryLottieBackgroundAnimation,
-      backgroundAnimationDarkMode:
-          ThemeSettings.secondaryLottieBackgroundAnimation,
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Center(
-              child: SizedBox(
-                width: 300,
-                child: Column(
-                  children: <Widget>[
-                    const SizedBox(height: 120),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          const Icon(Icons.email_outlined),
-                          const SizedBox(width: 5),
-                          Text(
-                            S.of(context).emailLabel,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                    ),
-                    ThemeInputTextField(
-                      controller: _emailController,
-                      focusNode: _emailFocusNode,
-                      hintText: S.of(context).emailHintText,
-                      isEmailInput: true,
-                      isValid: _isEmailValid,
-                      errorText: S.of(context).invalidEmailMessage,
-                      onChanged: (value) {
-                        if (isEmailValid(value)) {
-                          setState(() {
-                            _isEmailValid = true;
-                          });
-                        }
-                      },
-                    ),
-                    const SizedBox(height: 20),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          const Icon(Icons.lock_outline),
-                          const SizedBox(width: 5),
-                          Text(
-                            S.of(context).passwordLabel,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                    ),
-                    ThemeInputTextField(
-                      controller: _passwordController,
-                      focusNode: _passwordFocusNode,
-                      hintText: S.of(context).passwordHintText,
-                      isPasswordInput: true,
-                      hidePasswordVisibilityIcon: false,
-                      isValid: _isPasswordValid,
-                      errorText: S.of(context).invalidPasswordMessage,
-                      onChanged: (value) {
-                        if (value.isNotEmpty &&
-                            value.length >= minPasswordLength) {
-                          setState(() {
-                            _isPasswordValid = true;
-                          });
-                        }
-                      },
-                    ),
-                    const SizedBox(height: 32.0),
-                    SizedBox(
-                      width: 233,
-                      child: ElevatedButton(
-                        onPressed: _attemptingLogin
-                            ? null
-                            : () => attemptLoginWithEmailAndPassword(ref),
-                        child: Text(S.of(context).loginButton),
-                      ),
-                    ),
-                    Visibility(
-                      visible: AuthConfig.allowGoogleSignIn,
-                      child: Column(
-                        children: [
-                          const SizedBox(height: 22.0),
-                          SignInButton(Buttons.google,
-                              elevation: ThemeSettings.buttonsElevation,
-                              padding: const EdgeInsets.all(5.5),
-                              clipBehavior: Clip.hardEdge,
-                              shape: const RoundedRectangleBorder(
-                                  borderRadius:
-                                      ThemeSettings.buttonsBorderRadius),
-                              text: S.of(context).signInWithGoogleButtonLabel,
-                              onPressed: () async {
-                            if (AuthConfig.allowGoogleSignIn) {
-                              attemptLoginWithGoogle(ref);
-                            }
-                          }),
-                        ],
-                      ),
-                    ),
-                    const Divider(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          S.of(context).lightMode,
-                          style: TextStyle(
-                            fontWeight: isDarkMode
-                                ? FontWeight.normal
-                                : FontWeight.bold,
-                          ),
-                        ),
-                        const Text(
-                          ' / ',
-                        ),
-                        Text(
-                          S.of(context).darkMode,
-                          style: TextStyle(
-                            fontWeight: isDarkMode
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 5),
-                    Switch(
-                      thumbIcon: WidgetStateProperty.all(Icon(
-                        isDarkMode ? Icons.dark_mode : Icons.light_mode,
-                        color: Colors.white,
-                      )),
-                      value: isDarkMode,
-                      onChanged: (value) {
-                        ref.read(themeProvider).toggleTheme(value);
-                      },
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            ref
-                                .read(localeProvider)
-                                .setLocale(const Locale('en'));
-                          },
-                          child: const Text(
-                            '🇺🇸',
-                            style: TextStyle(fontSize: 30),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        const Text('/'),
-                        const SizedBox(width: 10),
-                        GestureDetector(
-                          onTap: () {
-                            ref
-                                .read(localeProvider)
-                                .setLocale(const Locale('es'));
-                          },
-                          child: const Text(
-                            '🇪🇸',
-                            style: TextStyle(fontSize: 30),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        const Text('/'),
-                        const SizedBox(width: 10),
-                        GestureDetector(
-                          onTap: () {
-                            ref
-                                .read(localeProvider)
-                                .setLocale(const Locale('de'));
-                          },
-                          child: const Text(
-                            '🇩🇪',
-                            style: TextStyle(fontSize: 30),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void attemptLoginWithEmailAndPassword(WidgetRef ref) async {
-    debugPrint('Attempting login...');
-    var error = false;
-    setState(() {
-      _isEmailValid = true;
-      _isPasswordValid = true;
-    });
-
-    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
-      List<String> emptyFields = [];
-      if (_emailController.text.isEmpty) {
-        debugPrint('Please insert a valid email');
-        emptyFields.add(S.of(context).email);
-        setState(() {
-          _isEmailValid = false;
-        });
-        NotificationSnackbar.showSnackBar(
-          message: S.of(context).invalidEmailSnackbarMessage,
-          variant: SnackbarVariant.error,
-          duration: SnackbarDuration.short,
-        );
-      }
-      if (_passwordController.text.isEmpty) {
-        debugPrint('Please insert a valid password');
-        emptyFields.add(S.of(context).password);
-        setState(() {
-          _isPasswordValid = false;
-        });
-        NotificationSnackbar.showSnackBar(
-          message: S.of(context).invalidPasswordSnackbarMessage,
-          variant: SnackbarVariant.error,
-          duration: SnackbarDuration.short,
-        );
-        error = true;
-      }
-
-      debugPrint('Error: The following fields are empty: $emptyFields');
-
-      NotificationSnackbar.showSnackBar(
-        message:
-            '${S.of(context).pleaseFillTheFollowingFields} ${emptyFields.join(', ')}.',
-        variant: SnackbarVariant.error,
-        duration: SnackbarDuration.short,
-      );
-      error = true;
-
-      NotificationModal.loginFieldsAreEmpty(
-          context: context, onTapConfirm: () {}, emptyFields: emptyFields);
-    }
-
-    if (_emailController.text.isNotEmpty &&
-        !isEmailValid(_emailController.text)) {
-      debugPrint('Email is not valid');
-      setState(() {
-        _isEmailValid = false;
-      });
-      NotificationSnackbar.showSnackBar(
-        message: S.of(context).invalidEmailMessage,
-        variant: SnackbarVariant.error,
-        duration: SnackbarDuration.short,
-      );
-      error = true;
-    }
-
-    if (_passwordController.text.isNotEmpty &&
-        _passwordController.text.length < minPasswordLength) {
-      debugPrint('Password is too short. Minimum length: $minPasswordLength');
-      setState(() {
-        _isPasswordValid = false;
-      });
-      NotificationSnackbar.showSnackBar(
-        message: S.of(context).invalidPasswordTooShortMessage,
-        variant: SnackbarVariant.error,
-        duration: SnackbarDuration.short,
-      );
-      error = true;
-    }
-
-    if (error) {
-      debugPrint('Login aborted.');
-      return;
-    }
-
-    setState(() {
-      _attemptingLogin = true;
-    });
-
-    NotificationSnackbar.showSnackBar(
-      message: S.of(context).signingInMessage,
-      variant: SnackbarVariant.info,
-      duration: SnackbarDuration.long,
-    );
-    try {
-      bool userSignedIn = await ref
-          .read(authProvider)
-          .signInWithEmail(_emailController.text, _passwordController.text);
-
-      if (userSignedIn) {
-        void userTappedConfirm() {
-          NotificationSnackbar.hideCurrentSnackBar();
-          NotificationSnackbar.showSnackBar(
-              message: S.of(context).loginSuccessfulMessage,
-              variant: SnackbarVariant.success,
-              duration: SnackbarDuration.short,
-              delay: 1);
-          context.go(Routes.welcomeMainScreen.path);
-        }
-
-        if (mounted) {
-          NotificationModal.successfulModal(
-              title: S.of(context).successfulLogin,
-              message: S.of(context).successfulLoginRedirectToHomeMessage,
-              context: context,
-              onTapConfirm: () => userTappedConfirm());
-        }
-      } else {
-        if (mounted) {
-          NotificationSnackbar.showSnackBar(
-            message: S.of(context).loginErrorMessage,
-            variant: SnackbarVariant.error,
-            duration: SnackbarDuration.long,
-          );
-        }
-      }
-    } catch (error) {
-      if (mounted) {
-        NotificationSnackbar.showSnackBar(
-          message: S.of(context).loginErrorMessage,
-          variant: SnackbarVariant.error,
-          duration: SnackbarDuration.long,
-        );
-      }
-      if (mounted) {
-        NotificationModal.failedLogin(
-            context: context,
-            onTapConfirm: () {},
-            errorMessage: S.of(context).loginErrorMessage);
-        debugPrint('Error logging in: ${error.toString()}');
-      }
-    } finally {
-      setState(() {
-        _attemptingLogin = false;
-      });
-      NotificationSnackbar.hideCurrentSnackBar();
-    }
-  }
-
-  void attemptLoginWithGoogle(WidgetRef ref) async {
-    NotificationSnackbar.showSnackBar(
-      message: S.of(context).signingInWithGoogleSnackbarMessage,
-      variant: SnackbarVariant.info,
-      duration: SnackbarDuration.long,
-    );
-    try {
-      bool userSignedIn = await ref.read(authProvider).signInWithGoogle();
-      if (userSignedIn) {
-        if (mounted) {
-          NotificationModal.successfulModal(
-            title: S.of(context).successfulLogin,
-            message: S.of(context).successfulLoginRedirectToHomeMessage,
-            context: context,
-            onTapConfirm: () {
-              NotificationSnackbar.hideCurrentSnackBar();
-              NotificationSnackbar.showSnackBar(
-                message: S.of(context).loginSuccessfulMessage,
-                variant: SnackbarVariant.success,
-                duration: SnackbarDuration.short,
-                delay: 1,
-              );
-              context.go(Routes.welcomeMainScreen.path);
-            },
-          );
-        }
-      } else {
-        if (mounted) {
-          NotificationSnackbar.showSnackBar(
-            message: S.of(context).loginErrorMessage,
-            variant: SnackbarVariant.error,
-            duration: SnackbarDuration.long,
-          );
-        }
-      }
-    } on PlatformException catch (error) {
-      if (mounted) {
-        NotificationSnackbar.showSnackBar(
-          message: S.of(context).errorSigningInWithGoogleSnackbarMessage,
-          variant: SnackbarVariant.error,
-          duration: SnackbarDuration.long,
-        );
-      }
-
-      debugPrint('Error signing in with Google: ${error.toString()}');
-    } catch (error) {
-      if (mounted) {
-        NotificationSnackbar.showSnackBar(
-          message: S.of(context).errorSigningInWithGoogleSnackbarMessage,
-          variant: SnackbarVariant.error,
-          duration: SnackbarDuration.long,
-        );
-      }
-
-      debugPrint('Error: ${error.toString()}');
-    }
-  }
-}
-
 ///// lib/models/therapist_model.dart /////
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 
 class TherapistModel {
   String id;
@@ -1597,6 +1210,7 @@ class TherapistModel {
   Score score;
   TherapistInfo therapistInfo;
   bool isOnline;
+  Timestamp lastOnline;
 
   TherapistModel({
     required this.id,
@@ -1607,19 +1221,29 @@ class TherapistModel {
     required this.score,
     required this.therapistInfo,
     required this.isOnline,
+    required this.lastOnline,
   });
 
   factory TherapistModel.fromJson(Map<String, dynamic> json, String id) {
-    return TherapistModel(
-      id: id,
-      createdAt: json['createdAt'] as Timestamp,
-      updatedAt: json['updatedAt'] as Timestamp,
-      aspects: Aspects.fromJson(json['aspects']),
-      subscription: Subscription.fromJson(json['subscription']),
-      score: Score.fromJson(json['score']),
-      therapistInfo: TherapistInfo.fromJson(json['therapistInfo']),
-      isOnline: json['isOnline'],
-    );
+    try {
+      return TherapistModel(
+        id: id,
+        createdAt: json['createdAt'] as Timestamp,
+        updatedAt: json['updatedAt'] as Timestamp,
+        aspects: Aspects.fromJson(json['aspects'] as Map<String, dynamic>),
+        subscription:
+            Subscription.fromJson(json['subscription'] as Map<String, dynamic>),
+        score: Score.fromJson(json['score'] as Map<String, dynamic>),
+        therapistInfo: TherapistInfo.fromJson(
+            json['therapistInfo'] as Map<String, dynamic>),
+        isOnline: json['isOnline'] as bool,
+        lastOnline: json['lastOnline'] as Timestamp,
+      );
+    } catch (e, stack) {
+      debugPrint('Error in TherapistModel.fromJson for ID $id: $e');
+      debugPrint('Stack trace: $stack');
+      throw e;
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -1632,7 +1256,29 @@ class TherapistModel {
       'score': score.toJson(),
       'therapistInfo': therapistInfo.toJson(),
       'isOnline': isOnline,
+      'lastOnline': lastOnline,
     };
+  }
+
+  TherapistModel copyWith({
+    Aspects? aspects,
+    Subscription? subscription,
+    Score? score,
+    TherapistInfo? therapistInfo,
+    bool? isOnline,
+    Timestamp? lastOnline,
+  }) {
+    return TherapistModel(
+      id: id,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+      aspects: aspects ?? this.aspects,
+      subscription: subscription ?? this.subscription,
+      score: score ?? this.score,
+      therapistInfo: therapistInfo ?? this.therapistInfo,
+      isOnline: isOnline ?? this.isOnline,
+      lastOnline: lastOnline ?? this.lastOnline,
+    );
   }
 }
 
@@ -1646,10 +1292,16 @@ class Term {
   });
 
   factory Term.fromJson(Map<String, dynamic> json) {
-    return Term(
-      term: json['term'],
-      public: json['public'],
-    );
+    try {
+      return Term(
+        term: json['term'] as String,
+        public: json['public'] as bool,
+      );
+    } catch (e, stack) {
+      debugPrint('Error in Term.fromJson: $e');
+      debugPrint('Stack trace: $stack');
+      throw e;
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -1670,14 +1322,20 @@ class Aspects {
   });
 
   factory Aspects.fromJson(Map<String, dynamic> json) {
-    return Aspects(
-      positive: (json['positive'] as List)
-          .map((item) => Term.fromJson(item))
-          .toList(),
-      negative: (json['negative'] as List)
-          .map((item) => Term.fromJson(item))
-          .toList(),
-    );
+    try {
+      return Aspects(
+        positive: (json['positive'] as List)
+            .map((item) => Term.fromJson(item as Map<String, dynamic>))
+            .toList(),
+        negative: (json['negative'] as List)
+            .map((item) => Term.fromJson(item as Map<String, dynamic>))
+            .toList(),
+      );
+    } catch (e, stack) {
+      debugPrint('Error in Aspects.fromJson: $e');
+      debugPrint('Stack trace: $stack');
+      throw e;
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -1702,12 +1360,18 @@ class Subscription {
   });
 
   factory Subscription.fromJson(Map<String, dynamic> json) {
-    return Subscription(
-      endsAt: json['endsAt'] as Timestamp,
-      plan: json['plan'],
-      startedAt: json['startedAt'] as Timestamp,
-      autoRenewal: json['autoRenewal'],
-    );
+    try {
+      return Subscription(
+        endsAt: json['endsAt'] as Timestamp,
+        plan: json['plan'] as String,
+        startedAt: json['startedAt'] as Timestamp,
+        autoRenewal: json['autoRenewal'] as bool,
+      );
+    } catch (e, stack) {
+      debugPrint('Error in Subscription.fromJson: $e');
+      debugPrint('Stack trace: $stack');
+      throw e;
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -1730,10 +1394,16 @@ class Score {
   });
 
   factory Score.fromJson(Map<String, dynamic> json) {
-    return Score(
-      rating: (json['rating'] as num).toDouble(),
-      amountRatings: json['amountRatings'],
-    );
+    try {
+      return Score(
+        rating: (json['rating'] as num).toDouble(),
+        amountRatings: json['amountRatings'] as int,
+      );
+    } catch (e, stack) {
+      debugPrint('Error in Score.fromJson: $e');
+      debugPrint('Stack trace: $stack');
+      throw e;
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -1745,68 +1415,93 @@ class Score {
 }
 
 class TherapistInfo {
-  String intro;
-  String publicPresentation;
-  String privateNotes;
-  Location location;
+  Timestamp birthday;
   String firstName;
-  bool userInfoIsVerified;
+  String email;
+  String intro;
   String lastName;
+  Location location;
+  MeetingType meetingType;
+  Phone phone;
+  String privateNotes;
+  ProfilePictureUrl profilePictureUrl;
+  String publicPresentation;
   List<String> specializations;
   List<String> spokenLanguages;
   List<ProfessionalCertificate> professionalCertificates;
-  ProfilePictureUrl profilePictureUrl;
-  MeetingType meetingType;
+  String title;
+  bool userInfoIsVerified;
 
   TherapistInfo({
-    required this.intro,
-    required this.publicPresentation,
-    required this.privateNotes,
-    required this.location,
+    required this.birthday,
     required this.firstName,
-    required this.userInfoIsVerified,
+    required this.email,
+    required this.intro,
     required this.lastName,
+    required this.location,
+    required this.meetingType,
+    required this.phone,
+    required this.privateNotes,
+    required this.profilePictureUrl,
+    required this.publicPresentation,
     required this.specializations,
     required this.spokenLanguages,
     required this.professionalCertificates,
-    required this.profilePictureUrl,
-    required this.meetingType,
+    required this.title,
+    required this.userInfoIsVerified,
   });
 
   factory TherapistInfo.fromJson(Map<String, dynamic> json) {
-    return TherapistInfo(
-      intro: json['intro'],
-      publicPresentation: json['publicPresentation'],
-      privateNotes: json['privateNotes'],
-      location: Location.fromJson(json['location']),
-      firstName: json['firstName'],
-      userInfoIsVerified: json['userInfoIsVerified'],
-      lastName: json['lastName'],
-      specializations: List<String>.from(json['specializations']),
-      spokenLanguages: List<String>.from(json['spokenLanguages']),
-      professionalCertificates: (json['professionalCertificates'] as List)
-          .map((i) => ProfessionalCertificate.fromJson(i))
-          .toList(),
-      profilePictureUrl: ProfilePictureUrl.fromJson(json['profilePictureUrl']),
-      meetingType: MeetingType.fromJson(json['meetingType']),
-    );
+    try {
+      return TherapistInfo(
+        birthday: json['birthday'] as Timestamp,
+        firstName: json['firstName'] as String,
+        intro: json['intro'] as String,
+        lastName: json['lastName'] as String,
+        email: json['email'] as String,
+        location: Location.fromJson(json['location'] as Map<String, dynamic>),
+        meetingType:
+            MeetingType.fromJson(json['meetingType'] as Map<String, dynamic>),
+        phone: Phone.fromJson(json['phone'] as Map<String, dynamic>),
+        privateNotes: json['privateNotes'] as String,
+        profilePictureUrl: ProfilePictureUrl.fromJson(
+            json['profilePictureUrl'] as Map<String, dynamic>),
+        publicPresentation: json['publicPresentation'] as String,
+        specializations: List<String>.from(json['specializations'] as List),
+        spokenLanguages: List<String>.from(json['spokenLanguages'] as List),
+        professionalCertificates: (json['professionalCertificates'] as List)
+            .map((i) =>
+                ProfessionalCertificate.fromJson(i as Map<String, dynamic>))
+            .toList(),
+        title: json['title'] as String,
+        userInfoIsVerified: json['userInfoIsVerified'] as bool,
+      );
+    } catch (e, stack) {
+      debugPrint('Error in TherapistInfo.fromJson for ID ${json['id']}: $e');
+      debugPrint('Stack trace: $stack');
+      throw e;
+    }
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'intro': intro,
-      'publicPresentation': publicPresentation,
-      'privateNotes': privateNotes,
-      'location': location.toJson(),
+      'birthday': birthday,
       'firstName': firstName,
-      'userInfoIsVerified': userInfoIsVerified,
+      'email': email,
+      'intro': intro,
       'lastName': lastName,
+      'location': location.toJson(),
+      'meetingType': meetingType.toJson(),
+      'phone': phone.toJson(),
+      'privateNotes': privateNotes,
+      'profilePictureUrl': profilePictureUrl.toJson(),
+      'publicPresentation': publicPresentation,
       'specializations': specializations,
       'spokenLanguages': spokenLanguages,
       'professionalCertificates':
           professionalCertificates.map((i) => i.toJson()).toList(),
-      'profilePictureUrl': profilePictureUrl.toJson(),
-      'meetingType': meetingType.toJson(),
+      'title': title,
+      'userInfoIsVerified': userInfoIsVerified,
     };
   }
 }
@@ -1829,14 +1524,20 @@ class Location {
   });
 
   factory Location.fromJson(Map<String, dynamic> json) {
-    return Location(
-      address: json['address'],
-      city: json['city'],
-      country: json['country'],
-      geolocation: json['geolocation'] as GeoPoint,
-      stateProvince: json['stateProvince'],
-      zip: json['zip'],
-    );
+    try {
+      return Location(
+        address: json['address'] as String,
+        city: json['city'] as String,
+        country: json['country'] as String,
+        geolocation: json['geolocation'] as GeoPoint,
+        stateProvince: json['stateProvince'] as String,
+        zip: json['zip'] as String,
+      );
+    } catch (e, stack) {
+      debugPrint('Error in Location.fromJson: $e');
+      debugPrint('Stack trace: $stack');
+      throw e;
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -1847,6 +1548,66 @@ class Location {
       'geolocation': geolocation,
       'stateProvince': stateProvince,
       'zip': zip,
+    };
+  }
+}
+
+class MeetingType {
+  bool presential;
+  bool remote;
+
+  MeetingType({
+    required this.presential,
+    required this.remote,
+  });
+
+  factory MeetingType.fromJson(Map<String, dynamic> json) {
+    try {
+      return MeetingType(
+        presential: json['presential'] as bool,
+        remote: json['remote'] as bool,
+      );
+    } catch (e, stack) {
+      debugPrint('Error in MeetingType.fromJson: $e');
+      debugPrint('Stack trace: $stack');
+      throw e;
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'presential': presential,
+      'remote': remote,
+    };
+  }
+}
+
+class Phone {
+  String areaCode;
+  String number;
+
+  Phone({
+    required this.areaCode,
+    required this.number,
+  });
+
+  factory Phone.fromJson(Map<String, dynamic> json) {
+    try {
+      return Phone(
+        areaCode: json['areaCode'] as String,
+        number: json['number'] as String,
+      );
+    } catch (e, stack) {
+      debugPrint('Error in Phone.fromJson: $e');
+      debugPrint('Stack trace: $stack');
+      throw e;
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'areaCode': areaCode,
+      'number': number,
     };
   }
 }
@@ -1869,14 +1630,20 @@ class ProfessionalCertificate {
   });
 
   factory ProfessionalCertificate.fromJson(Map<String, dynamic> json) {
-    return ProfessionalCertificate(
-      institution: json['institution'],
-      photoUrl: json['photoUrl'],
-      title: json['title'],
-      type: json['type'],
-      verified: json['verified'],
-      yearObtained: json['yearObtained'],
-    );
+    try {
+      return ProfessionalCertificate(
+        institution: json['institution'] as String,
+        photoUrl: json['photoUrl'] as String,
+        title: json['title'] as String,
+        type: json['type'] as String,
+        verified: json['verified'] as bool,
+        yearObtained: json['yearObtained'] as int,
+      );
+    } catch (e, stack) {
+      debugPrint('Error in ProfessionalCertificate.fromJson: $e');
+      debugPrint('Stack trace: $stack');
+      throw e;
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -1903,11 +1670,17 @@ class ProfilePictureUrl {
   });
 
   factory ProfilePictureUrl.fromJson(Map<String, dynamic> json) {
-    return ProfilePictureUrl(
-      large: json['large'],
-      small: json['small'],
-      thumb: json['thumb'],
-    );
+    try {
+      return ProfilePictureUrl(
+        large: json['large'] as String,
+        small: json['small'] as String,
+        thumb: json['thumb'] as String,
+      );
+    } catch (e, stack) {
+      debugPrint('Error in ProfilePictureUrl.fromJson: $e');
+      debugPrint('Stack trace: $stack');
+      throw e;
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -1919,181 +1692,1063 @@ class ProfilePictureUrl {
   }
 }
 
-class MeetingType {
-  bool presential;
-  bool remote;
-
-  MeetingType({
-    required this.presential,
-    required this.remote,
-  });
-
-  factory MeetingType.fromJson(Map<String, dynamic> json) {
-    return MeetingType(
-      presential: json['presential'],
-      remote: json['remote'],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'presential': presential,
-      'remote': remote,
-    };
+Future<List<TherapistModel>> _fetchTherapists() async {
+  try {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    QuerySnapshot snapshot = await firestore.collection('therapists').get();
+    return snapshot.docs
+        .map((doc) {
+          try {
+            return TherapistModel.fromJson(
+              doc.data() as Map<String, dynamic>,
+              doc.id,
+            );
+          } catch (e, stack) {
+            debugPrint('Error in processing document ID ${doc.id}: $e');
+            debugPrint('Stack trace: $stack');
+            return null;
+          }
+        })
+        .where((doc) => doc != null)
+        .cast<TherapistModel>()
+        .toList();
+  } catch (e, stack) {
+    debugPrint('Failed to get therapists: $e');
+    debugPrint('Stack trace: $stack');
+    return [];
   }
 }
 
-///// lib/screens/common/welcome_main_screen/welcome_main_screen.dart /////
-import 'package:animate_do/animate_do.dart';
-import 'package:findatherapistapp/app_settings/app_info.dart';
+///// lib/screens/user_area/user_request_screen/user_request_screen.dart /////
+import 'dart:async';
+import 'dart:developer';
+
+import 'package:country_picker/country_picker.dart';
+
+import 'package:dash_flags/dash_flags.dart' as dash_flags;
+import 'package:findatherapistapp/widgets/ModalTopChip/modal_top_chip.dart';
+import 'package:findatherapistapp/widgets/NotificationModal/notification_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:findatherapistapp/models/general_models.dart';
+import 'package:findatherapistapp/providers/locale_provider.dart';
+import 'package:findatherapistapp/utils/admin/to_capital_case.dart';
+import 'package:findatherapistapp/widgets/NotificationSnackbar/notification_snackbar.dart';
+
+import 'package:flutter_localized_locales/flutter_localized_locales.dart';
+import 'package:findatherapistapp/widgets/LoadingCircle/loading_circle.dart';
+import 'package:findatherapistapp/services/gemini_service.dart';
+import 'package:findatherapistapp/services/speech_to_text_service.dart';
+
 import 'package:go_router/go_router.dart';
-import 'package:lottie/lottie.dart';
-import 'package:skeletonizer/skeletonizer.dart';
-import 'package:findatherapistapp/app_settings/app_general_settings.dart';
-import 'package:findatherapistapp/widgets/AppScaffold/app_scaffold.dart';
-
-import '../../../generated/l10n.dart';
+import '../../../app_settings/theme_settings.dart';
+import '../../../models/gemini_tags_response_model.dart';
+import '../../../providers/providers_all.dart';
 import '../../../routes/routes.dart';
-import '../../../utils/admin/add_current_user_as_therapist.dart';
-import '../../../utils/admin/add_current_user_to_database.dart';
+import '../../../utils/debug/error_code_to_text.dart';
+import '../../../utils/functions/show_city_state_selection_modal.dart';
+import '../../../utils/locale/build_language_text_with_flag.dart';
+import '../../../utils/locale/get_localized_language_names.dart';
+import '../../../utils/locale/show_language_selection_modal.dart';
+import '../../../utils/ui/get_dash_flag_by_country_code.dart';
+import '../../../widgets/AppScaffold/app_scaffold.dart';
+import '../../../generated/l10n.dart';
+import '../../../widgets/LocationSelectionModal/location_selection_modal.dart';
+import '../../common/aspects_screen/aspects_screen.dart';
 
-class WelcomeMainScreen extends ConsumerStatefulWidget {
-  const WelcomeMainScreen({super.key});
+class UserRequestScreen extends ConsumerStatefulWidget {
+  const UserRequestScreen({super.key});
 
   @override
-  ConsumerState<WelcomeMainScreen> createState() => _WelcomeMainScreenState();
+  ConsumerState<UserRequestScreen> createState() => _UserRequestScreenState();
 }
 
-class _WelcomeMainScreenState extends ConsumerState<WelcomeMainScreen> {
-  bool useAppBar = AppGeneralSettings.useTopAppBar;
-  ValueNotifier<bool> isDialOpen = ValueNotifier(false);
-  bool exampleSwitchValue = false;
-  static const bool isLoading = false;
+class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
+  final TextEditingController _requestController = TextEditingController();
+  final TextEditingController _languageController = TextEditingController();
+  String _requestLastText = '';
+  final GeminiService _geminiService = GeminiService();
+  final SpeechToTextService _speechService = SpeechToTextService();
+  GeminiTagsResponse? _tagsResponse;
+  bool isSendingRequest = false;
+  bool _isListening = false;
+  bool _isImprovingTranscription = false;
+  bool _isAutoWriting = false;
+  Timer? _autoWriteTimer;
+  TextEditingController countryInputController = TextEditingController();
+  TextEditingController stateProvinceInputController = TextEditingController();
+  TextEditingController cityInputController = TextEditingController();
+
+  String? defaultCountry;
+  late UserRequestFilters therapistFilters;
+
+  List<Country> countries = [];
+  String listenedText = '';
+
+  final ScrollController _scrollControllerPage1 = ScrollController();
+  final ScrollController _scrollControllerPage2 = ScrollController();
+
+  CountryService countryService = CountryService();
+
+  List<String> selectedLanguages = ['en'];
+
+  final PageController _pageController = PageController();
 
   @override
   void initState() {
     super.initState();
+    _initializeSpeech();
+
+    Locale currentLocale = ref.read(localeProvider).locale;
+
+    selectedLanguages = [currentLocale.languageCode];
+
+    therapistFilters = UserRequestFilters(
+        remote: true,
+        presential: true,
+        location: LocationFilters(
+            enabled: true, country: 'AU', state: null, city: null));
+    List<Country> allCountries = countryService.getAll();
+
+    setState(() {
+      countries = allCountries;
+    });
+
+    stateProvinceInputController.text = '';
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _languageController.text =
+        getLocalizedLanguagesNames(context, languageCodes: selectedLanguages);
+    if (therapistFilters.location.country == null) {
+      countryInputController.text = '< Select a country >';
+    } else {
+      countryInputController.text =
+          ' ${CountryLocalizations.of(context)?.countryName(countryCode: therapistFilters.location.country)}';
+    }
+  }
+
+  void _initializeSpeech() async {
+    await _speechService.initialize();
+  }
+
+  @override
+  void dispose() {
+    _speechService.stopListening();
+    _requestController.dispose();
+    _autoWriteTimer?.cancel();
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _startAutoWrite() async {
+    if (_isListening) {
+      _stopListening();
+    }
+    setState(() {
+      _isAutoWriting = true;
+    });
+
+    final LocaleProvider localeService = ref.read(localeProvider);
+
+    final newText = await _geminiService.generateAutoWriteText(
+        language: localeService.locale.languageCode);
+    int charIndex = 0;
+    int blockSize = 1;
+
+    _autoWriteTimer = Timer.periodic(const Duration(milliseconds: 20), (timer) {
+      if (_isAutoWriting && charIndex < newText.length) {
+        setState(() {
+          int nextIndex = charIndex + blockSize;
+          if (nextIndex > newText.length) {
+            nextIndex = newText.length;
+          }
+          _requestController.text += newText.substring(charIndex, nextIndex);
+          charIndex = nextIndex;
+        });
+      } else {
+        _stopAutoWrite();
+      }
+    });
+  }
+
+  void _stopAutoWrite() async {
+    setState(() {
+      _isAutoWriting = false;
+    });
+    _autoWriteTimer?.cancel();
+  }
+
+  void _startListening() async {
+    if (_isAutoWriting) {
+      _stopAutoWrite();
+    }
+
+    var localeService = ref.watch(localeProvider);
+
+    setState(() {
+      _isListening = true;
+      _requestLastText = _requestController.text;
+    });
+
+    _speechService.startListening(
+      localeId: localeService.locale.languageCode,
+      onResult: (text) {
+        setState(() {
+          listenedText = text;
+          _requestController.text = _requestLastText + text;
+        });
+      },
+    );
+    setState(() {
+      listenedText = '';
+    });
+  }
+
+  void _stopListening() async {
+    _speechService.stopListening();
+    setState(() => _isListening = false);
+
+    if (_requestController.text.isNotEmpty && listenedText.isNotEmpty) {
+      await _improveTranscription(_requestController.text);
+    }
+  }
+
+  Future<void> _improveTranscription(String text) async {
+    setState(() {
+      _isImprovingTranscription = true;
+    });
+
+    final improvedText = await _geminiService.improveTranscription(text);
+    setState(() {
+      _requestController.text = improvedText;
+      _isImprovingTranscription = false;
+      _requestLastText = improvedText;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    ///device height
-    final double deviceHeight = MediaQuery.of(context).size.height;
+    final bool isDarkMode =
+        ref.watch(themeProvider).themeMode == ThemeMode.dark;
+
+    final therapistsLanguages = ref.watch(therapistsLanguagesProvider);
+    final labelTextStyle = Theme.of(context)
+        .textTheme
+        .titleMedium
+        ?.copyWith(fontSize: 15, fontWeight: FontWeight.w600);
+
     return AppScaffold(
-      isProtected: true,
+      scrollPhysics: const NeverScrollableScrollPhysics(),
       ignoreGlobalPadding: true,
-      appBarTitle: S.of(context).homeScreenTitle,
-      body: SizedBox(
-        height: deviceHeight - 180,
+      centerTitle: true,
+      backButton: () {
+        if (_pageController.hasClients && _pageController.page == 0) {
+          if (Navigator.canPop(context)) {
+            Navigator.pop(context);
+          } else {
+            context.go(Routes.welcomeMainScreen.path);
+          }
+        } else {
+          _pageController.previousPage(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+          );
+        }
+      },
+      setFloatingSpeedDialToLoadingMode:
+          isSendingRequest || _isAutoWriting || _isImprovingTranscription,
+      useTopAppBar: true,
+      isProtected: true,
+      appBarTitle: S.of(context).yourRequest,
+      body: Padding(
+        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: <Widget>[
-            const SizedBox(
-              height: 60,
-            ),
+          children: [
             Expanded(
-              child: FadeInUp(
-                from: 20,
-                curve: Curves.decelerate,
-                delay: const Duration(milliseconds: 2000),
-                duration: const Duration(milliseconds: 900),
-                child: Lottie.asset(
-                    'lib/assets/lottie_animations/animation2.json',
-                    width: 330
-                    // Use BoxFit.contain to adjust the size
-                    ),
+              child: PageView(
+                controller: _pageController,
+                physics: const ClampingScrollPhysics(),
+                children: [
+                  _buildFirstPage(
+                      context, isDarkMode, therapistsLanguages.languages),
+                  _buildSecondPage(context, isDarkMode),
+                ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 27),
-              child: Skeletonizer(
-                enabled: isLoading,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    FadeInUp(
-                      curve: Curves.decelerate,
-                      duration: const Duration(milliseconds: 1000),
-                      delay: const Duration(milliseconds: 1500),
-                      from: 10,
-                      child: Column(
-                        children: [
-                          Text(
-                              '${S.of(context).welcomeToPrefix}${AppInfo.appName}!',
-                              style: Theme.of(context).textTheme.headlineSmall),
-                          const SizedBox(height: 10),
-                          Text(S.of(context).welcomeScreenSubtitleDescription,
-                              style: Theme.of(context).textTheme.bodyMedium),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 13),
-                    FadeInUp(
-                      curve: Curves.decelerate,
-                      duration: const Duration(milliseconds: 1000),
-                      from: 20,
-                      child: Column(
-                        children: [
-                          ElevatedButton(
-                              onPressed: () {
-                                context.push(Routes.userRequestScreen.path);
-                              },
-                              style: ElevatedButton.styleFrom(
-                                minimumSize: const Size(double.infinity, 47),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(S.of(context).findYourTherapistButton),
-                                ],
-                              )),
-                          const SizedBox(height: 10),
-                          OutlinedButton(
-                              onPressed: () {
-                                context
-                                    .push(Routes.therapistProfileScreen.path);
-                                // updateALLTherapistAspects();
-                              },
-                              style: ElevatedButton.styleFrom(
-                                minimumSize: const Size(double.infinity, 47),
-                              ),
-                              child: Text(
-                                  S.of(context).registerAsTherapistButton)),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            ElevatedButton(
-                onPressed: () {
-                  addTherapist();
-                  createUser();
-                },
-                child: Text('Add Therapist and user')),
-            const SizedBox(height: 15),
           ],
         ),
       ),
     );
   }
+
+  Widget _buildFirstPage(
+      BuildContext context, bool isDarkMode, List<String> availableLanguages) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    final labelTextStyle = Theme.of(context)
+        .textTheme
+        .titleMedium
+        ?.copyWith(fontSize: 15, fontWeight: FontWeight.w600);
+
+    return SingleChildScrollView(
+      controller: _scrollControllerPage1,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          const SizedBox(
+            height: 20,
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '${S.of(context).meetingType}:',
+                style: labelTextStyle,
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: ListTile(
+                        dense: true,
+                        onTap: () {
+                          setState(() {
+                            if (!therapistFilters.presential) return;
+
+                            therapistFilters.remote = !therapistFilters.remote;
+                          });
+                        },
+                        contentPadding: const EdgeInsets.only(
+                            left: 16, right: 4, bottom: 1, top: 1),
+                        shape: RoundedRectangleBorder(
+                          side: BorderSide(
+                            width: 1,
+                            color: isDarkMode ? Colors.white : Colors.black87,
+                          ),
+                          borderRadius: ThemeSettings.buttonsBorderRadius,
+                        ),
+                        title: Text(S.of(context).remote,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  fontSize: 15,
+                                )),
+                        trailing: IgnorePointer(
+                          child: Checkbox(
+                              value: therapistFilters.remote,
+                              onChanged: (value) {}),
+                        )),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: ListTile(
+                        dense: true,
+                        onTap: () {
+                          setState(() {
+                            if (!therapistFilters.remote) return;
+                            therapistFilters.presential =
+                                !therapistFilters.presential;
+                          });
+                        },
+                        contentPadding: const EdgeInsets.only(
+                            left: 16, right: 4, bottom: 1, top: 1),
+                        shape: RoundedRectangleBorder(
+                          side: BorderSide(
+                            width: 1,
+                            color: isDarkMode ? Colors.white : Colors.black87,
+                          ),
+                          borderRadius: ThemeSettings.buttonsBorderRadius,
+                        ),
+                        title: Text(S.of(context).presential,
+                            overflow: TextOverflow.visible,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(fontSize: 15)),
+                        trailing: IgnorePointer(
+                          child: Checkbox(
+                              value: therapistFilters.presential,
+                              onChanged: (value) {}),
+                        )),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+
+              /// Preferred Language Input
+              Text(
+                '${S.of(context).preferredLanguage}:',
+                style: labelTextStyle,
+              ),
+              const SizedBox(height: 10),
+              GestureDetector(
+                onTap: () => showLanguageSelectionModal(context,
+                    selectedLanguages: availableLanguages,
+                    onLanguagesSelected: (List<String> languages) {
+                  setState(() {
+                    selectedLanguages = languages;
+                    _languageController.text = getLocalizedLanguagesNames(
+                        context,
+                        languageCodes: selectedLanguages);
+                  });
+                }),
+                child: AbsorbPointer(
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 13, horizontal: 12),
+                    decoration: BoxDecoration(
+                      color: isDarkMode
+                          ? ThemeSettings.inputBackgroundColor.darkModePrimary
+                          : ThemeSettings.inputBackgroundColor.lightModePrimary,
+                      border: Border.all(
+                          color: isDarkMode
+                              ? ThemeSettings.primaryTextColor.darkModePrimary
+                              : ThemeSettings
+                                  .primaryTextColor.lightModePrimary),
+                      borderRadius: ThemeSettings.inputsBorderRadius,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Flexible(
+                            child: buildLanguageText(context,
+                                selectedLanguages: selectedLanguages)),
+                        const Icon(Icons.add, size: 23),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        '${S.of(context).location}:',
+                        style: labelTextStyle,
+                      ),
+                      Expanded(
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Checkbox(
+                                  value: !therapistFilters.location.enabled,
+                                  onChanged: (_) {
+                                    setState(() {
+                                      therapistFilters.location.enabled =
+                                          !therapistFilters.location.enabled;
+                                    });
+                                  }),
+                              GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    therapistFilters.location.enabled =
+                                        !therapistFilters.location.enabled;
+                                  });
+                                },
+                                child: Text('${S.of(context).worldwide}  🌐',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(fontSize: 16)),
+                              ),
+                            ]),
+                      ),
+                    ],
+                  ),
+
+                  /// Country Input
+                  Visibility(
+                    visible: therapistFilters.location.enabled,
+                    child: GestureDetector(
+                      onTap: () {
+                        showCountryPicker(
+                          context: context,
+                          showPhoneCode: false,
+                          favorite: defaultCountry != null
+                              ? [therapistFilters.location.country!]
+                              : null,
+                          countryListTheme: CountryListThemeData(
+                            bottomSheetHeight: screenHeight * 0.85,
+                            textStyle:
+                                const TextStyle(height: 2, fontSize: 16.5),
+                          ),
+                          customFlagBuilder: (Country country) {
+                            return getDashFlagByCountryCode(
+                                country.countryCode);
+                          },
+                          onSelect: (Country country) {
+                            setState(() {
+                              if (therapistFilters.location.country !=
+                                  country.countryCode) {
+                                therapistFilters.location.state = null;
+                                therapistFilters.location.city = null;
+                                stateProvinceInputController.clear();
+                                cityInputController.clear();
+                              }
+
+                              therapistFilters.location.country =
+                                  country.countryCode;
+
+                              countryInputController.text =
+                                  '  ${country.nameLocalized}';
+                              defaultCountry = country.countryCode;
+                            });
+                          },
+                        );
+                      },
+                      child: AbsorbPointer(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 4),
+                            TextField(
+                              decoration: InputDecoration(
+                                label: Text(S.of(context).country),
+                                hintText: '< ${S.of(context).selectACountry} >',
+                                hintStyle: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium
+                                    ?.copyWith(),
+                                prefixIcon: Padding(
+                                  padding: const EdgeInsets.only(left: 15),
+                                  child: getDashFlagByCountryCode(
+                                      therapistFilters.location.country),
+                                ),
+                                prefixIconConstraints: const BoxConstraints(
+                                  minWidth: 41,
+                                  minHeight: 20,
+                                ),
+                              ),
+                              controller: countryInputController,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+
+                  /// State/Province Input
+                  Visibility(
+                    visible: therapistFilters.location.enabled,
+                    child: GestureDetector(
+                      onTap: () {
+                        showCityStateSelectionModal(
+                          context,
+                          type: 'state',
+                          country: therapistFilters.location.country!,
+                          onSelect: (selectedItem) {
+                            setState(() {
+                              therapistFilters.location.state =
+                                  selectedItem.isoCode;
+                              stateProvinceInputController.text =
+                                  selectedItem.name;
+                              therapistFilters.location.city = null;
+                              cityInputController.clear();
+                            });
+                          },
+                        );
+                      },
+                      child: AbsorbPointer(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 15),
+                            TextField(
+                              textAlign: therapistFilters.location.state == null
+                                  ? TextAlign.center
+                                  : TextAlign.start,
+                              decoration: InputDecoration(
+                                filled: therapistFilters.location.state == null
+                                    ? false
+                                    : true,
+                                floatingLabelBehavior:
+                                    FloatingLabelBehavior.always,
+                                label: Text(S.of(context).stateProvince),
+                                hintText: '< ${S.of(context).all} >',
+                                hintStyle: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium
+                                    ?.copyWith(
+                                      fontSize: 15,
+                                    ),
+                                border: const OutlineInputBorder(),
+                              ),
+                              controller: stateProvinceInputController,
+                              onChanged: (value) {
+                                if (value.isEmpty) {
+                                  therapistFilters.location.state = null;
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+
+                  /// City Input
+                  Visibility(
+                    visible: therapistFilters.location.enabled &&
+                        therapistFilters.location.state != null,
+                    child: GestureDetector(
+                      onTap: () {
+                        showCityStateSelectionModal(
+                          context,
+                          type: 'city',
+                          country: therapistFilters.location.country!,
+                          state: therapistFilters.location.state,
+                          onSelect: (selectedItem) {
+                            setState(() {
+                              therapistFilters.location.city =
+                                  selectedItem.name;
+                              cityInputController.text = selectedItem.name;
+                            });
+                          },
+                        );
+                      },
+                      child: AbsorbPointer(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 15),
+                            TextField(
+                              textAlign: therapistFilters.location.city == null
+                                  ? TextAlign.center
+                                  : TextAlign.start,
+                              decoration: InputDecoration(
+                                floatingLabelBehavior:
+                                    FloatingLabelBehavior.always,
+                                label: Text(S.of(context).city),
+                                hintText: '< ${S.of(context).all} >',
+                                hintStyle: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium
+                                    ?.copyWith(fontSize: 15),
+                                border: const OutlineInputBorder(),
+                              ),
+                              controller:
+                                  cityInputController, // Usar el nuevo controlador
+                            ),
+                            const SizedBox(height: 12),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+
+          /// Next Button
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              ElevatedButton(
+                iconAlignment: IconAlignment.end,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.only(right: 10, left: 20),
+                  minimumSize: const Size(120, ThemeSettings.buttonsHeight),
+                ),
+                onPressed: () {
+                  _pageController.nextPage(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                  );
+                },
+                child: Row(
+                  children: [
+                    Text(S.of(context).continueButton),
+                    const SizedBox(width: 10),
+                    const Icon(Icons.arrow_forward_ios, size: 16)
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 90),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSecondPage(BuildContext context, bool isDarkMode) {
+    return SingleChildScrollView(
+      controller: _scrollControllerPage2,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          const SizedBox(
+            height: 20,
+          ),
+          Text(S.of(context).tellUsWhatYouAreLookingFor,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(fontSize: 17)),
+          const SizedBox(height: 20),
+
+          Stack(
+            children: [
+              Scrollbar(
+                thumbVisibility: true,
+                thickness: 5,
+                controller: _scrollControllerPage2,
+                child: TextField(
+                  scrollPhysics: const ClampingScrollPhysics(),
+                  controller: _requestController,
+                  decoration: InputDecoration(
+                    hintText: S.of(context).requestTextFieldHintText,
+                    border: const OutlineInputBorder(),
+                  ),
+                  maxLines: 18,
+                  enabled: !isSendingRequest &&
+                      !_isImprovingTranscription &&
+                      !_isAutoWriting,
+                ),
+              ),
+
+              /// Auto Writting Icon
+              Positioned(
+                right: 58,
+                bottom: 13,
+                child: InkWell(
+                    borderRadius: BorderRadius.circular(50),
+                    onTap: _isAutoWriting ? _stopAutoWrite : _startAutoWrite,
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: _isAutoWriting && isDarkMode
+                            ? Colors.white24
+                            : Colors.transparent,
+                        boxShadow: [
+                          if (_isAutoWriting)
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              blurRadius: 0,
+                              spreadRadius: 0,
+                            ),
+                        ],
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        _isAutoWriting
+                            ? Icons.auto_awesome
+                            : Icons.auto_awesome_outlined,
+                        color: (isSendingRequest && !isDarkMode)
+                            ? Colors.black54
+                            : (isSendingRequest && isDarkMode)
+                                ? Colors.white24
+                                : (_isAutoWriting && !isDarkMode
+                                    ? Colors.yellow
+                                    : isDarkMode && _isAutoWriting
+                                        ? Colors.white
+                                        : isDarkMode && !_isAutoWriting
+                                            ? Colors.white.withOpacity(0.7)
+                                            : Colors.black.withOpacity(0.7)),
+                        size: 28,
+                      ),
+                    )),
+              ),
+
+              /// Record Icon
+              Positioned(
+                right: 13,
+                bottom: 13,
+                child: InkWell(
+                    borderRadius: BorderRadius.circular(50),
+                    onTap: isSendingRequest
+                        ? null
+                        : (_isListening ? _stopListening : _startListening),
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: _isListening ? Colors.red : Colors.transparent,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        _isListening ? Icons.mic : Icons.mic_none,
+                        color: (isSendingRequest && !isDarkMode)
+                            ? Colors.black54
+                            : (isSendingRequest && isDarkMode)
+                                ? Colors.white24
+                                : (_isListening && !isDarkMode
+                                    ? Colors.white
+                                    : isDarkMode && _isListening
+                                        ? Colors.white
+                                        : isDarkMode && !_isListening
+                                            ? Colors.white.withOpacity(0.7)
+                                            : Colors.black.withOpacity(0.7)),
+                        size: 30,
+                      ),
+                    )),
+              ),
+            ],
+          ),
+          const SizedBox(height: 15),
+
+          if (_tagsResponse != null) ...[
+            if (_tagsResponse!.error != null) ...[
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: ThemeSettings.errorColor.shade50,
+                  border: Border.all(
+                    color: ThemeSettings.errorColor,
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 10),
+                      const Icon(Icons.warning, color: Colors.red, size: 40),
+                      const SizedBox(height: 10),
+                      Text(
+                        S.of(context).ohNoSomethingWentWrong,
+                        textAlign: TextAlign.center,
+                        style:
+                            Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                  color: ThemeSettings.errorColor,
+                                ),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        ErrorCodeToText.getGeminiErrorMessage(
+                            _tagsResponse!.error!, context),
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              color: ThemeSettings.errorColor,
+                            ),
+                      ),
+                      const SizedBox(height: 10),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+            ],
+          ],
+
+          /// Send Button
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(120, ThemeSettings.buttonsHeight),
+                  ),
+                  onPressed: isSendingRequest || _isAutoWriting
+                      ? null
+                      : _sendUserRequest,
+                  child: isSendingRequest
+                      ? Text(S.of(context).sendingButton)
+                      : _isListening ||
+                              _isImprovingTranscription ||
+                              _isAutoWriting
+                          ? SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: LoadingCircle(
+                                color: isDarkMode
+                                    ? Colors.white.withOpacity(0.8)
+                                    : Colors.white.withOpacity(0.8),
+                              ),
+                            )
+                          : Text(S.of(context).sendButton)),
+            ],
+          ),
+          const SizedBox(height: 50),
+        ],
+      ),
+    );
+  }
+  //
+  // void showLanguageSelectionModal(
+  //     BuildContext context, List<String> availableLanguages) {
+  //   showModalBottomSheet(
+  //     isScrollControlled: true,
+  //     constraints: BoxConstraints(
+  //       maxHeight: MediaQuery.of(context).size.height * 0.8,
+  //     ),
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return Column(
+  //         mainAxisAlignment: MainAxisAlignment.end,
+  //         mainAxisSize: MainAxisSize.min,
+  //         children: [
+  //           const ModalTopChip(),
+  //           StatefulBuilder(
+  //             builder: (BuildContext context, StateSetter modalSetState) {
+  //               return Expanded(
+  //                 child: Padding(
+  //                   padding: const EdgeInsets.only(
+  //                       top: 10, bottom: 30, left: 10, right: 10),
+  //                   child: SingleChildScrollView(
+  //                     physics: const ClampingScrollPhysics(),
+  //                     child: Column(
+  //                       mainAxisSize: MainAxisSize.min,
+  //                       children: availableLanguages.map((String languageCode) {
+  //                         return CheckboxListTile(
+  //                           title: Row(
+  //                             children: [
+  //                               dash_flags.LanguageFlag(
+  //                                   height: 20,
+  //                                   language: dash_flags.Language.fromCode(
+  //                                       languageCode)),
+  //                               const SizedBox(width: 10),
+  //                               Text(LocaleNames.of(context)!
+  //                                           .nameOf(languageCode) !=
+  //                                       null
+  //                                   ? toCapitalCase(LocaleNames.of(context)!
+  //                                       .nameOf(languageCode)!)
+  //                                   : languageCode),
+  //                             ],
+  //                           ),
+  //                           value: selectedLanguages.contains(languageCode),
+  //                           onChanged: (bool? value) {
+  //                             modalSetState(() {
+  //                               if (value == true) {
+  //                                 selectedLanguages.add(languageCode);
+  //                               } else {
+  //                                 if (selectedLanguages.length > 1) {
+  //                                   selectedLanguages.remove(languageCode);
+  //                                 }
+  //                               }
+  //                             });
+  //                             setState(() {
+  //                               _languageController.text =
+  //                                   getLocalizedLanguagesNames(context,
+  //                                       languageCodes: selectedLanguages);
+  //                             });
+  //                           },
+  //                         );
+  //                       }).toList(),
+  //                     ),
+  //                   ),
+  //                 ),
+  //               );
+  //             },
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
+
+  Future<Object?> _sendUserRequest() async {
+    if (isSendingRequest) return null;
+    if (_requestController.text.isEmpty) {
+      NotificationSnackbar.showSnackBar(
+          message: S.of(context).theRequestInputShouldNotBeEmpty,
+          variant: SnackbarVariant.info,
+          duration: 'short');
+      return null;
+    }
+
+    setState(() {
+      isSendingRequest = true;
+    });
+    final inputText = _requestController.text;
+    final GeminiTagsResponse geminiResponse =
+        await _geminiService.getTherapyTags(inputText);
+
+    if (geminiResponse.tags.positive.isEmpty &&
+        geminiResponse.tags.negative.isEmpty) {
+      if (mounted) {
+        NotificationModal.errorModal(
+            context: context,
+            title: S.of(context).oops,
+            message: S.of(context).noTagsFoundErrorDescription,
+            onTapConfirm: () {});
+      }
+
+      setState(() {
+        isSendingRequest = false;
+      });
+      return null;
+    }
+
+    setState(() {
+      _tagsResponse = geminiResponse;
+    });
+
+    log(geminiResponse.toJson().toString());
+
+    if (geminiResponse.error != null) {
+      setState(() {
+        isSendingRequest = false;
+      });
+      return null;
+    }
+
+    if (mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AspectsScreen(
+            aspects: geminiResponse.tags.toAspects(),
+            therapistFilters: therapistFilters,
+          ),
+        ),
+      );
+    }
+
+    setState(() {
+      isSendingRequest = false;
+    });
+
+    return geminiResponse;
+  }
 }
 
 ///// lib/screens/therapist_area/therapist_personal_profile_screen/therapist_personal_profile_screen.dart /////
 import 'dart:io';
-
+import 'package:advanced_chips_input/advanced_chips_input.dart';
+import 'package:animate_do/animate_do.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:country_state_city/models/city.dart';
+import 'package:country_state_city/models/state.dart' as state_utils;
+import 'package:country_state_city/utils/state_utils.dart';
+import 'package:findatherapistapp/services/firestore_service.dart';
+import 'package:findatherapistapp/widgets/LoadingCircle/loading_circle.dart';
+import 'package:findatherapistapp/widgets/NotificationModal/notification_modal.dart';
+import 'package:findatherapistapp/widgets/NotificationSnackbar/notification_snackbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../../../widgets/AppScaffold/app_scaffold.dart';
-import '../../../app_settings/theme_settings.dart';
-import '../../../providers/providers_all.dart';
-import '../../../routes/routes.dart';
-import '../../../utils/functions/images_utils.dart';
+import 'package:findatherapistapp/widgets/AppScaffold/app_scaffold.dart';
+import 'package:findatherapistapp/app_settings/theme_settings.dart';
+import 'package:findatherapistapp/providers/providers_all.dart';
+import 'package:findatherapistapp/providers/therapist_provider.dart';
+import 'package:findatherapistapp/routes/routes.dart';
+import 'package:findatherapistapp/services/profile_service.dart';
+import 'package:country_picker/country_picker.dart';
+import '../../../generated/l10n.dart';
+import '../../../utils/functions/profile_utils.dart';
+import '../../../utils/functions/show_city_state_selection_modal.dart';
+import '../../../utils/locale/all_locales_list.dart';
+import '../../../utils/locale/build_language_text_with_flag.dart';
+import '../../../utils/locale/get_localized_language_names.dart';
+import '../../../utils/locale/show_language_selection_modal.dart';
+import '../../../utils/ui/get_dash_flag_by_country_code.dart';
 
 class TherapistPersonalProfileScreen extends ConsumerStatefulWidget {
   const TherapistPersonalProfileScreen({super.key});
@@ -2108,55 +2763,105 @@ class _TherapistPersonalProfileScreenState
     with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
 
+  late String? therapistId;
+  final TextEditingController _titleController = TextEditingController();
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
-  final TextEditingController _birthdayController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _bioController = TextEditingController();
+  final TextEditingController _phoneAreaCodeController =
+      TextEditingController();
+  final TextEditingController _introController = TextEditingController();
   final TextEditingController _publicPresentationController =
       TextEditingController();
   final TextEditingController _privateNotesController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
-  final TextEditingController _cityController = TextEditingController();
-  final TextEditingController _countryController = TextEditingController();
-  final TextEditingController _stateProvinceController =
+  final TextEditingController _cityCodeController = TextEditingController();
+  final TextEditingController _countryCodeController = TextEditingController();
+  final TextEditingController _stateProvinceCodeController =
       TextEditingController();
+  final TextEditingController countryNameController = TextEditingController();
+  final TextEditingController stateProvinceNameController =
+      TextEditingController();
+  final TextEditingController cityNameController = TextEditingController();
+
   final TextEditingController _zipController = TextEditingController();
   final TextEditingController _profilePictureUrlController =
       TextEditingController();
+
+  final TextEditingController _specializationsController =
+      TextEditingController();
+
+  TextEditingController _languageController = TextEditingController();
+
+  List<String> selectedLanguages = ['en'];
   List<String> _specializations = [];
-  List<String> _spokenLanguages = [];
   bool _presential = false;
   bool _remote = false;
   File? _selectedImage;
+  bool uploadingProfilePicture = false;
+  bool savingChanges = false;
+
+  Timestamp therapistDateOfBirth = Timestamp.fromDate(DateTime(1990, 1, 1));
+  GeoPoint therapistGeolocation = const GeoPoint(0, 0);
 
   late TabController _tabController;
+  String? defaultCountry;
 
+  @override
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+
+    selectedLanguages =
+        ref.read(therapistProvider).therapist?.therapistInfo.spokenLanguages ??
+            ['en'];
+    // _languageController.text =
+    //     getLocalizedLanguagesNames(context, languageCodes: selectedLanguages);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    _languageController.text =
+        getLocalizedLanguagesNames(context, languageCodes: selectedLanguages);
   }
 
   @override
   void dispose() {
+    therapistId = null;
     _tabController.dispose();
     _firstNameController.dispose();
     _lastNameController.dispose();
-    _birthdayController.dispose();
     _emailController.dispose();
+    _specializationsController.dispose();
     _phoneController.dispose();
-    _bioController.dispose();
+    _languageController.dispose();
+    _introController.dispose();
     _publicPresentationController.dispose();
     _privateNotesController.dispose();
     _addressController.dispose();
-    _cityController.dispose();
-    _countryController.dispose();
-    _stateProvinceController.dispose();
+    _cityCodeController.dispose();
+    _countryCodeController.dispose();
+    _stateProvinceCodeController.dispose();
+    cityNameController.dispose();
+    stateProvinceNameController.dispose();
+    countryNameController.dispose();
     _zipController.dispose();
     _profilePictureUrlController.dispose();
+    _titleController.dispose();
+
     super.dispose();
+  }
+
+  void _updateSelectedLanguages(List<String> languages) {
+    setState(() {
+      selectedLanguages = languages;
+      _languageController.text =
+          getLocalizedLanguagesNames(context, languageCodes: selectedLanguages);
+    });
   }
 
   Future<void> _pickImageFromGallery() async {
@@ -2168,47 +2873,232 @@ class _TherapistPersonalProfileScreenState
       setState(() {
         _selectedImage = imageFile;
       });
-      final downloadUrl = await uploadImageToFirebase(_selectedImage!);
+
+      if (mounted) {
+        NotificationSnackbar.showSnackBar(
+            message: S.of(context).imageUploadedSuccessfully,
+            variant: 'success',
+            duration: 'short');
+      }
+
+      final downloadUrl =
+          await uploadProfilePicture(_selectedImage!, 'therapist');
 
       if (downloadUrl != null) {
         setState(() {
           _profilePictureUrlController.text = downloadUrl;
         });
 
-        // Aquí puedes actualizar el perfil del terapeuta con la URL de la imagen subida
-        debugPrint('Image uploaded: $downloadUrl');
+        debugPrint('Image uploaded successfully');
+      } else {
+        debugPrint('Error uploading image');
       }
     }
   }
 
   Future<void> _pickImageFromCamera() async {
-    final imageFile = await pickImage(ImageSource.camera);
+    final imageFile = await pickImage(ImageSource.camera,
+        preferredCamera: CameraDevice.front);
 
     if (imageFile != null) {
       setState(() {
         _selectedImage = imageFile;
       });
-      final downloadUrl = await uploadImageToFirebase(_selectedImage!);
+
+      debugPrint('Image uploaded successfully');
+      final downloadUrl =
+          await uploadProfilePicture(_selectedImage!, 'therapist');
 
       if (downloadUrl != null) {
         setState(() {
           _profilePictureUrlController.text = downloadUrl;
         });
 
-        // Aquí puedes actualizar el perfil del terapeuta con la URL de la imagen subida
-        debugPrint('Image uploaded: $downloadUrl');
+        NotificationSnackbar.showSnackBar(
+            message: S.of(context).imageUploadedSuccessfully,
+            variant: 'success',
+            duration: 'short');
       }
     }
+  }
+
+  Future<void> _saveChanges() async {
+    bool isDarkMode = ref.watch(themeProvider).themeMode == ThemeMode.dark;
+    setState(() {
+      savingChanges = true;
+    });
+    final profileService = ref.read(profileServiceProvider);
+
+    final currentDoc = await FirestoreService.instance
+        .collection('therapists')
+        .doc(therapistId)
+        .get();
+    final currentData = currentDoc.data() as Map<String, dynamic>;
+
+    final Map<String, dynamic> updatedData = {
+      'firstName': _firstNameController.text,
+      'lastName': _lastNameController.text,
+      'birthday': therapistDateOfBirth,
+      'email': _emailController.text,
+      'phone': {
+        'number': _phoneController.text,
+        'areaCode': _phoneAreaCodeController.text,
+      },
+      'intro': _introController.text,
+      'publicPresentation': _publicPresentationController.text,
+      'privateNotes': _privateNotesController.text,
+      'location': {
+        'address': _addressController.text,
+        'city': _cityCodeController.text,
+        'country': _countryCodeController.text,
+        'stateProvince': stateProvinceNameController.text,
+        'zip': _zipController.text,
+        'geolocation': therapistGeolocation,
+      },
+      'specializations': _specializations,
+      'spokenLanguages': selectedLanguages,
+      'meetingType': {
+        'presential': _presential,
+        'remote': _remote,
+      },
+      'profilePictureUrl': {
+        'large': _profilePictureUrlController.text,
+        'small': '',
+        'thumb': ''
+      },
+      'title': '',
+      'userInfoIsVerified': false,
+      'professionalCertificates':
+          currentData['therapistInfo']['professionalCertificates'] ?? [],
+    };
+
+    try {
+      bool therapistDataUploadedSuccesfully =
+          await profileService.updateProfile(
+        profileTarget: 'therapist',
+        userId: therapistId!,
+        data: {'therapistInfo': updatedData},
+        profilePicture: _selectedImage,
+      );
+
+      if (therapistDataUploadedSuccesfully) {
+        debugPrint('Profile updated successfully');
+
+        ref.read(therapistProvider.notifier).updateTherapistInfo(updatedData);
+
+        if (mounted) {
+          NotificationModal.successfulModal(
+            context: context,
+            title: S.of(context).profileSaved,
+            message: S.of(context).profileSavedMessage,
+          );
+        }
+      } else {
+        debugPrint('Error updating profile');
+        if (mounted) {
+          NotificationModal.errorModal(
+            icon: isDarkMode ? Icons.error_outline : Icons.error,
+            context: context,
+            title: S.of(context).errorSavingProfile,
+            message: S.of(context).errorSavingProfileMessage,
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint('Error updating profile: $e');
+    }
+
+    setState(() {
+      savingChanges = false;
+      _selectedImage = null;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final bool isDarkMode =
         ref.watch(themeProvider).themeMode == ThemeMode.dark;
+    final therapistState = ref.watch(therapistProvider);
+    final therapist = therapistState.therapist;
+    final labelTextStyle = Theme.of(context)
+        .textTheme
+        .titleMedium
+        ?.copyWith(fontSize: 15, fontWeight: FontWeight.w600);
 
-    final labelTextStyle = Theme.of(context).textTheme.titleMedium?.copyWith(
-          fontSize: 15,
-        );
+    if (therapist == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    therapistId = therapist.id;
+
+    if (_firstNameController.text.isEmpty) {
+      _firstNameController.text = therapist.therapistInfo.firstName;
+    }
+    if (_lastNameController.text.isEmpty) {
+      _lastNameController.text = therapist.therapistInfo.lastName;
+    }
+
+    if (_emailController.text.isEmpty) {
+      _emailController.text = therapist.therapistInfo.email;
+    }
+
+    if (_phoneController.text.isEmpty) {
+      _phoneController.text = therapist.therapistInfo.phone.number;
+    }
+
+    if (_phoneAreaCodeController.text.isEmpty) {
+      _phoneAreaCodeController.text = therapist.therapistInfo.phone.areaCode;
+    }
+
+    if (_specializationsController.text.isEmpty) {
+      _specializationsController.text = "Psichologist Counselor";
+    }
+
+    if (_introController.text.isEmpty) {
+      _introController.text = therapist.therapistInfo.intro;
+    }
+    if (_publicPresentationController.text.isEmpty) {
+      _publicPresentationController.text =
+          therapist.therapistInfo.publicPresentation;
+    }
+    if (_privateNotesController.text.isEmpty) {
+      _privateNotesController.text = therapist.therapistInfo.privateNotes;
+    }
+
+    if (_profilePictureUrlController.text.isEmpty) {
+      _profilePictureUrlController.text =
+          therapist.therapistInfo.profilePictureUrl.large;
+    }
+
+    if (_addressController.text.isEmpty) {
+      _addressController.text = therapist.therapistInfo.location.address;
+    }
+    if (_cityCodeController.text.isEmpty) {
+      _cityCodeController.text = therapist.therapistInfo.location.city;
+    }
+    if (_countryCodeController.text.isEmpty) {
+      _countryCodeController.text = therapist.therapistInfo.location.country;
+      countryNameController.text = CountryLocalizations.of(context)!
+          .countryName(countryCode: therapist.therapistInfo.location.country)!;
+    }
+    if (_stateProvinceCodeController.text.isEmpty) {
+      _stateProvinceCodeController.text =
+          therapist.therapistInfo.location.stateProvince;
+
+      stateProvinceNameController.text =
+          therapist.therapistInfo.location.stateProvince;
+    }
+
+    if (therapistGeolocation.latitude == 0 &&
+        therapistGeolocation.longitude == 0) {
+      therapistGeolocation = therapist.therapistInfo.location.geolocation;
+    }
+    if (_zipController.text.isEmpty) {
+      _zipController.text = therapist.therapistInfo.location.zip;
+    }
+    _presential = therapist.therapistInfo.meetingType.presential;
+    _remote = therapist.therapistInfo.meetingType.remote;
+    _specializations = therapist.therapistInfo.specializations;
 
     return AppScaffold(
       ignoreGlobalPadding: true,
@@ -2221,416 +3111,909 @@ class _TherapistPersonalProfileScreenState
       },
       hideFloatingSpeedDialMenu: true,
       scrollPhysics: const NeverScrollableScrollPhysics(),
-      appBarTitle: "Your Therapist Profile",
+      appBarTitle: S.of(context).yourTherapistProfile,
+      centerTitle: true,
       useTopAppBar: true,
       actions: [
         IconButton(
-          icon: Icon(Icons.settings),
+          icon: const Icon(Icons.settings),
           onPressed: () {
             context.push(Routes.settingsScreen.path);
           },
         ),
       ],
       isProtected: false,
-      body: NestedScrollView(
-        headerSliverBuilder: (context, innerBoxIsScrolled) => [
-          SliverAppBar(
-            backgroundColor: isDarkMode
-                ? ThemeSettings.scaffoldBackgroundColor.darkModePrimary
-                : ThemeSettings.scaffoldBackgroundColor.lightModePrimary,
-            surfaceTintColor: Color(0xFF4B4B4B),
-            leading: Container(),
-            expandedHeight: 220.0,
-            floating: true,
-            pinned: true,
-            flexibleSpace: LayoutBuilder(
-              builder: (BuildContext context, BoxConstraints constraints) {
-                double top = constraints.biggest.height;
-                return FlexibleSpaceBar(
-                  centerTitle: true,
-                  background: Column(
-                    children: [
-                      const SizedBox(height: 20),
-                      Stack(
-                        fit: StackFit.loose,
-                        alignment: Alignment.topCenter,
-                        clipBehavior: Clip.none,
-                        children: [
-                          ClipOval(
-                            child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                splashColor: Colors.black.withAlpha(30),
-                                onTap: () {
-                                  // Acción al presionar la imagen de perfil
-                                },
-                                child: InkWell(
-                                  splashColor: Colors.black.withAlpha(30),
-                                  onTap: _pickImageFromGallery,
-                                  child: AnimatedContainer(
-                                    clipBehavior: Clip.hardEdge,
-                                    duration: Duration(milliseconds: 100),
-                                    margin: EdgeInsets.only(
-                                      top: top > 160.0 ? 0.0 : 17.0,
-                                    ),
-                                    width: top > 160.0 ? 140.0 : 80.0,
-                                    height: top > 160.0 ? 140.0 : 80.0,
-                                    decoration: BoxDecoration(
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.grey.withOpacity(0.1),
-                                          blurRadius: 1,
-                                          offset: const Offset(0, 1),
-                                        ),
-                                      ],
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: Colors.white,
-                                        width: 4,
-                                      ),
-                                    ),
-                                    child: Ink(
-                                      decoration: const BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        image: DecorationImage(
-                                          image: AssetImage(
-                                            'lib/assets/placeholders/default_profile_picture.jpg',
+      body: Column(
+        children: [
+          Expanded(
+            child: NestedScrollView(
+              headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                SliverAppBar(
+                  backgroundColor: isDarkMode
+                      ? ThemeSettings.scaffoldBackgroundColor.darkModePrimary
+                      : ThemeSettings.scaffoldBackgroundColor.lightModePrimary,
+                  surfaceTintColor: Color(0xFF4B4B4B),
+                  leading: Container(),
+                  expandedHeight: 220.0,
+                  floating: true,
+                  pinned: true,
+                  flexibleSpace: LayoutBuilder(
+                    builder:
+                        (BuildContext context, BoxConstraints constraints) {
+                      double top = constraints.biggest.height;
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: isDarkMode
+                              ? ThemeSettings
+                                  .scaffoldBackgroundColor.darkModePrimary
+                              : ThemeSettings
+                                  .scaffoldBackgroundColor.lightModePrimary,
+                          boxShadow: [
+                            if (innerBoxIsScrolled)
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.08),
+                                blurRadius: 1.0,
+                                offset: Offset(0, 0.8),
+                              ),
+                          ],
+                        ),
+                        child: FlexibleSpaceBar(
+                          centerTitle: true,
+                          background: Column(
+                            children: [
+                              const SizedBox(height: 20),
+                              Stack(
+                                fit: StackFit.loose,
+                                alignment: Alignment.topCenter,
+                                clipBehavior: Clip.none,
+                                children: [
+                                  FadeIn(
+                                    delay: const Duration(milliseconds: 300),
+                                    child: ClipOval(
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          splashColor:
+                                              Colors.black.withAlpha(30),
+                                          onTap: _pickImageFromGallery,
+                                          child: AnimatedContainer(
+                                            clipBehavior: Clip.hardEdge,
+                                            duration:
+                                                Duration(milliseconds: 100),
+                                            margin: EdgeInsets.only(
+                                              top: top > 160.0 ? 0.0 : 17.0,
+                                            ),
+                                            width: top > 160.0 ? 140.0 : 80.0,
+                                            height: top > 160.0 ? 140.0 : 80.0,
+                                            decoration: BoxDecoration(
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.grey
+                                                      .withOpacity(0.1),
+                                                  blurRadius: 1,
+                                                  offset: const Offset(0, 1),
+                                                ),
+                                              ],
+                                              shape: BoxShape.circle,
+                                              border: Border.all(
+                                                color: Colors.white,
+                                                width: 4,
+                                              ),
+                                            ),
+                                            child: Ink(
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                shape: BoxShape.circle,
+                                                image: _selectedImage != null
+                                                    ? DecorationImage(
+                                                        image: AssetImage(
+                                                          _selectedImage!.path,
+                                                        ),
+                                                        fit: BoxFit.cover,
+                                                      )
+                                                    : therapist
+                                                            .therapistInfo
+                                                            .profilePictureUrl
+                                                            .large
+                                                            .isEmpty
+                                                        ? const DecorationImage(
+                                                            image: AssetImage(
+                                                              'lib/assets/placeholders/default_profile_picture.jpg',
+                                                            ),
+                                                            fit: BoxFit.cover,
+                                                          )
+                                                        : DecorationImage(
+                                                            image:
+                                                                CachedNetworkImageProvider(
+                                                              therapist
+                                                                  .therapistInfo
+                                                                  .profilePictureUrl
+                                                                  .large,
+                                                            ),
+                                                            fit: BoxFit.cover,
+                                                          ),
+                                              ),
+                                            ),
                                           ),
-                                          fit: BoxFit.cover,
                                         ),
                                       ),
                                     ),
                                   ),
+                                  if (top > 160.0)
+                                    Positioned(
+                                      right: -4,
+                                      top: 10,
+                                      child: FadeIn(
+                                        child: Container(
+                                          padding: const EdgeInsets.all(0),
+                                          width: 35,
+                                          height: 35,
+                                          decoration: const BoxDecoration(
+                                            border: Border.fromBorderSide(
+                                                BorderSide(
+                                              color: Colors.black26,
+                                              width: 3,
+                                            )),
+                                            color: Colors.white,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: Center(
+                                            child: IconButton(
+                                              padding: EdgeInsets.zero,
+                                              icon: const Icon(
+                                                Icons.camera_alt,
+                                                size: 19,
+                                              ),
+                                              color: Colors.black54,
+                                              onPressed: _pickImageFromCamera,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  bottom: TabBar(
+                    overlayColor:
+                        WidgetStateProperty.all<Color>(Colors.transparent),
+                    splashFactory: null,
+                    controller: _tabController,
+                    tabAlignment: TabAlignment.center,
+                    indicator: BoxDecoration(
+                        color: isDarkMode
+                            ? ThemeSettings.primaryTextColor.darkModePrimary
+                                .withOpacity(0.9)
+                            : ThemeSettings.primaryTextColor.lightModePrimary
+                                .withOpacity(0.8),
+                        borderRadius: const BorderRadius.only(
+                          bottomRight: Radius.circular(2),
+                          bottomLeft: Radius.circular(2),
+                          topLeft: Radius.circular(2),
+                          topRight: Radius.circular(2),
+                        )),
+                    indicatorPadding: const EdgeInsets.only(top: 45),
+                    indicatorColor: ThemeSettings.seedColor.withOpacity(0.7),
+                    dividerColor: Colors.transparent,
+                    labelStyle:
+                        Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                    labelPadding:
+                        const EdgeInsets.symmetric(vertical: 0, horizontal: 12),
+                    tabs: [
+                      Tab(
+                        text: S.of(context).contactInfo,
+                      ),
+                      Tab(text: S.of(context).aboutMe),
+                    ],
+                  ),
+                ),
+              ],
+              body: TabBarView(
+                controller: _tabController,
+                children: [
+                  // Personal Info Tab
+                  SingleChildScrollView(
+                    physics: const ClampingScrollPhysics(),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 18.0,
+                        vertical: 16.0,
+                      ),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // const SizedBox(height: 16),
+                            // Text(
+                            //   'Title',
+                            //   style: labelTextStyle,
+                            // ),
+                            // const SizedBox(height: 8),
+                            // TextFormField(
+                            //   controller: _titleController,
+                            // ),
+                            const SizedBox(height: 16),
+                            Text(
+                              S.of(context).firstName,
+                              style: labelTextStyle,
+                            ),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: _firstNameController,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return S.of(context).pleaseEnterYourFullName;
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              S.of(context).lastName,
+                              style: labelTextStyle,
+                            ),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: _lastNameController,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return S.of(context).pleaseEnterYourFullName;
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              S.of(context).contactEmail,
+                              style: labelTextStyle,
+                            ),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: _emailController,
+                              keyboardType: TextInputType.emailAddress,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return S.of(context).pleaseEnterYourEmail;
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              S.of(context).phone,
+                              style: labelTextStyle,
+                            ),
+                            Row(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  constraints: const BoxConstraints(
+                                    maxWidth: 80,
+                                  ),
+                                  child: TextFormField(
+                                    controller: _phoneAreaCodeController,
+                                    keyboardType: TextInputType.phone,
+                                    inputFormatters: [
+                                      LengthLimitingTextInputFormatter(4),
+                                    ],
+                                    decoration: const InputDecoration(
+                                      hintText: '000',
+                                      prefixIcon: Padding(
+                                        padding: EdgeInsets.only(left: 10),
+                                        child: Icon(
+                                          Icons.add,
+                                          size: 16,
+                                        ),
+                                      ),
+                                      prefixIconConstraints: BoxConstraints(
+                                        minWidth: 18,
+                                      ),
+                                    ),
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return S
+                                            .of(context)
+                                            .pleaseEnterPhoneAreaCode;
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ),
+                                SizedBox(width: 10),
+                                Expanded(
+                                  child: TextFormField(
+                                    controller: _phoneController,
+                                    decoration: const InputDecoration(
+                                      hintText: '000 000 0000',
+                                    ),
+                                    keyboardType: TextInputType.phone,
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return S
+                                            .of(context)
+                                            .pleaseEnterYourPhoneNumber;
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            // Text(
+                            //   S.of(context).birthday,
+                            //   style: labelTextStyle,
+                            // ),
+                            // const SizedBox(height: 8),
+                            // TextFormField(
+                            //   controller: _birthdayController,
+                            //   decoration: const InputDecoration(
+                            //     suffixIcon: Icon(Icons.calendar_today),
+                            //   ),
+                            //   readOnly: true,
+                            //   onTap: () {
+                            //     // Acción para seleccionar la fecha
+                            //   },
+                            //   validator: (value) {
+                            //     if (value == null || value.isEmpty) {
+                            //       return S.of(context).pleaseEnterYourBirthday;
+                            //     }
+                            //     return null;
+                            //   },
+                            // ),
+                            const SizedBox(height: 10),
+                            Text(
+                              S.of(context).country,
+                              style: labelTextStyle,
+                            ),
+                            const SizedBox(height: 8),
+                            GestureDetector(
+                              onTap: () {
+                                showCountryPicker(
+                                  context: context,
+                                  showPhoneCode: false,
+                                  favorite: defaultCountry != null
+                                      ? [defaultCountry!]
+                                      : null,
+                                  countryListTheme: CountryListThemeData(
+                                    bottomSheetHeight:
+                                        MediaQuery.of(context).size.height *
+                                            0.85,
+                                    textStyle: const TextStyle(
+                                        height: 2, fontSize: 16.5),
+                                  ),
+                                  customFlagBuilder: (Country country) {
+                                    return getDashFlagByCountryCode(
+                                        country.countryCode);
+                                  },
+                                  onSelect: (Country country) {
+                                    setState(() {
+                                      if (_countryCodeController.text !=
+                                          country.countryCode) {
+                                        stateProvinceNameController.text = '';
+                                        _stateProvinceCodeController.text = '';
+                                        _cityCodeController.text = '';
+                                        cityNameController.text = '';
+
+                                        therapist.therapistInfo.location
+                                            .stateProvince = '';
+                                        therapist.therapistInfo.location.city =
+                                            '';
+                                      }
+
+                                      _countryCodeController.text =
+                                          country.countryCode;
+                                      countryNameController.text =
+                                          country.nameLocalized!;
+                                      defaultCountry = country.countryCode;
+                                    });
+                                  },
+                                );
+                              },
+                              child: AbsorbPointer(
+                                child: TextFormField(
+                                  textAlign: _countryCodeController.text.isEmpty
+                                      ? TextAlign.center
+                                      : TextAlign.start,
+                                  controller: countryNameController,
+                                  decoration: InputDecoration(
+                                    hintText: '< ${S.of(context).selectHint} >',
+                                    hintStyle: TextStyle(
+                                      color: _countryCodeController.text.isEmpty
+                                          ? Colors.black
+                                          : (isDarkMode
+                                              ? ThemeSettings
+                                                  .hintTextColor.darkModePrimary
+                                              : ThemeSettings.hintTextColor
+                                                  .lightModePrimary),
+                                    ),
+                                    prefixIcon: _countryCodeController
+                                            .text.isEmpty
+                                        ? null
+                                        : Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 15, right: 8),
+                                            child: getDashFlagByCountryCode(
+                                                _countryCodeController.text),
+                                          ),
+                                    prefixIconConstraints: const BoxConstraints(
+                                      minWidth: 41,
+                                      minHeight: 20,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              S.of(context).stateProvince,
+                              style: labelTextStyle,
+                            ),
+                            const SizedBox(height: 8),
+                            GestureDetector(
+                              onTap: () {
+                                showCityStateSelectionModal(
+                                  context,
+                                  type: 'state',
+                                  country: _countryCodeController.text,
+                                  onSelect: (selectedItem) {
+                                    state_utils.State stateProvinceSelected =
+                                        selectedItem;
+
+                                    setState(() {
+                                      _stateProvinceCodeController.text =
+                                          stateProvinceSelected.isoCode;
+                                      stateProvinceNameController.text =
+                                          stateProvinceSelected.name;
+                                      _cityCodeController.clear();
+
+                                      if (stateProvinceSelected.latitude !=
+                                              null &&
+                                          stateProvinceSelected.longitude !=
+                                              null) {
+                                        therapistGeolocation = GeoPoint(
+                                            double.parse(stateProvinceSelected
+                                                .latitude!),
+                                            double.parse(stateProvinceSelected
+                                                .longitude!));
+                                      }
+                                    });
+                                  },
+                                );
+                              },
+                              child: AbsorbPointer(
+                                child: TextFormField(
+                                  textAlign:
+                                      _stateProvinceCodeController.text.isEmpty
+                                          ? TextAlign.center
+                                          : TextAlign.start,
+                                  controller: stateProvinceNameController,
+                                  decoration: InputDecoration(
+                                    filled: _stateProvinceCodeController
+                                            .text.isEmpty
+                                        ? false
+                                        : true,
+                                    hintText: _stateProvinceCodeController
+                                            .text.isEmpty
+                                        ? '< ${S.of(context).selectHint} >'
+                                        : '',
+                                    hintStyle: TextStyle(
+                                      color: _stateProvinceCodeController
+                                              .text.isEmpty
+                                          ? Colors.black
+                                          : (isDarkMode
+                                              ? ThemeSettings
+                                                  .hintTextColor.darkModePrimary
+                                              : ThemeSettings.hintTextColor
+                                                  .lightModePrimary),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              S.of(context).city,
+                              style: labelTextStyle,
+                            ),
+                            const SizedBox(height: 8),
+                            GestureDetector(
+                              onTap: () {
+                                showCityStateSelectionModal(
+                                  context,
+                                  type: 'city',
+                                  country: _countryCodeController.text,
+                                  state: _stateProvinceCodeController.text,
+                                  onSelect: (selectedItem) {
+                                    City citySelected = selectedItem;
+                                    setState(() {
+                                      _cityCodeController.text =
+                                          citySelected.name;
+
+                                      if (citySelected.latitude != null &&
+                                          citySelected.longitude != null) {
+                                        therapistGeolocation = GeoPoint(
+                                            double.parse(
+                                                citySelected.latitude!),
+                                            double.parse(
+                                                citySelected.longitude!));
+                                      }
+                                    });
+                                  },
+                                );
+                              },
+                              child: AbsorbPointer(
+                                child: TextFormField(
+                                  textAlign: _cityCodeController.text.isEmpty
+                                      ? TextAlign.center
+                                      : TextAlign.start,
+                                  controller: _cityCodeController,
+                                  decoration: InputDecoration(
+                                    filled: _cityCodeController.text.isEmpty
+                                        ? false
+                                        : true,
+                                    hintText: _cityCodeController.text.isEmpty
+                                        ? '< ${S.of(context).selectHint} >'
+                                        : '',
+                                    hintStyle: TextStyle(
+                                      color: _cityCodeController.text.isEmpty
+                                          ? Colors.black
+                                          : (isDarkMode
+                                              ? ThemeSettings
+                                                  .hintTextColor.darkModePrimary
+                                              : ThemeSettings.hintTextColor
+                                                  .lightModePrimary),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              S.of(context).address,
+                              style: labelTextStyle,
+                            ),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: _addressController,
+                              decoration: const InputDecoration(
+                                hintText: '123 Main St.',
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              S.of(context).zipCode,
+                              style: labelTextStyle,
+                            ),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: _zipController,
+                              decoration: const InputDecoration(
+                                hintText: '12345',
+                              ),
+                            ),
+
+                            const SizedBox(height: 30),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  // About me Tab
+                  SingleChildScrollView(
+                    physics: ClampingScrollPhysics(),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 10),
+                          Text(
+                            S.of(context).addSpecializations,
+                            style: labelTextStyle,
+                          ),
+                          const SizedBox(height: 10),
+                          AdvancedChipsInput(
+                            paddingInsideWidgetContainer: EdgeInsets.zero,
+                            controller: _specializationsController,
+                            onSubmitted: (specializations) {
+                              // setState(() {
+                              //   _specializations.add(specializations);
+                              // });
+                            },
+                            deleteIcon: Padding(
+                              padding: const EdgeInsets.only(left: 7),
+                              child: const Icon(
+                                Icons.cancel,
+                                size: 18,
+                              ),
+                            ),
+                            marginBetweenChips:
+                                EdgeInsets.only(bottom: 13, top: 2, right: 5),
+                            paddingInsideChipContainer: const EdgeInsets.only(
+                                left: 15, right: 15, top: 8, bottom: 8),
+                            textFormFieldStyle: TextFormFieldStyle(
+                              enableSuggestions: false,
+                              decoration: InputDecoration(
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      ThemeSettings.inputsBorderRadius,
+                                  borderSide: BorderSide(
+                                    color: isDarkMode
+                                        ? ThemeSettings
+                                            .primaryTextColor.darkModePrimary
+                                        : ThemeSettings
+                                            .primaryTextColor.lightModePrimary,
+                                  ),
+                                ),
+                                hintText: S.of(context).addSpecializations,
+                                hintStyle: TextStyle(
+                                  color: isDarkMode
+                                      ? ThemeSettings
+                                          .hintTextColor.darkModePrimary
+                                      : ThemeSettings
+                                          .hintTextColor.lightModePrimary,
+                                ),
+                              ),
+                            ),
+                            separatorCharacter: ' ',
+                            placeChipsSectionAbove: true,
+                            chipContainerDecoration: BoxDecoration(
+                              border: Border.all(
+                                width: 1,
+                                color: isDarkMode
+                                    ? ThemeSettings
+                                        .primaryTextColor.darkModePrimary
+                                    : ThemeSettings
+                                        .primaryTextColor.lightModePrimary,
+                              ),
+                              color: isDarkMode
+                                  ? ThemeSettings
+                                      .inputBackgroundColor.darkModePrimary
+                                  : ThemeSettings
+                                      .inputBackgroundColor.lightModePrimary,
+                              borderRadius: ThemeSettings.inputsBorderRadius,
+                            ),
+                            chipTextStyle: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                                color: isDarkMode
+                                    ? ThemeSettings
+                                        .primaryTextColor.darkModePrimary
+                                    : ThemeSettings
+                                        .primaryTextColor.lightModePrimary),
+                            validateInput: true,
+                            validateInputMethod: (value) {
+                              if (value.length < 3) {
+                                return 'Input should be at least 3 characters long';
+                              }
+                              return null;
+                            },
+                            onChipDeleted: (chipText, index) {
+                              print('Deleted chip: $chipText at index $index');
+                            },
+                          ),
+                          // TextFormField(
+                          //   decoration: InputDecoration(
+                          //     suffixIcon: IconButton(
+                          //       icon: const Icon(Icons.add),
+                          //       onPressed: () {
+                          //         // Acción para agregar especialización
+                          //       },
+                          //     ),
+                          //   ),
+                          // ),
+                          const SizedBox(height: 10),
+                          Text(
+                            S.of(context).addSpokenLanguages,
+                            style: labelTextStyle,
+                          ),
+                          const SizedBox(height: 10),
+                          GestureDetector(
+                            onTap: () => showLanguageSelectionModal(
+                              context,
+                              selectedLanguages: selectedLanguages,
+                              onLanguagesSelected: _updateSelectedLanguages,
+                            ),
+                            child: AbsorbPointer(
+                              child: Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 13, horizontal: 12),
+                                decoration: BoxDecoration(
+                                  color: isDarkMode
+                                      ? ThemeSettings
+                                          .inputBackgroundColor.darkModePrimary
+                                      : ThemeSettings.inputBackgroundColor
+                                          .lightModePrimary,
+                                  border: Border.all(
+                                      color: isDarkMode
+                                          ? ThemeSettings
+                                              .primaryTextColor.darkModePrimary
+                                          : ThemeSettings.primaryTextColor
+                                              .lightModePrimary),
+                                  borderRadius:
+                                      ThemeSettings.inputsBorderRadius,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Flexible(
+                                        child: buildLanguageText(context,
+                                            selectedLanguages:
+                                                selectedLanguages)),
+                                    const Icon(Icons.add, size: 23),
+                                  ],
                                 ),
                               ),
                             ),
                           ),
-                          if (top > 160.0)
-                            Positioned(
-                              right: -4,
-                              top: 10,
-                              child: Container(
-                                padding: const EdgeInsets.all(0),
-                                width: 35,
-                                height: 35,
-                                decoration: const BoxDecoration(
-                                  border: Border.fromBorderSide(BorderSide(
-                                    color: Colors.black26,
-                                    width: 3,
-                                  )),
-                                  color: Colors.white,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Center(
-                                  child: IconButton(
-                                    padding: EdgeInsets.zero,
-                                    icon: const Icon(
-                                      Icons.camera_alt,
-                                      size: 19,
-                                    ),
-                                    color: Colors.black54,
-                                    onPressed:
-                                        _pickImageFromCamera, // Llamar a la nueva función aquí
-                                  ),
-                                ),
+                          const SizedBox(height: 16),
+                          Text(
+                            '${S.of(context).meetingType}:',
+                            style: labelTextStyle,
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Checkbox(
+                                value: _presential,
+                                onChanged: (bool? value) {
+                                  setState(() {
+                                    _presential = !_presential;
+                                    therapist.therapistInfo.meetingType
+                                            .presential =
+                                        !therapist.therapistInfo.meetingType
+                                            .presential;
+                                  });
+                                },
                               ),
+                              Text(
+                                S.of(context).presential,
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Checkbox(
+                                value: _remote,
+                                onChanged: (bool? value) {
+                                  setState(() {
+                                    _remote = !_remote;
+                                    therapist.therapistInfo.meetingType.remote =
+                                        !therapist
+                                            .therapistInfo.meetingType.remote;
+                                  });
+                                },
+                              ),
+                              Text(
+                                S.of(context).remote,
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 16),
+                          Text(
+                            S.of(context).intro,
+                            style: labelTextStyle,
+                          ),
+                          SizedBox(height: 8),
+                          TextFormField(
+                            controller: _introController,
+                            maxLines: 3,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return S.of(context).pleaseEnterYourIntro;
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            S.of(context).publicPresentation,
+                            style: labelTextStyle,
+                          ),
+                          SizedBox(height: 8),
+                          TextFormField(
+                            controller: _publicPresentationController,
+                            scrollPhysics: const ClampingScrollPhysics(),
+                            maxLines: 8,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return S
+                                    .of(context)
+                                    .pleaseEnterYourPublicPresentation;
+                              }
+                              return null;
+                            },
+                          ),
+                          Divider(),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                S.of(context).privateNotes,
+                                style: labelTextStyle,
+                              ),
+                              Text(
+                                  ' (${S.of(context).privateNotesDescription})',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium
+                                      ?.copyWith(
+                                        fontSize: 15,
+                                      )),
+                            ],
+                          ),
+                          SizedBox(height: 8),
+                          Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Colors.red.withOpacity(0.3)!,
+                                width: 8,
+                              ),
+                              borderRadius: BorderRadius.circular(18),
                             ),
+                            child: TextFormField(
+                              controller: _privateNotesController,
+                              maxLines: 6,
+                            ),
+                          ),
                         ],
                       ),
-                    ],
+                    ),
                   ),
-                );
-              },
+                ],
+              ),
             ),
-            bottom: TabBar(
-              overlayColor: WidgetStateProperty.all<Color>(Colors.transparent),
-              splashFactory: null,
-              controller: _tabController,
-              tabAlignment: TabAlignment.center,
-              dividerColor: Colors.transparent,
-              labelStyle: Theme.of(context).textTheme.titleMedium,
-              labelPadding:
-                  const EdgeInsets.symmetric(vertical: 0, horizontal: 12),
-              tabs: const [
-                Tab(
-                  text: 'Personal Info',
+          ),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16.0),
+            decoration: BoxDecoration(
+              color: Theme.of(context).scaffoldBackgroundColor,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 1.0,
+                  offset: Offset(0, -0.8),
                 ),
-                Tab(text: 'About me'),
               ],
+            ),
+            child: ElevatedButton(
+              onPressed: savingChanges ? null : _saveChanges,
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.symmetric(vertical: 16),
+              ),
+              child: savingChanges
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(S.of(context).savingChanges),
+                        SizedBox(width: 8),
+                        const SizedBox(
+                            width: 12,
+                            height: 12,
+                            child: LoadingCircle(
+                              strokeWidth: 2.5,
+                            ))
+                      ],
+                    )
+                  : Text(S.of(context).saveChanges),
             ),
           ),
         ],
-        body: TabBarView(
-          controller: _tabController,
-          children: [
-            // Personal Info Tab
-            SingleChildScrollView(
-              physics: const ClampingScrollPhysics(),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 18.0,
-                  vertical: 16.0,
-                ),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 16),
-                      Text(
-                        'First Name',
-                        style: labelTextStyle,
-                      ),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        controller: _firstNameController,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your full name';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'Last Name',
-                        style: labelTextStyle,
-                      ),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        controller: _lastNameController,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your full name';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'Birthday',
-                        style: labelTextStyle,
-                      ),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        controller: _birthdayController,
-                        decoration: const InputDecoration(
-                          suffixIcon: Icon(Icons.calendar_today),
-                        ),
-                        readOnly: true,
-                        onTap: () {
-                          // Acción para seleccionar la fecha
-                        },
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your birthday';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'Email',
-                        style: labelTextStyle,
-                      ),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        controller: _emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your email';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'Phone',
-                        style: labelTextStyle,
-                      ),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        controller: _phoneController,
-                        decoration: const InputDecoration(
-                          suffixIcon: Icon(Icons.arrow_drop_down),
-                        ),
-                        keyboardType: TextInputType.phone,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your phone number';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'Address',
-                        style: labelTextStyle,
-                      ),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        controller: _addressController,
-                      ),
-                      const SizedBox(height: 10),
-                      Text('City', style: labelTextStyle),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        controller: _cityController,
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'Country',
-                        style: labelTextStyle,
-                      ),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        controller: _countryController,
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'State/Province',
-                        style: labelTextStyle,
-                      ),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        controller: _stateProvinceController,
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'Zip Code',
-                        style: labelTextStyle,
-                      ),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        controller: _zipController,
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'Add Specialization/s',
-                        style: labelTextStyle,
-                      ),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        decoration: InputDecoration(
-                          suffixIcon: IconButton(
-                            icon: const Icon(Icons.add),
-                            onPressed: () {
-                              // Acción para agregar especialización
-                            },
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'Add Spoken Language/s',
-                        style: labelTextStyle,
-                      ),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        decoration: InputDecoration(
-                          suffixIcon: IconButton(
-                            icon: Icon(Icons.add),
-                            onPressed: () {
-                              // Acción para agregar idioma hablado
-                            },
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Checkbox(
-                            value: _presential,
-                            onChanged: (bool? value) {
-                              setState(() {
-                                _presential = value ?? false;
-                              });
-                            },
-                          ),
-                          Text(
-                            'Presential',
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Checkbox(
-                            value: _remote,
-                            onChanged: (bool? value) {
-                              setState(() {
-                                _remote = value ?? false;
-                              });
-                            },
-                          ),
-                          Text(
-                            'Remote',
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            // About me Tab
-            SingleChildScrollView(
-              physics: ClampingScrollPhysics(),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 16),
-                    Text(
-                      'Intro',
-                      style: labelTextStyle,
-                    ),
-                    SizedBox(height: 8),
-                    TextFormField(
-                      controller: _bioController,
-                      maxLines: 3,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your intro';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      'Public Presentation',
-                      style: labelTextStyle,
-                    ),
-                    SizedBox(height: 8),
-                    TextFormField(
-                      controller: _publicPresentationController,
-                      maxLines: 8,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your public presentation';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      'Private Notes',
-                      style: labelTextStyle,
-                    ),
-                    SizedBox(height: 8),
-                    TextFormField(
-                      controller: _privateNotesController,
-                      maxLines: 6,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

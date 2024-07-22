@@ -200,7 +200,13 @@
          "errorUpdatingProfile": "Error al actualizar el perfil",
          "profileUpdatedSuccessfully": "Perfil actualizado exitosamente",
          "settings": "Configuración",
-         "loading": "Cargando..."
+         "loading": "Cargando...",
+         "noRatingsYet": "Sin valoraciones aún",
+         "selectHint": "Seleccionar",
+          "pleaseEnterPhoneAreaCode": "Por favor, ingresa el código de área de tu teléfono",
+          "contactEmail": "Correo de contacto",
+          "privateNotesDescription": "Estas notas son privadas y no serán reveladas públicamente. Pero servirán a la AI a encontrar coincidencias más precisas.",
+          "contactInfo": "Información de contacto"
 
 
 

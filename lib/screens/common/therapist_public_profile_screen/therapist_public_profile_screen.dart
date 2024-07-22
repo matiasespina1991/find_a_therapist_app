@@ -347,21 +347,35 @@ class _TherapistPublicProfileScreenState
                             color: Colors.amber,
                           ),
                           const SizedBox(width: 4),
-                          Text(
-                            widget.therapist.score.rating.toStringAsFixed(1),
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey[700],
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            '(${widget.therapist.score.amountRatings})',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey[700],
-                            ),
-                          ),
+                          if (widget.therapist.score.rating == 0)
+                            Text(
+                              S.of(context).noRatingsYet,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey[700],
+                              ),
+                            )
+                          else
+                            Column(
+                              children: [
+                                Text(
+                                  widget.therapist.score.rating
+                                      .toStringAsFixed(1),
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey[700],
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  '(${widget.therapist.score.amountRatings})',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey[700],
+                                  ),
+                                ),
+                              ],
+                            )
                         ],
                       ),
                       const SizedBox(height: 8.0),
@@ -558,12 +572,15 @@ class _TherapistPublicProfileScreenState
                                 ],
                               ))),
                       const SizedBox(height: 20.0),
-                      Text(
-                        S.of(context).professionalCertificates,
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                      ),
+                      if (widget.therapist.therapistInfo
+                          .professionalCertificates.isNotEmpty)
+                        Text(
+                          S.of(context).professionalCertificates,
+                          style:
+                              Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                        ),
                       ...widget.therapist.therapistInfo.professionalCertificates
                           .map((certificate) => ListTile(
                                 title: Text(certificate.title),

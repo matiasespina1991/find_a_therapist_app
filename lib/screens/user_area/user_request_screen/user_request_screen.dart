@@ -25,7 +25,9 @@ import '../../../providers/providers_all.dart';
 import '../../../routes/routes.dart';
 import '../../../utils/debug/error_code_to_text.dart';
 import '../../../utils/functions/show_city_state_selection_modal.dart';
+import '../../../utils/locale/build_language_text_with_flag.dart';
 import '../../../utils/locale/get_localized_language_names.dart';
+import '../../../utils/locale/show_language_selection_modal.dart';
 import '../../../utils/ui/get_dash_flag_by_country_code.dart';
 import '../../../widgets/AppScaffold/app_scaffold.dart';
 import '../../../generated/l10n.dart';
@@ -211,10 +213,15 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
         ref.watch(themeProvider).themeMode == ThemeMode.dark;
 
     final therapistsLanguages = ref.watch(therapistsLanguagesProvider);
+    final labelTextStyle = Theme.of(context)
+        .textTheme
+        .titleMedium
+        ?.copyWith(fontSize: 15, fontWeight: FontWeight.w600);
 
     return AppScaffold(
       scrollPhysics: const NeverScrollableScrollPhysics(),
       ignoreGlobalPadding: true,
+      centerTitle: true,
       backButton: () {
         if (_pageController.hasClients && _pageController.page == 0) {
           if (Navigator.canPop(context)) {
@@ -259,9 +266,10 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
       BuildContext context, bool isDarkMode, List<String> availableLanguages) {
     final screenHeight = MediaQuery.of(context).size.height;
 
-    final labelTextStyle = Theme.of(context).textTheme.bodyMedium?.copyWith(
-          fontSize: 15,
-        );
+    final labelTextStyle = Theme.of(context)
+        .textTheme
+        .titleMedium
+        ?.copyWith(fontSize: 15, fontWeight: FontWeight.w600);
 
     return SingleChildScrollView(
       controller: _scrollControllerPage1,
@@ -356,8 +364,16 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
               ),
               const SizedBox(height: 10),
               GestureDetector(
-                onTap: () =>
-                    _showLanguageSelectionModal(context, availableLanguages),
+                onTap: () => showLanguageSelectionModal(context,
+                    selectedLanguages: availableLanguages,
+                    onLanguagesSelected: (List<String> languages) {
+                  setState(() {
+                    selectedLanguages = languages;
+                    _languageController.text = getLocalizedLanguagesNames(
+                        context,
+                        languageCodes: selectedLanguages);
+                  });
+                }),
                 child: AbsorbPointer(
                   child: Container(
                     width: double.infinity,
@@ -377,7 +393,9 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Flexible(child: _buildLanguageText(context)),
+                        Flexible(
+                            child: buildLanguageText(context,
+                                selectedLanguages: selectedLanguages)),
                         const Icon(Icons.add, size: 23),
                       ],
                     ),
@@ -414,7 +432,10 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                                   });
                                 },
                                 child: Text('${S.of(context).worldwide}  🌐',
-                                    style: labelTextStyle),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(fontSize: 16)),
                               ),
                             ]),
                       ),
@@ -643,42 +664,6 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
     );
   }
 
-  RichText _buildLanguageText(BuildContext context) {
-    List<InlineSpan> spans = [];
-
-    for (String languageCode in selectedLanguages) {
-      spans.add(WidgetSpan(
-        alignment: PlaceholderAlignment.middle,
-        child: dash_flags.LanguageFlag(
-          height: 19,
-          language: dash_flags.Language.fromCode(languageCode),
-        ),
-      ));
-      spans.add(const TextSpan(text: '  '));
-      spans.add(TextSpan(
-        text: LocaleNames.of(context)!.nameOf(languageCode) != null
-            ? toCapitalCase(LocaleNames.of(context)!.nameOf(languageCode)!)
-            : languageCode,
-      ));
-      spans.add(const TextSpan(text: ',  '));
-    }
-
-    // Remove the last comma and space
-    if (spans.isNotEmpty) {
-      spans.removeLast();
-    }
-
-    return RichText(
-      text: TextSpan(
-        style: Theme.of(context)
-            .textTheme
-            .bodyMedium
-            ?.copyWith(fontSize: 15, height: 1.8),
-        children: spans,
-      ),
-    );
-  }
-
   Widget _buildSecondPage(BuildContext context, bool isDarkMode) {
     return SingleChildScrollView(
       controller: _scrollControllerPage2,
@@ -870,78 +855,78 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
       ),
     );
   }
-
-  void _showLanguageSelectionModal(
-      BuildContext context, List<String> availableLanguages) {
-    showModalBottomSheet(
-      isScrollControlled: true,
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.8,
-      ),
-      context: context,
-      builder: (BuildContext context) {
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const ModalTopChip(),
-            StatefulBuilder(
-              builder: (BuildContext context, StateSetter modalSetState) {
-                return Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                        top: 10, bottom: 30, left: 10, right: 10),
-                    child: SingleChildScrollView(
-                      physics: const ClampingScrollPhysics(),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: availableLanguages.map((String languageCode) {
-                          return CheckboxListTile(
-                            title: Row(
-                              children: [
-                                dash_flags.LanguageFlag(
-                                    height: 20,
-                                    language: dash_flags.Language.fromCode(
-                                        languageCode)),
-                                const SizedBox(width: 10),
-                                Text(LocaleNames.of(context)!
-                                            .nameOf(languageCode) !=
-                                        null
-                                    ? toCapitalCase(LocaleNames.of(context)!
-                                        .nameOf(languageCode)!)
-                                    : languageCode),
-                              ],
-                            ),
-                            value: selectedLanguages.contains(languageCode),
-                            onChanged: (bool? value) {
-                              modalSetState(() {
-                                if (value == true) {
-                                  selectedLanguages.add(languageCode);
-                                } else {
-                                  if (selectedLanguages.length > 1) {
-                                    selectedLanguages.remove(languageCode);
-                                  }
-                                }
-                              });
-                              setState(() {
-                                _languageController.text =
-                                    getLocalizedLanguagesNames(context,
-                                        languageCodes: selectedLanguages);
-                              });
-                            },
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+  //
+  // void showLanguageSelectionModal(
+  //     BuildContext context, List<String> availableLanguages) {
+  //   showModalBottomSheet(
+  //     isScrollControlled: true,
+  //     constraints: BoxConstraints(
+  //       maxHeight: MediaQuery.of(context).size.height * 0.8,
+  //     ),
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return Column(
+  //         mainAxisAlignment: MainAxisAlignment.end,
+  //         mainAxisSize: MainAxisSize.min,
+  //         children: [
+  //           const ModalTopChip(),
+  //           StatefulBuilder(
+  //             builder: (BuildContext context, StateSetter modalSetState) {
+  //               return Expanded(
+  //                 child: Padding(
+  //                   padding: const EdgeInsets.only(
+  //                       top: 10, bottom: 30, left: 10, right: 10),
+  //                   child: SingleChildScrollView(
+  //                     physics: const ClampingScrollPhysics(),
+  //                     child: Column(
+  //                       mainAxisSize: MainAxisSize.min,
+  //                       children: availableLanguages.map((String languageCode) {
+  //                         return CheckboxListTile(
+  //                           title: Row(
+  //                             children: [
+  //                               dash_flags.LanguageFlag(
+  //                                   height: 20,
+  //                                   language: dash_flags.Language.fromCode(
+  //                                       languageCode)),
+  //                               const SizedBox(width: 10),
+  //                               Text(LocaleNames.of(context)!
+  //                                           .nameOf(languageCode) !=
+  //                                       null
+  //                                   ? toCapitalCase(LocaleNames.of(context)!
+  //                                       .nameOf(languageCode)!)
+  //                                   : languageCode),
+  //                             ],
+  //                           ),
+  //                           value: selectedLanguages.contains(languageCode),
+  //                           onChanged: (bool? value) {
+  //                             modalSetState(() {
+  //                               if (value == true) {
+  //                                 selectedLanguages.add(languageCode);
+  //                               } else {
+  //                                 if (selectedLanguages.length > 1) {
+  //                                   selectedLanguages.remove(languageCode);
+  //                                 }
+  //                               }
+  //                             });
+  //                             setState(() {
+  //                               _languageController.text =
+  //                                   getLocalizedLanguagesNames(context,
+  //                                       languageCodes: selectedLanguages);
+  //                             });
+  //                           },
+  //                         );
+  //                       }).toList(),
+  //                     ),
+  //                   ),
+  //                 ),
+  //               );
+  //             },
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 
   Future<Object?> _sendUserRequest() async {
     if (isSendingRequest) return null;

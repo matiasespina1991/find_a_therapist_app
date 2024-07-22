@@ -3,6 +3,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:findatherapistapp/app_settings/theme_settings.dart';
 import 'package:findatherapistapp/models/therapist_model.dart';
 
+import '../../generated/l10n.dart';
+
 class TherapistListCard extends StatelessWidget {
   final TherapistModel therapist;
   final VoidCallback onTap;
@@ -183,8 +185,8 @@ class TherapistListCard extends StatelessWidget {
                                             .withOpacity(0.4),
                                         borderRadius: BorderRadius.circular(99),
                                       ),
-                                      child: const Center(
-                                        child: Text('Remote',
+                                      child: Center(
+                                        child: Text(S.of(context).remote,
                                             style: TextStyle(
                                               fontSize: 14,
                                               color: Colors.white,
