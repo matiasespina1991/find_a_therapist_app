@@ -23,6 +23,9 @@ import 'package:findatherapistapp/routes/routes.dart';
 import 'package:findatherapistapp/services/profile_service.dart';
 import 'package:country_picker/country_picker.dart';
 import '../../../generated/l10n.dart';
+import '../../../models/gemini_tags_response_model.dart';
+import '../../../models/therapist_model.dart';
+import '../../../services/gemini_service.dart';
 import '../../../utils/functions/profile_utils.dart';
 import '../../../utils/functions/show_city_state_selection_modal.dart';
 import '../../../utils/locale/all_locales_list.dart';
@@ -82,6 +85,8 @@ class _TherapistPersonalProfileScreenState
   File? _selectedImage;
   bool uploadingProfilePicture = false;
   bool savingChanges = false;
+  bool publicPresentationModified = false;
+  bool privateNotesModified = false;
 
   Timestamp therapistDateOfBirth = Timestamp.fromDate(DateTime(1990, 1, 1));
   GeoPoint therapistGeolocation = const GeoPoint(0, 0);
@@ -254,6 +259,83 @@ class _TherapistPersonalProfileScreenState
     };
 
     try {
+      GeminiService geminiService = GeminiService();
+
+      List<Term> positiveTerms = [];
+      List<Term> negativeTerms = [];
+
+      bool publicPresentationModified = _publicPresentationController.text !=
+          currentData['publicPresentation'];
+      bool privateNotesModified =
+          _privateNotesController.text != currentData['privateNotes'];
+
+      // Process Public Presentation
+      if (publicPresentationModified) {
+        debugPrint(
+            'Changes detected in PUBLIC PRESENTATION. Computing tags...');
+        GeminiTagsResponse geminiResponseForPublicPresentation =
+            await geminiService
+                .getAspectsForTherapist(_publicPresentationController.text);
+
+        if (geminiResponseForPublicPresentation.error != null) {
+          debugPrint(
+              'Failed to get tags for PUBLIC PRESENTATION: ${geminiResponseForPublicPresentation.error!.message}');
+        } else {
+          positiveTerms.addAll(geminiResponseForPublicPresentation.tags.positive
+              .map((tag) => Term(term: tag, public: true)));
+          negativeTerms.addAll(geminiResponseForPublicPresentation.tags.negative
+              .map((tag) => Term(term: tag, public: true)));
+        }
+      }
+
+      // Process Private Notes
+      if (privateNotesModified) {
+        debugPrint('Changes detected in PRIVATE NOTES. Computing tags...');
+        GeminiTagsResponse geminiResponseForPrivatePresentation =
+            await geminiService
+                .getAspectsForTherapist(_privateNotesController.text);
+
+        if (geminiResponseForPrivatePresentation.error != null) {
+          debugPrint(
+              'Failed to get tags for PRIVATE NOTES: ${geminiResponseForPrivatePresentation.error!.message}');
+        } else {
+          positiveTerms.addAll(geminiResponseForPrivatePresentation
+              .tags.positive
+              .map((tag) => Term(term: tag, public: false)));
+          negativeTerms.addAll(geminiResponseForPrivatePresentation
+              .tags.negative
+              .map((tag) => Term(term: tag, public: false)));
+        }
+      }
+
+      if (positiveTerms.isNotEmpty || negativeTerms.isNotEmpty) {
+        Aspects aspects =
+            Aspects(positive: positiveTerms, negative: negativeTerms);
+
+        debugPrint(
+            'Adding aspects to profile: Positive: ${aspects.positive.toString()}, Negative: ${aspects.negative.toString()} ');
+
+        bool aspectsUpdatedSuccesfully =
+            await profileService.updateTherapistAspects(
+          userId: therapistId!,
+          data: {'aspects': aspects.toJson()},
+        );
+
+        if (aspectsUpdatedSuccesfully) {
+          setState(() {
+            publicPresentationModified = false;
+            privateNotesModified = false;
+          });
+          debugPrint('Aspects updated successfully');
+
+          // Update term-index for this therapist
+          await profileService.updateTermIndexForTherapist(
+              therapistId!, positiveTerms, negativeTerms);
+        } else {
+          debugPrint('Error updating aspects');
+        }
+      }
+
       bool therapistDataUploadedSuccesfully =
           await profileService.updateProfile(
         profileTarget: 'therapist',
@@ -265,7 +347,7 @@ class _TherapistPersonalProfileScreenState
       if (therapistDataUploadedSuccesfully) {
         debugPrint('Profile updated successfully');
 
-        ref.read(therapistProvider.notifier).updateTherapistInfo(updatedData);
+        // ref.read(therapistProvider.notifier).updateTherapistInfo(updatedData);
 
         if (mounted) {
           NotificationModal.successfulModal(
@@ -1208,6 +1290,11 @@ class _TherapistPersonalProfileScreenState
                           SizedBox(height: 8),
                           TextFormField(
                             controller: _publicPresentationController,
+                            onChanged: (value) {
+                              setState(() {
+                                publicPresentationModified = true;
+                              });
+                            },
                             scrollPhysics: const ClampingScrollPhysics(),
                             maxLines: 8,
                             validator: (value) {
@@ -1249,6 +1336,11 @@ class _TherapistPersonalProfileScreenState
                             child: TextFormField(
                               controller: _privateNotesController,
                               maxLines: 6,
+                              onChanged: (value) {
+                                setState(() {
+                                  privateNotesModified = true;
+                                });
+                              },
                             ),
                           ),
                         ],

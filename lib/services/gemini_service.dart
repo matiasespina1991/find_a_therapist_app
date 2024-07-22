@@ -147,6 +147,159 @@ Expected Output: A structured object tags with two arrays, positive and negative
     }
   }
 
+  Future<GeminiTagsResponse> getAspectsForTherapist(String text) async {
+    final model = google_ai.GenerativeModel(
+      model: 'gemini-1.5-flash-latest',
+      apiKey: apiKey,
+    );
+
+    final promptTemplate = '''
+    Input Text: {inputText}
+
+    Instructions for the AI: Your task is to analyze the provided text and extract key information essential for classifying and understanding the therapist's offerings, services and limitations. It's important that if the therapist names specifical conditions that he or she treats, that you extraxt them as a tag (like saying 'anxiety', 'low-self-steem', 'food-addiction', borderline-personality-disorder' or any thing or type of person that the therapist mentions that he or she DO treat. Generate a structured object named tags that includes two arrays, positive and negative, to encapsulate:
+
+    Convert All Terms to English and Lowercase: Regardless of the input text's language, ensure all extracted terms are translated into English and presented in lowercase. This includes types of therapy, client challenges, and any preferences or characteristics mentioned.
+    Use Hyphens for Multi-Word Terms: For concepts consisting of more than one word, connect these words with hyphens instead of spaces. Ensure these hyphen-connected terms are also in lowercase to maintain data uniformity and facilitate easier data processing.
+    Types of Therapy Offered: Identify any specific therapy types mentioned that the therapist can offer (e.g., cbt, jungian-analysis, emdr) and list them under the positive category.
+    Client Preferences and Limitations: Extract any preferences regarding clients or limitations in the therapist's practice (e.g., not-working-with-children, avoiding-trauma-cases) and place them in the negative array.
+    Therapy Preferences and Other Relevant Details: If the text includes specific preferences regarding therapy modality or other relevant details (like offering-holistic-therapy, not-offering-medication), add these to the appropriate array, using hyphens for two-word terms, and ensure all are in lowercase.
+    Expected Output: A structured object tags with two arrays, positive and negative, that accurately reflect the key information from the text, correctly formatted in English and entirely in lowercase. This structure aims to facilitate precise matching in a therapy search database.
+    ''';
+
+    final publicPrompt = promptTemplate.replaceAll('{inputText}', text);
+
+    try {
+      final publicContent = [google_ai.Content.text(publicPrompt)];
+
+      final publicResponse = await model.generateContent(publicContent);
+
+      final publicTagsResponse = _processResponse(publicResponse);
+
+      if (publicTagsResponse.error != null) {
+        return GeminiTagsResponse(
+          tags: Tags(positive: [], negative: []),
+          error: GeminiErrorResponse(
+            message: 'Error in generating tags',
+            code: 'generative-ai-error',
+          ),
+          candidates: [],
+        );
+      }
+
+      final combinedPositiveTags = publicTagsResponse.tags.positive;
+      final combinedNegativeTags = publicTagsResponse.tags.negative;
+
+      final combinedCandidates = [
+        ...?publicResponse.candidates?.map((candidate) => Candidate(
+              text: candidate.text,
+              safetyRatings: candidate.safetyRatings
+                  ?.map((rating) => SafetyRating(
+                        category: rating.category.toString(),
+                        probability: rating.probability.toString(),
+                      ))
+                  .toList(),
+            )),
+      ];
+
+      return GeminiTagsResponse(
+        tags: Tags(
+            positive: combinedPositiveTags, negative: combinedNegativeTags),
+        error: null,
+        candidates: combinedCandidates,
+      );
+    } catch (e, stackTrace) {
+      await ErrorReportingService.reportError(e, stackTrace, null,
+          screen: 'GeminiService',
+          errorLocation: 'getAspectsForTherapist',
+          additionalInfo: [
+            'Text: $text',
+          ]);
+      return GeminiTagsResponse(
+          tags: Tags(positive: [], negative: []),
+          error: GeminiErrorResponse(
+            message: 'Unknown error occurred',
+            code: 'unknown-error',
+          ),
+          candidates: []);
+    }
+  }
+
+  GeminiTagsResponse _processResponse(
+      google_ai.GenerateContentResponse response) {
+    if (response.candidates.isEmpty) {
+      return GeminiTagsResponse(
+          tags: Tags(positive: [], negative: []),
+          error: GeminiErrorResponse(
+              message: 'No candidates found in response',
+              code: 'no-candidates'),
+          candidates: []);
+    }
+
+    String? responseText;
+    for (var candidate in response.candidates) {
+      if (candidate.text != null && candidate.text!.isNotEmpty) {
+        responseText = candidate.text;
+        break;
+      }
+    }
+
+    if (responseText == null) {
+      return GeminiTagsResponse(
+          tags: Tags(positive: [], negative: []),
+          error: GeminiErrorResponse(
+              message: 'No text found in response candidates',
+              code: 'no-text-found-in-response'),
+          candidates: response.candidates
+                  .map((candidate) => Candidate(
+                        text: candidate.text,
+                        safetyRatings: candidate.safetyRatings
+                            ?.map((rating) => SafetyRating(
+                                  category: rating.category.toString(),
+                                  probability: rating.probability.toString(),
+                                ))
+                            .toList(),
+                      ))
+                  .toList() ??
+              []);
+    }
+
+    // Extract only the JSON part of the response
+    final jsonString = _extractJson(responseText);
+    if (jsonString.isEmpty) {
+      return GeminiTagsResponse(
+          tags: Tags(positive: [], negative: []),
+          error: GeminiErrorResponse(
+              message: 'No JSON found in response text',
+              code: 'no-json-found-in-response-text'),
+          candidates: response.candidates
+                  .map((candidate) => Candidate(
+                        text: candidate.text,
+                        safetyRatings: candidate.safetyRatings
+                            ?.map((rating) => SafetyRating(
+                                  category: rating.category.toString(),
+                                  probability: rating.probability.toString(),
+                                ))
+                            .toList(),
+                      ))
+                  .toList() ??
+              []);
+    }
+
+    final jsonResponse = jsonDecode(jsonString);
+    final geminiTagsResponse = GeminiTagsResponse.fromJson(jsonResponse);
+    geminiTagsResponse.candidates
+        ?.addAll(response.candidates.map((candidate) => Candidate(
+              text: candidate.text,
+              safetyRatings: candidate.safetyRatings
+                  ?.map((rating) => SafetyRating(
+                        category: rating.category.toString(),
+                        probability: rating.probability.toString(),
+                      ))
+                  .toList(),
+            )));
+    return geminiTagsResponse;
+  }
+
   String _extractJson(String responseText) {
     final regex = RegExp(r'\{.*\}', dotAll: true);
     final match = regex.firstMatch(responseText);

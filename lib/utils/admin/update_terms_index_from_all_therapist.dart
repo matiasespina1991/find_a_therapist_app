@@ -14,7 +14,7 @@ Future<void> updateTermsIndex() async {
   List<QueryDocumentSnapshot> therapistDocs = therapistSnapshot.docs;
 
   /// Comment this line to allow this function to run
-  return;
+  // return;
   for (var therapistDoc in therapistDocs) {
     try {
       var therapistData = therapistDoc.data() as Map<String, dynamic>;
