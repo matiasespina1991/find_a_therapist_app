@@ -25,11 +25,19 @@ class ProfileService {
           List<Map<String, dynamic>>.from(termData['negative'] ?? []);
 
       if (aspectType == 'positive') {
-        updatedPositive.add({'therapistId': therapistId});
+        // Add therapistId to positive and remove from negative if exists
+        if (!updatedPositive
+            .any((element) => element['therapistId'] == therapistId)) {
+          updatedPositive.add({'therapistId': therapistId});
+        }
         updatedNegative
             .removeWhere((element) => element['therapistId'] == therapistId);
       } else {
-        updatedNegative.add({'therapistId': therapistId});
+        // Add therapistId to negative and remove from positive if exists
+        if (!updatedNegative
+            .any((element) => element['therapistId'] == therapistId)) {
+          updatedNegative.add({'therapistId': therapistId});
+        }
         updatedPositive
             .removeWhere((element) => element['therapistId'] == therapistId);
       }

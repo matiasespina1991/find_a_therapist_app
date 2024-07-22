@@ -264,11 +264,6 @@ class _TherapistPersonalProfileScreenState
       List<Term> positiveTerms = [];
       List<Term> negativeTerms = [];
 
-      bool publicPresentationModified = _publicPresentationController.text !=
-          currentData['publicPresentation'];
-      bool privateNotesModified =
-          _privateNotesController.text != currentData['privateNotes'];
-
       // Process Public Presentation
       if (publicPresentationModified) {
         debugPrint(
@@ -334,6 +329,9 @@ class _TherapistPersonalProfileScreenState
         } else {
           debugPrint('Error updating aspects');
         }
+
+        positiveTerms.clear();
+        negativeTerms.clear();
       }
 
       bool therapistDataUploadedSuccesfully =
@@ -344,12 +342,17 @@ class _TherapistPersonalProfileScreenState
         profilePicture: _selectedImage,
       );
 
+      setState(() {
+        savingChanges = false;
+        _selectedImage = null;
+      });
+
       if (therapistDataUploadedSuccesfully) {
         debugPrint('Profile updated successfully');
 
-        // ref.read(therapistProvider.notifier).updateTherapistInfo(updatedData);
-
         if (mounted) {
+          ref.read(therapistProvider.notifier).updateTherapistInfo(updatedData);
+
           NotificationModal.successfulModal(
             context: context,
             title: S.of(context).profileSaved,
@@ -370,11 +373,6 @@ class _TherapistPersonalProfileScreenState
     } catch (e) {
       debugPrint('Error updating profile: $e');
     }
-
-    setState(() {
-      savingChanges = false;
-      _selectedImage = null;
-    });
   }
 
   @override
@@ -393,6 +391,9 @@ class _TherapistPersonalProfileScreenState
     }
 
     therapistId = therapist.id;
+
+    print('Public Presentation modified: $publicPresentationModified');
+    print('Private Notes modified: $privateNotesModified');
 
     if (_firstNameController.text.isEmpty) {
       _firstNameController.text = therapist.therapistInfo.firstName;

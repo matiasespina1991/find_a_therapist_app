@@ -154,17 +154,19 @@ Expected Output: A structured object tags with two arrays, positive and negative
     );
 
     final promptTemplate = '''
-    Input Text: {inputText}
+  Input Text: {inputText}
 
-    Instructions for the AI: Your task is to analyze the provided text and extract key information essential for classifying and understanding the therapist's offerings, services and limitations. It's important that if the therapist names specifical conditions that he or she treats, that you extraxt them as a tag (like saying 'anxiety', 'low-self-steem', 'food-addiction', borderline-personality-disorder' or any thing or type of person that the therapist mentions that he or she DO treat. Generate a structured object named tags that includes two arrays, positive and negative, to encapsulate:
+  Instructions for the AI: Your task is to analyze the provided text and extract key information essential for classifying and understanding the therapist's offerings, services, and limitations. It's important that if the therapist names specific conditions that he or she treats, that you extract them as a tag (e.g., 'anxiety', 'low-self-esteem', 'food-addiction', 'borderline-personality-disorder' or any other condition or type of person that the therapist mentions that he or she DOES treat). Generate a structured object named tags that includes two arrays, positive and negative, to encapsulate:
 
-    Convert All Terms to English and Lowercase: Regardless of the input text's language, ensure all extracted terms are translated into English and presented in lowercase. This includes types of therapy, client challenges, and any preferences or characteristics mentioned.
-    Use Hyphens for Multi-Word Terms: For concepts consisting of more than one word, connect these words with hyphens instead of spaces. Ensure these hyphen-connected terms are also in lowercase to maintain data uniformity and facilitate easier data processing.
-    Types of Therapy Offered: Identify any specific therapy types mentioned that the therapist can offer (e.g., cbt, jungian-analysis, emdr) and list them under the positive category.
-    Client Preferences and Limitations: Extract any preferences regarding clients or limitations in the therapist's practice (e.g., not-working-with-children, avoiding-trauma-cases) and place them in the negative array.
-    Therapy Preferences and Other Relevant Details: If the text includes specific preferences regarding therapy modality or other relevant details (like offering-holistic-therapy, not-offering-medication), add these to the appropriate array, using hyphens for two-word terms, and ensure all are in lowercase.
-    Expected Output: A structured object tags with two arrays, positive and negative, that accurately reflect the key information from the text, correctly formatted in English and entirely in lowercase. This structure aims to facilitate precise matching in a therapy search database.
-    ''';
+  Convert All Terms to English and Lowercase: Regardless of the input text's language, ensure all extracted terms are translated into English and presented in lowercase. This includes types of therapy, client challenges, and any preferences or characteristics mentioned.
+  Use Hyphens for Multi-Word Terms: For concepts consisting of more than one word, connect these words with hyphens instead of spaces. Ensure these hyphen-connected terms are also in lowercase to maintain data uniformity and facilitate easier data processing.
+  Types of Therapy Offered: Identify any specific therapy types mentioned that the therapist can offer (e.g., cbt, jungian-analysis, emdr) and list them under the positive category.
+  Client Conditions Treated: Extract any conditions or challenges that the therapist treats (e.g., screen-addiction, anxiety, digital-overload, stress, body-image-issues) and place them in the positive array.
+  Client Preferences and Limitations: Extract any preferences regarding clients or limitations in the therapist's practice (e.g., children, trauma-cases, astrology) and place them in the negative array.
+  If the therapist mentions he works with astrology and children for example, then you should add 'astrology' and 'child-therapy' to the positive array. If the therapist mentions he does not work with children, then you should add 'child-therapy' and 'astrology' to the negative array.
+  Therapy Preferences and Other Relevant Details: If the text includes specific preferences regarding therapy modality or other relevant details (like offering-holistic-therapy, not-offering-medication), add these to the appropriate array, using hyphens for two-word terms, and ensure all are in lowercase.
+  Expected Output: A structured object tags with two arrays, positive and negative, that accurately reflect the key information from the text, correctly formatted in English and entirely in lowercase. This structure aims to facilitate precise matching in a therapy search database.
+  ''';
 
     final publicPrompt = promptTemplate.replaceAll('{inputText}', text);
 
