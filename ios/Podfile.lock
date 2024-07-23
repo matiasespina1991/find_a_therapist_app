@@ -952,6 +952,10 @@ PODS:
   - AppAuth/Core (1.7.5)
   - AppAuth/ExternalUserAgent (1.7.5):
     - AppAuth/Core
+  - AppCheckCore (10.19.2):
+    - GoogleUtilities/Environment (~> 7.13)
+    - GoogleUtilities/UserDefaults (~> 7.13)
+    - PromisesObjC (~> 2.3)
   - BoringSSL-GRPC (0.0.32):
     - BoringSSL-GRPC/Implementation (= 0.0.32)
     - BoringSSL-GRPC/Interface (= 0.0.32)
@@ -978,6 +982,11 @@ PODS:
   - Firebase/Storage (10.28.0):
     - Firebase/CoreOnly
     - FirebaseStorage (~> 10.28.0)
+  - firebase_app_check (0.3.0-3):
+    - Firebase/CoreOnly (~> 10.28.0)
+    - firebase_core
+    - FirebaseAppCheck (~> 10.28.0)
+    - Flutter
   - firebase_auth (5.1.2):
     - Firebase/Auth (= 10.28.0)
     - firebase_core
@@ -989,6 +998,13 @@ PODS:
     - Firebase/Storage (= 10.28.0)
     - firebase_core
     - Flutter
+  - FirebaseAppCheck (10.28.0):
+    - AppCheckCore (~> 10.19)
+    - FirebaseAppCheckInterop (~> 10.28)
+    - FirebaseCore (~> 10.18)
+    - GoogleUtilities/Environment (~> 7.13)
+    - GoogleUtilities/UserDefaults (~> 7.13)
+    - PromisesObjC (~> 2.1)
   - FirebaseAppCheckInterop (10.29.0)
   - FirebaseAuth (10.28.0):
     - FirebaseAppCheckInterop (~> 10.17)
@@ -1238,6 +1254,7 @@ DEPENDENCIES:
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
   - connectivity_plus (from `.symlinks/plugins/connectivity_plus/darwin`)
   - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
+  - firebase_app_check (from `.symlinks/plugins/firebase_app_check/ios`)
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - firebase_storage (from `.symlinks/plugins/firebase_storage/ios`)
@@ -1257,8 +1274,10 @@ SPEC REPOS:
   trunk:
     - abseil
     - AppAuth
+    - AppCheckCore
     - BoringSSL-GRPC
     - Firebase
+    - FirebaseAppCheck
     - FirebaseAppCheckInterop
     - FirebaseAuth
     - FirebaseAuthInterop
@@ -1299,6 +1318,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/connectivity_plus/darwin"
   device_info_plus:
     :path: ".symlinks/plugins/device_info_plus/ios"
+  firebase_app_check:
+    :path: ".symlinks/plugins/firebase_app_check/ios"
   firebase_auth:
     :path: ".symlinks/plugins/firebase_auth/ios"
   firebase_core:
@@ -1331,14 +1352,17 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   abseil: d121da9ef7e2ff4cab7666e76c5a3e0915ae08c3
   AppAuth: 501c04eda8a8d11f179dbe8637b7a91bb7e5d2fa
+  AppCheckCore: 9feb4300caa596a36416cde10674dc5bec1e022e
   BoringSSL-GRPC: 1e2348957acdbcad360b80a264a90799984b2ba6
   cloud_firestore: 71f0ffec97ce23c51587ec906f4cc470c518bc70
   connectivity_plus: ddd7f30999e1faaef5967c23d5b6d503d10434db
   device_info_plus: 97af1d7e84681a90d0693e63169a5d50e0839a0d
   Firebase: 5121c624121af81cbc81df3bda414b3c28c4f3c3
+  firebase_app_check: d26a83129d5bfe1fd66b9c2f3432fb3df486eee5
   firebase_auth: e778ee89483b86fe4200d1f8e9a1c52aa5fb64a8
   firebase_core: a9d0180d5285527884d07a41eb4a9ec9ed12cdb6
   firebase_storage: f7cd2f66840540e243e77325f4e272e2c0dc0603
+  FirebaseAppCheck: 94bcff56401058ba9f7343fff086380ffb987ed6
   FirebaseAppCheckInterop: 6a1757cfd4067d8e00fccd14fcc1b8fd78cfac07
   FirebaseAuth: 3d872fbbfc4223edeb72769e488f325fa8b0a4a9
   FirebaseAuthInterop: 17db81e9b198afb0f95ce48c133825727eed55d3

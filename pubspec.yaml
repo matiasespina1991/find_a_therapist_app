@@ -31,7 +31,7 @@ dependencies:
   # Go Router is a Flutter plugin for routing in a Flutter app.
   go_router: ^14.2.0
   # Google Generative AI is a Flutter plugin for using Google Generative AI in a Flutter app.
-  google_generative_ai: ^0.4.3
+#  google_generative_ai: ^0.4.3
   # Firebase Vertex AI is a Flutter plugin for using Firebase Vertex AI in a Flutter app.
   firebase_vertexai: ^0.2.2+2
   # Speech to Text is a Flutter plugin for converting speech to text in a Flutter app.
