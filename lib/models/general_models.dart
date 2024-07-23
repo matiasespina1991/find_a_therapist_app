@@ -59,11 +59,13 @@ class LocationFilters {
 class UserRequestFilters {
   bool remote;
   bool presential;
+  List<String> preferredLanguages = [];
   LocationFilters location;
 
   UserRequestFilters({
     required this.remote,
     required this.presential,
+    required this.preferredLanguages,
     required this.location,
   });
 
@@ -71,6 +73,7 @@ class UserRequestFilters {
     return {
       'remote': remote,
       'presential': presential,
+      'preferredLanguages': preferredLanguages,
       'location': location.toMap(),
     };
   }
@@ -79,12 +82,13 @@ class UserRequestFilters {
     return UserRequestFilters(
       remote: map['remote'] ?? false,
       presential: map['presential'] ?? false,
+      preferredLanguages: List<String>.from(map['preferredLanguages'] ?? []),
       location: LocationFilters.fromMap(map['location'] ?? {}),
     );
   }
 
   @override
   String toString() {
-    return 'UserRequestFilters(remote: $remote, presential: $presential, location: $location)';
+    return 'UserRequestFilters(remote: $remote, presential: $presential, preferredLanguages: $preferredLanguages, location: $location)';
   }
 }

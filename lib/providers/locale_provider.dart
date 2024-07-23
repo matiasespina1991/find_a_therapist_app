@@ -6,10 +6,10 @@ class LocaleProvider extends ChangeNotifier {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   Locale _locale = Locale(
-    LanguageSettings.supportedLocales
+    LanguageSettings.supportedTranslationLocales
             .contains(LanguageSettings.appDefaultLanguage)
         ? LanguageSettings.appDefaultLanguage
-        : LanguageSettings.supportedLocales.first,
+        : LanguageSettings.supportedTranslationLocales.first,
   );
 
   LocaleProvider() {
@@ -25,9 +25,10 @@ class LocaleProvider extends ChangeNotifier {
       return;
     }
 
-    if (!LanguageSettings.supportedLocales.contains(locale.languageCode)) {
+    if (!LanguageSettings.supportedTranslationLocales
+        .contains(locale.languageCode)) {
       debugPrint(
-          'Unsupported locale: ${locale.languageCode.toUpperCase()}, please use one of the following: ${LanguageSettings.supportedLocales}. Or add the new locale to the supportedLocales list in config.dart');
+          'Unsupported locale: ${locale.languageCode.toUpperCase()}, please use one of the following: ${LanguageSettings.supportedTranslationLocales}. Or add the new locale to the supportedLocales list in config.dart');
       return;
     }
 

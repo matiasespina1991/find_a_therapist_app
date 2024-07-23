@@ -356,7 +356,7 @@ class _TherapistPublicProfileScreenState
                               ),
                             )
                           else
-                            Column(
+                            Row(
                               children: [
                                 Text(
                                   widget.therapist.score.rating

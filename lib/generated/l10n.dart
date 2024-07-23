@@ -1690,11 +1690,31 @@ class S {
     );
   }
 
+  /// `Spoken Language/s`
+  String get spokenLanguages {
+    return Intl.message(
+      'Spoken Language/s',
+      name: 'spokenLanguages',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Add Spoken Language/s`
   String get addSpokenLanguages {
     return Intl.message(
       'Add Spoken Language/s',
       name: 'addSpokenLanguages',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Search languages`
+  String get searchLanguages {
+    return Intl.message(
+      'Search languages',
+      name: 'searchLanguages',
       desc: '',
       args: [],
     );
@@ -1959,6 +1979,7 @@ class AppLocalizationDelegate extends LocalizationsDelegate<S> {
       Locale.fromSubtags(languageCode: 'en'),
       Locale.fromSubtags(languageCode: 'de'),
       Locale.fromSubtags(languageCode: 'es'),
+      Locale.fromSubtags(languageCode: 'fr'),
     ];
   }
 

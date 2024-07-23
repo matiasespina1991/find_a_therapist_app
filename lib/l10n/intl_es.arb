@@ -109,7 +109,7 @@
           "tellUsWhatYouAreLookingFor": "Cuéntanos qué estás buscando (Describe los problemas que estés enfrentando y tus preferencias en detalle):",
 
           "requestTextFieldHintText": "Escribe tu solicitud aquí - Proporciona tanta información como sea posible sobre tus necesidades, desafíos y lo que buscas en un terapeuta.  \n\np.ej:   \nHola, soy una persona de 32 años que busca un terapeuta que pueda relacionarse con mis experiencias y brindar terapia culturalmente sensible. He enfrentado dificultades con la ansiedad, baja autoestima y últimamente me ha sido difícil socializar. Necesito a alguien que se especialice en Terapia Cognitivo-Conductual, y que tenga conocimientos en astrología sería un plus. Preferiría un terapeuta de color y...",
-          "meetingType": "Modalidad de Encuentro",
+          "meetingType": "Modalidad de encuentro preferida",
             "remote": "Remoto",
             "presential": "Presencial",
             "worldwide": "Todo el mundo",
@@ -181,7 +181,9 @@
          "stateProvince": "Estado/Provincia",
          "zipCode": "Código postal",
          "addSpecializations": "Agregar especialización/es",
+         "spokenLanguages": "Idioma/s hablado/s",
          "addSpokenLanguages": "Agregar idioma/s hablado/s",
+         "searchLanguages": "Buscar idiomas",
          "presential": "Presencial",
          "remote": "Remoto",
          "intro": "Introducción",

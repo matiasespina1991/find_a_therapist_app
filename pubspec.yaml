@@ -163,6 +163,7 @@ dependencies:
 #  # Firebase Storage is a Flutter plugin to use the Firebase Cloud Storage API and allow uploading, downloading, and deleting files in the cloud.
   firebase_storage: ^12.0.1
   advanced_chips_input: ^0.1.5
+  diacritic: ^0.1.5
 #  # Firebase Messaging is a Flutter plugin to use the Firebase Cloud Messaging (FCM) API and allow sending push notifications to Android and iOS users.
 #  firebase_messaging: ^15.0.1
 #  # Firebase In-App Messaging is a Flutter plugin to use the Firebase In-App Messaging API and allow sending in-app messages to Android and iOS users.

@@ -259,6 +259,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "savingChanges": MessageLookupByLibrary.simpleMessage(
             "Änderungen werden gespeichert..."),
         "score": MessageLookupByLibrary.simpleMessage("Bewertung"),
+        "searchLanguages":
+            MessageLookupByLibrary.simpleMessage("Sprachen suchen"),
         "searchPrefix": MessageLookupByLibrary.simpleMessage("Suche "),
         "seeResultsButton":
             MessageLookupByLibrary.simpleMessage("Ergebnisse anzeigen"),
@@ -287,6 +289,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Schiebereglerwert"),
         "slidersSectionTitle":
             MessageLookupByLibrary.simpleMessage("Schieberegler"),
+        "spokenLanguages":
+            MessageLookupByLibrary.simpleMessage("Gesprochene Sprache(n)"),
         "stateProvince":
             MessageLookupByLibrary.simpleMessage("Bundesland/Kanton"),
         "stepOneContent": MessageLookupByLibrary.simpleMessage(

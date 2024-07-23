@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:country_picker/country_picker.dart';
 
 import 'package:dash_flags/dash_flags.dart' as dash_flags;
+import 'package:findatherapistapp/providers/therapist_provider.dart';
 import 'package:findatherapistapp/widgets/ModalTopChip/modal_top_chip.dart';
 import 'package:findatherapistapp/widgets/NotificationModal/notification_modal.dart';
 import 'package:flutter/material.dart';
@@ -78,14 +79,25 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
     _initializeSpeech();
 
     Locale currentLocale = ref.read(localeProvider).locale;
+    String? userCountryLivingIn =
+        ref.read(therapistProvider).therapist?.therapistInfo.location.country;
+    List<String> userPreferredLanguages =
+        ref.read(therapistProvider).therapist?.therapistInfo.spokenLanguages ??
+            [];
 
-    selectedLanguages = [currentLocale.languageCode];
+    selectedLanguages = [...userPreferredLanguages];
 
     therapistFilters = UserRequestFilters(
         remote: true,
         presential: true,
+        preferredLanguages: selectedLanguages,
         location: LocationFilters(
             enabled: true, country: 'AU', state: null, city: null));
+
+    if (userCountryLivingIn != null) {
+      therapistFilters.location.country = userCountryLivingIn;
+      defaultCountry = userCountryLivingIn;
+    }
     List<Country> allCountries = countryService.getAll();
 
     setState(() {
@@ -365,7 +377,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
               const SizedBox(height: 10),
               GestureDetector(
                 onTap: () => showLanguageSelectionModal(context,
-                    selectedLanguages: availableLanguages,
+                    userSelectedLanguages: selectedLanguages,
                     onLanguagesSelected: (List<String> languages) {
                   setState(() {
                     selectedLanguages = languages;

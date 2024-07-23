@@ -1,8 +1,12 @@
+import 'package:animate_do/animate_do.dart';
+import 'package:dash_flags/dash_flags.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../app_settings/language_settings.dart';
 import '../../../generated/l10n.dart';
 import '../../../providers/providers_all.dart';
 import '../../../widgets/AppScaffold/app_scaffold.dart';
+import '../../../widgets/LocaleSelector/locale_selector.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -67,45 +71,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               Text(
                 S.of(context).changeLanguageButton,
               ),
-              const SizedBox(height: 3),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      ref.read(localeProvider).setLocale(const Locale('en'));
-                    },
-                    child: const Text(
-                      '🇺🇸',
-                      style: TextStyle(fontSize: 26),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  const Text('/'),
-                  const SizedBox(width: 10),
-                  GestureDetector(
-                    onTap: () {
-                      ref.read(localeProvider).setLocale(const Locale('es'));
-                    },
-                    child: const Text(
-                      '🇪🇸',
-                      style: TextStyle(fontSize: 26),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  const Text('/'),
-                  const SizedBox(width: 10),
-                  GestureDetector(
-                    onTap: () {
-                      ref.read(localeProvider).setLocale(const Locale('de'));
-                    },
-                    child: const Text(
-                      '🇩🇪',
-                      style: TextStyle(fontSize: 26),
-                    ),
-                  ),
-                ],
-              ),
+              const SizedBox(height: 14),
+              const LocaleSelector(),
             ],
           ),
         ],

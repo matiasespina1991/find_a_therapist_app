@@ -5,7 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:country_state_city/models/city.dart';
 import 'package:country_state_city/models/state.dart' as state_utils;
-import 'package:country_state_city/utils/state_utils.dart';
+import 'package:findatherapistapp/app_settings/app_config.dart';
 import 'package:findatherapistapp/services/firestore_service.dart';
 import 'package:findatherapistapp/widgets/LoadingCircle/loading_circle.dart';
 import 'package:findatherapistapp/widgets/NotificationModal/notification_modal.dart';
@@ -28,7 +28,6 @@ import '../../../models/therapist_model.dart';
 import '../../../services/gemini_service.dart';
 import '../../../utils/functions/profile_utils.dart';
 import '../../../utils/functions/show_city_state_selection_modal.dart';
-import '../../../utils/locale/all_locales_list.dart';
 import '../../../utils/locale/build_language_text_with_flag.dart';
 import '../../../utils/locale/get_localized_language_names.dart';
 import '../../../utils/locale/show_language_selection_modal.dart';
@@ -73,10 +72,9 @@ class _TherapistPersonalProfileScreenState
   final TextEditingController _profilePictureUrlController =
       TextEditingController();
 
-  final TextEditingController _specializationsController =
-      TextEditingController();
+  late final TextEditingController _specializationsController;
 
-  TextEditingController _languageController = TextEditingController();
+  final TextEditingController _languageController = TextEditingController();
 
   List<String> selectedLanguages = ['en'];
   List<String> _specializations = [];
@@ -103,6 +101,14 @@ class _TherapistPersonalProfileScreenState
     selectedLanguages =
         ref.read(therapistProvider).therapist?.therapistInfo.spokenLanguages ??
             ['en'];
+
+    _specializationsController = TextEditingController(
+        text: ref
+            .read(therapistProvider)
+            .therapist
+            ?.therapistInfo
+            .specializations
+            .join(', '));
     // _languageController.text =
     //     getLocalizedLanguagesNames(context, languageCodes: selectedLanguages);
   }
@@ -117,14 +123,12 @@ class _TherapistPersonalProfileScreenState
 
   @override
   void dispose() {
-    therapistId = null;
     _tabController.dispose();
     _firstNameController.dispose();
     _lastNameController.dispose();
     _emailController.dispose();
-    _specializationsController.dispose();
     _phoneController.dispose();
-    _languageController.dispose();
+    _phoneAreaCodeController.dispose();
     _introController.dispose();
     _publicPresentationController.dispose();
     _privateNotesController.dispose();
@@ -132,13 +136,13 @@ class _TherapistPersonalProfileScreenState
     _cityCodeController.dispose();
     _countryCodeController.dispose();
     _stateProvinceCodeController.dispose();
-    cityNameController.dispose();
-    stateProvinceNameController.dispose();
     countryNameController.dispose();
+    stateProvinceNameController.dispose();
+    cityNameController.dispose();
     _zipController.dispose();
     _profilePictureUrlController.dispose();
-    _titleController.dispose();
-
+    _specializationsController.dispose();
+    _languageController.dispose();
     super.dispose();
   }
 
@@ -392,9 +396,6 @@ class _TherapistPersonalProfileScreenState
 
     therapistId = therapist.id;
 
-    print('Public Presentation modified: $publicPresentationModified');
-    print('Private Notes modified: $privateNotesModified');
-
     if (_firstNameController.text.isEmpty) {
       _firstNameController.text = therapist.therapistInfo.firstName;
     }
@@ -414,9 +415,9 @@ class _TherapistPersonalProfileScreenState
       _phoneAreaCodeController.text = therapist.therapistInfo.phone.areaCode;
     }
 
-    if (_specializationsController.text.isEmpty) {
-      _specializationsController.text = "Psichologist Counselor";
-    }
+    // if (_specializationsController.text.isEmpty) {
+    //   _specializationsController.text = "Psichologist Counselor";
+    // }
 
     if (_introController.text.isEmpty) {
       _introController.text = therapist.therapistInfo.intro;
@@ -1086,86 +1087,88 @@ class _TherapistPersonalProfileScreenState
                             style: labelTextStyle,
                           ),
                           const SizedBox(height: 10),
-                          AdvancedChipsInput(
-                            paddingInsideWidgetContainer: EdgeInsets.zero,
-                            controller: _specializationsController,
-                            onSubmitted: (specializations) {
-                              // setState(() {
-                              //   _specializations.add(specializations);
-                              // });
-                            },
-                            deleteIcon: Padding(
-                              padding: const EdgeInsets.only(left: 7),
-                              child: const Icon(
-                                Icons.cancel,
-                                size: 18,
+                          if (_specializationsController != null)
+                            AdvancedChipsInput(
+                              paddingInsideWidgetContainer: EdgeInsets.zero,
+                              controller: _specializationsController,
+                              onSubmitted: (specializations) {
+                                // setState(() {
+                                //   _specializations.add(specializations);
+                                // });
+                              },
+                              deleteIcon: Padding(
+                                padding: const EdgeInsets.only(left: 7),
+                                child: const Icon(
+                                  Icons.cancel,
+                                  size: 18,
+                                ),
                               ),
-                            ),
-                            marginBetweenChips:
-                                EdgeInsets.only(bottom: 13, top: 2, right: 5),
-                            paddingInsideChipContainer: const EdgeInsets.only(
-                                left: 15, right: 15, top: 8, bottom: 8),
-                            textFormFieldStyle: TextFormFieldStyle(
-                              enableSuggestions: false,
-                              decoration: InputDecoration(
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      ThemeSettings.inputsBorderRadius,
-                                  borderSide: BorderSide(
+                              marginBetweenChips:
+                                  EdgeInsets.only(bottom: 13, top: 2, right: 5),
+                              paddingInsideChipContainer: const EdgeInsets.only(
+                                  left: 15, right: 15, top: 8, bottom: 8),
+                              textFormFieldStyle: TextFormFieldStyle(
+                                enableSuggestions: false,
+                                decoration: InputDecoration(
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        ThemeSettings.inputsBorderRadius,
+                                    borderSide: BorderSide(
+                                      color: isDarkMode
+                                          ? ThemeSettings
+                                              .primaryTextColor.darkModePrimary
+                                          : ThemeSettings.primaryTextColor
+                                              .lightModePrimary,
+                                    ),
+                                  ),
+                                  hintText: S.of(context).addSpecializations,
+                                  hintStyle: TextStyle(
                                     color: isDarkMode
                                         ? ThemeSettings
-                                            .primaryTextColor.darkModePrimary
+                                            .hintTextColor.darkModePrimary
                                         : ThemeSettings
-                                            .primaryTextColor.lightModePrimary,
+                                            .hintTextColor.lightModePrimary,
                                   ),
                                 ),
-                                hintText: S.of(context).addSpecializations,
-                                hintStyle: TextStyle(
+                              ),
+                              separatorCharacter: ' ',
+                              placeChipsSectionAbove: true,
+                              chipContainerDecoration: BoxDecoration(
+                                border: Border.all(
+                                  width: 1,
                                   color: isDarkMode
                                       ? ThemeSettings
-                                          .hintTextColor.darkModePrimary
+                                          .primaryTextColor.darkModePrimary
                                       : ThemeSettings
-                                          .hintTextColor.lightModePrimary,
+                                          .primaryTextColor.lightModePrimary,
                                 ),
-                              ),
-                            ),
-                            separatorCharacter: ' ',
-                            placeChipsSectionAbove: true,
-                            chipContainerDecoration: BoxDecoration(
-                              border: Border.all(
-                                width: 1,
                                 color: isDarkMode
                                     ? ThemeSettings
-                                        .primaryTextColor.darkModePrimary
+                                        .inputBackgroundColor.darkModePrimary
                                     : ThemeSettings
-                                        .primaryTextColor.lightModePrimary,
+                                        .inputBackgroundColor.lightModePrimary,
+                                borderRadius: ThemeSettings.inputsBorderRadius,
                               ),
-                              color: isDarkMode
-                                  ? ThemeSettings
-                                      .inputBackgroundColor.darkModePrimary
-                                  : ThemeSettings
-                                      .inputBackgroundColor.lightModePrimary,
-                              borderRadius: ThemeSettings.inputsBorderRadius,
+                              chipTextStyle: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                  color: isDarkMode
+                                      ? ThemeSettings
+                                          .primaryTextColor.darkModePrimary
+                                      : ThemeSettings
+                                          .primaryTextColor.lightModePrimary),
+                              validateInput: true,
+                              validateInputMethod: (value) {
+                                if (value.length < 3) {
+                                  return 'Input should be at least 3 characters long';
+                                }
+                                return null;
+                              },
+                              onChipDeleted: (chipText, index) {
+                                print(
+                                    'Deleted chip: $chipText at index $index');
+                              },
                             ),
-                            chipTextStyle: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 14,
-                                color: isDarkMode
-                                    ? ThemeSettings
-                                        .primaryTextColor.darkModePrimary
-                                    : ThemeSettings
-                                        .primaryTextColor.lightModePrimary),
-                            validateInput: true,
-                            validateInputMethod: (value) {
-                              if (value.length < 3) {
-                                return 'Input should be at least 3 characters long';
-                              }
-                              return null;
-                            },
-                            onChipDeleted: (chipText, index) {
-                              print('Deleted chip: $chipText at index $index');
-                            },
-                          ),
                           // TextFormField(
                           //   decoration: InputDecoration(
                           //     suffixIcon: IconButton(
@@ -1183,11 +1186,10 @@ class _TherapistPersonalProfileScreenState
                           ),
                           const SizedBox(height: 10),
                           GestureDetector(
-                            onTap: () => showLanguageSelectionModal(
-                              context,
-                              selectedLanguages: selectedLanguages,
-                              onLanguagesSelected: _updateSelectedLanguages,
-                            ),
+                            onTap: () => showLanguageSelectionModal(context,
+                                userSelectedLanguages: selectedLanguages,
+                                onLanguagesSelected: _updateSelectedLanguages,
+                                useSearch: true),
                             child: AbsorbPointer(
                               child: Container(
                                 width: double.infinity,
@@ -1267,14 +1269,17 @@ class _TherapistPersonalProfileScreenState
                               ),
                             ],
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           Text(
                             S.of(context).intro,
                             style: labelTextStyle,
                           ),
-                          SizedBox(height: 8),
+                          const SizedBox(height: 8),
                           TextFormField(
                             controller: _introController,
+                            maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                            maxLength:
+                                AppConfig.maximumTherapistIntroCharactersLength,
                             maxLines: 3,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
@@ -1288,9 +1293,12 @@ class _TherapistPersonalProfileScreenState
                             S.of(context).publicPresentation,
                             style: labelTextStyle,
                           ),
-                          SizedBox(height: 8),
+                          const SizedBox(height: 8),
                           TextFormField(
                             controller: _publicPresentationController,
+                            maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                            maxLength: AppConfig
+                                .maximumTherapistPublicPresentationCharactersLength,
                             onChanged: (value) {
                               setState(() {
                                 publicPresentationModified = true;
@@ -1315,8 +1323,7 @@ class _TherapistPersonalProfileScreenState
                                 S.of(context).privateNotes,
                                 style: labelTextStyle,
                               ),
-                              Text(
-                                  ' (${S.of(context).privateNotesDescription})',
+                              Text('(${S.of(context).privateNotesDescription})',
                                   style: Theme.of(context)
                                       .textTheme
                                       .titleMedium
@@ -1326,24 +1333,56 @@ class _TherapistPersonalProfileScreenState
                             ],
                           ),
                           SizedBox(height: 8),
-                          Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Colors.red.withOpacity(0.3)!,
-                                width: 8,
+                          Stack(
+                            children: [
+                              // Outer border
+                              Positioned.fill(
+                                bottom: 22,
+                                child: DecoratedBox(
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: Colors.red.withOpacity(0.3)!,
+                                      width: 8,
+                                    ),
+                                    borderRadius:
+                                        ThemeSettings.inputsBorderRadius.add(
+                                      ThemeSettings.inputsBorderRadius,
+                                    ),
+                                  ),
+                                ),
                               ),
-                              borderRadius: BorderRadius.circular(18),
-                            ),
-                            child: TextFormField(
-                              controller: _privateNotesController,
-                              maxLines: 6,
-                              onChanged: (value) {
-                                setState(() {
-                                  privateNotesModified = true;
-                                });
-                              },
-                            ),
-                          ),
+                              // Inner TextField
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 8,
+                                    top: 8,
+                                    right: 8,
+                                    bottom:
+                                        0), // Adjust padding to match outer border width
+                                child: TextFormField(
+                                  maxLength: AppConfig
+                                      .maximumTherapistPrivateNotesCharactersLength,
+                                  controller: _privateNotesController,
+                                  maxLines: 6,
+                                  buildCounter: (BuildContext,
+                                          {required int currentLength,
+                                          required bool isFocused,
+                                          required int? maxLength}) =>
+                                      Padding(
+                                    padding: const EdgeInsets.only(top: 3.0),
+                                    child: Text(
+                                      '$currentLength/${AppConfig.maximumTherapistPrivateNotesCharactersLength}',
+                                    ),
+                                  ),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      privateNotesModified = true;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ],
+                          )
                         ],
                       ),
                     ),

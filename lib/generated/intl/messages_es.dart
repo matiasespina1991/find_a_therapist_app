@@ -259,6 +259,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "savingChanges":
             MessageLookupByLibrary.simpleMessage("Guardando gambios..."),
         "score": MessageLookupByLibrary.simpleMessage("Valoración"),
+        "searchLanguages":
+            MessageLookupByLibrary.simpleMessage("Buscar idiomas"),
         "searchPrefix": MessageLookupByLibrary.simpleMessage("Buscar "),
         "seeResultsButton":
             MessageLookupByLibrary.simpleMessage("Ver resultados"),
@@ -289,6 +291,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Valor del Deslizador"),
         "slidersSectionTitle":
             MessageLookupByLibrary.simpleMessage("Deslizadores"),
+        "spokenLanguages":
+            MessageLookupByLibrary.simpleMessage("Idioma/s hablado/s"),
         "stateProvince":
             MessageLookupByLibrary.simpleMessage("Estado/Provincia"),
         "stepOneContent": MessageLookupByLibrary.simpleMessage(

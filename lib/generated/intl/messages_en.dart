@@ -247,6 +247,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "savingChanges":
             MessageLookupByLibrary.simpleMessage("Saving Changes..."),
         "score": MessageLookupByLibrary.simpleMessage("Score"),
+        "searchLanguages":
+            MessageLookupByLibrary.simpleMessage("Search languages"),
         "searchPrefix": MessageLookupByLibrary.simpleMessage("Search"),
         "seeResultsButton": MessageLookupByLibrary.simpleMessage("See results"),
         "selectACity": MessageLookupByLibrary.simpleMessage("Select a city"),
@@ -271,6 +273,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "sliderValueLabel":
             MessageLookupByLibrary.simpleMessage("Slider Value"),
         "slidersSectionTitle": MessageLookupByLibrary.simpleMessage("Sliders"),
+        "spokenLanguages":
+            MessageLookupByLibrary.simpleMessage("Spoken Language/s"),
         "stateProvince": MessageLookupByLibrary.simpleMessage("State/Province"),
         "stepOneContent": MessageLookupByLibrary.simpleMessage(
             "This is the content for step one."),

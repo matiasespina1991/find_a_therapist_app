@@ -77,7 +77,7 @@ class MyApp extends ConsumerWidget {
         darkTheme: MainTheme.darkTheme,
         themeMode: themeNotifier.themeMode,
         locale: localeNotifier.locale,
-        supportedLocales: LanguageSettings.supportedLocales
+        supportedLocales: LanguageSettings.supportedTranslationLocales
             .map((e) => Locale.fromSubtags(languageCode: e))
             .toList(),
         localizationsDelegates: const [
