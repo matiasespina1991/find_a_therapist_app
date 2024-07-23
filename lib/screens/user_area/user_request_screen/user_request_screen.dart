@@ -145,6 +145,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
 
     final newText = await _geminiService.generateAutoWriteText(
         language: localeService.locale.languageCode);
+
     int charIndex = 0;
     int blockSize = 1;
 
