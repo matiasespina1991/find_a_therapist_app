@@ -237,16 +237,26 @@ class AuthorizationProvider extends ChangeNotifier {
   }
 
   Future<bool> checkIfUserExists(String userId) async {
-    DocumentSnapshot userDoc =
-        await FirestoreService.instance.collection('users').doc(userId).get();
-    return userDoc.exists;
+    try {
+      DocumentSnapshot userDoc =
+          await FirestoreService.instance.collection('users').doc(userId).get();
+      return userDoc.exists;
+    } catch (e) {
+      debugPrint('Error: $e');
+      return false;
+    }
   }
 
   Future<bool> checkIfTherapistExists(String userId) async {
-    DocumentSnapshot therapistDoc = await FirestoreService.instance
-        .collection('therapists')
-        .doc(userId)
-        .get();
-    return therapistDoc.exists;
+    try {
+      DocumentSnapshot therapistDoc = await FirestoreService.instance
+          .collection('therapists')
+          .doc(userId)
+          .get();
+      return therapistDoc.exists;
+    } catch (e) {
+      debugPrint('Error: $e');
+      return false;
+    }
   }
 }
