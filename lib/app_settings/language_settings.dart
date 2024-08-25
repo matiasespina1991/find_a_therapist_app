@@ -5,7 +5,7 @@ class LanguageSettings {
     'en',
     'es',
     'de',
-    'fr'
+    'fr',
   ];
   static const List<String> ignoredLocales = [];
 }

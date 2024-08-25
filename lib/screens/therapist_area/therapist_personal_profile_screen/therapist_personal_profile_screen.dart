@@ -1276,6 +1276,7 @@ class _TherapistPersonalProfileScreenState
                           ),
                           const SizedBox(height: 8),
                           TextFormField(
+                            autocorrect: false,
                             controller: _introController,
                             maxLengthEnforcement: MaxLengthEnforcement.enforced,
                             maxLength:
@@ -1295,6 +1296,7 @@ class _TherapistPersonalProfileScreenState
                           ),
                           const SizedBox(height: 8),
                           TextFormField(
+                            autocorrect: false,
                             controller: _publicPresentationController,
                             maxLengthEnforcement: MaxLengthEnforcement.enforced,
                             maxLength: AppConfig
@@ -1360,6 +1362,7 @@ class _TherapistPersonalProfileScreenState
                                     bottom:
                                         0), // Adjust padding to match outer border width
                                 child: TextFormField(
+                                  autocorrect: false,
                                   maxLength: AppConfig
                                       .maximumTherapistPrivateNotesCharactersLength,
                                   controller: _privateNotesController,

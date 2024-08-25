@@ -111,6 +111,10 @@ class _TherapistResultsScreenState extends State<TherapistResultsScreen> {
                 // Set a threshold for how many items should have staggered animations
                 const int staggeredAnimationThreshold = 6;
 
+                if (matchScore < 0.5) {
+                  return Container();
+                }
+
                 return shouldAnimate
                     ? (index < staggeredAnimationThreshold
                         ? FadeInUp(

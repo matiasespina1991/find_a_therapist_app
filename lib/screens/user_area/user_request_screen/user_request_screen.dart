@@ -700,6 +700,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                 thickness: 5,
                 controller: _scrollControllerPage2,
                 child: TextField(
+                  autocorrect: false,
                   scrollPhysics: const ClampingScrollPhysics(),
                   controller: _requestController,
                   decoration: InputDecoration(

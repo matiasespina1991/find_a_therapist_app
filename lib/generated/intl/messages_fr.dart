@@ -41,6 +41,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "backToInternetConnection": MessageLookupByLibrary.simpleMessage(
             "Vous êtes de retour en ligne"),
         "birthday": MessageLookupByLibrary.simpleMessage("Date de naissance"),
+        "bookAMeeting":
+            MessageLookupByLibrary.simpleMessage("Réserver une rencontre"),
         "buttonsSectionTitle": MessageLookupByLibrary.simpleMessage("Boutons"),
         "cancel": MessageLookupByLibrary.simpleMessage("Annuler"),
         "cancelButton": MessageLookupByLibrary.simpleMessage("Annuler"),

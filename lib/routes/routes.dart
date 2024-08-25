@@ -11,6 +11,7 @@ import '../screens/common/login_screen/login_screen.dart';
 import '../screens/common/settings_screen/settings_screen.dart';
 import '../screens/common/welcome_main_screen/welcome_main_screen.dart';
 import '../screens/therapist_area/therapist_personal_profile_screen/therapist_personal_profile_screen.dart';
+import '../screens/user_area/book_a_meeting_screen/book_a_meeting_screen.dart';
 import '../screens/user_area/user_profile_screen/user_profile_screen.dart';
 import '../screens/user_area/user_request_screen/user_request_screen.dart';
 
@@ -66,6 +67,12 @@ class Routes {
     builder: (context) => const UserRequestScreen(),
   );
 
+  static RouteConfig bookAMeetingScreen = RouteConfig(
+    path: '/book-a-meeting',
+    name: 'Book a Meeting',
+    builder: (context) => const BookAMeetingScreen(),
+  );
+
   /// THERAPIST AREA ROUTES
 
   static RouteConfig therapistProfileScreen = RouteConfig(
@@ -93,7 +100,8 @@ class Routes {
       notFoundScreen,
       loadingScreen,
       debugScreen,
-      allTherapistsScreen
+      allTherapistsScreen,
+      bookAMeetingScreen,
     ];
     return publicRoutes
         .map((routeConfig) => GoRoute(
