@@ -1510,6 +1510,16 @@ class S {
     );
   }
 
+  /// `Book a meeting`
+  String get bookAMeeting {
+    return Intl.message(
+      'Book a meeting',
+      name: 'bookAMeeting',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Settings`
   String get settingsScreenTitle {
     return Intl.message(

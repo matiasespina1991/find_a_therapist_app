@@ -145,6 +145,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
 
     final newText = await _geminiService.generateAutoWriteText(
         language: localeService.locale.languageCode);
+
     int charIndex = 0;
     int blockSize = 1;
 
@@ -699,6 +700,7 @@ class _UserRequestScreenState extends ConsumerState<UserRequestScreen> {
                 thickness: 5,
                 controller: _scrollControllerPage2,
                 child: TextField(
+                  autocorrect: false,
                   scrollPhysics: const ClampingScrollPhysics(),
                   controller: _requestController,
                   decoration: InputDecoration(

@@ -121,7 +121,7 @@ class _LocationSelectionModalState extends State<LocationSelectionModal> {
               controller: searchController,
               decoration: InputDecoration(
                 labelText:
-                    '${S.of(context).searchPrefix}${widget.type == 'state' ? S.of(context).stateProvince.toLowerCase() : S.of(context).city.toLowerCase()}',
+                    '${S.of(context).searchPrefix} ${widget.type == 'state' ? S.of(context).stateProvince.toLowerCase() : S.of(context).city.toLowerCase()}',
                 prefixIcon: Icon(Icons.search),
               ),
               onChanged: (value) => _filterItems(value),

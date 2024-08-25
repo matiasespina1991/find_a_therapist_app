@@ -4,13 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localized_locales/flutter_localized_locales.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:findatherapistapp/app_settings/theme_settings.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_mlkit_translation/google_mlkit_translation.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:hugeicons/hugeicons.dart';
+import 'package:icofont_flutter/icofont_flutter.dart';
 
 import '../../../generated/l10n.dart';
 import '../../../models/therapist_model.dart';
 import '../../../providers/providers_all.dart';
 import '../../../providers/translate_profiles_providers.dart';
+import '../../../routes/routes.dart';
 import '../../../utils/admin/to_capital_case.dart';
 import '../../../widgets/AppScaffold/app_scaffold.dart';
 
@@ -557,20 +562,50 @@ class _TherapistPublicProfileScreenState
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20),
                                 ),
-                                minimumSize: const Size(0, 38),
+                                minimumSize: const Size(170, 38),
                               ),
                               onPressed: () {},
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   const Icon(
-                                    Icons.chat_outlined,
-                                    size: 16,
+                                    IcoFontIcons.paperPlane,
+                                    size: 18,
                                   ),
-                                  const SizedBox(width: 8),
+                                  const SizedBox(width: 6),
                                   Text(S.of(context).messageMeButton),
                                 ],
                               ))),
+                      Center(
+                        child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Theme.of(context).primaryColor,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              minimumSize: const Size(0, 38),
+                            ),
+                            onPressed: () {
+                              context.push(
+                                Routes.bookAMeetingScreen.path,
+                                extra: {
+                                  'therapistInfo':
+                                      widget.therapist.therapistInfo,
+                                },
+                              );
+                            },
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  IcoFontIcons.uiCalendar,
+                                  size: 15,
+                                ),
+                                const SizedBox(width: 7),
+                                Text(S.of(context).bookAMeeting),
+                              ],
+                            )),
+                      ),
                       const SizedBox(height: 20.0),
                       if (widget.therapist.therapistInfo
                           .professionalCertificates.isNotEmpty)

@@ -31,7 +31,9 @@ dependencies:
   # Go Router is a Flutter plugin for routing in a Flutter app.
   go_router: ^14.2.0
   # Google Generative AI is a Flutter plugin for using Google Generative AI in a Flutter app.
-  google_generative_ai: ^0.4.3
+#  google_generative_ai: ^0.4.3
+  # Firebase Vertex AI is a Flutter plugin for using Firebase Vertex AI in a Flutter app.
+  firebase_vertexai: ^0.2.2+2
   # Speech to Text is a Flutter plugin for converting speech to text in a Flutter app.
   speech_to_text: ^6.6.0
   # Country Picker is a Flutter plugin for selecting countries in a Flutter app.
@@ -50,6 +52,8 @@ dependencies:
   google_places_autocomplete_text_field: ^0.1.3
   # Animated Do is a Flutter plugin for creating animations in a Flutter app.
   animate_do: ^3.3.4
+  # Table Calendar is a Flutter plugin for creating table calendars in a Flutter app.
+  table_calendar: ^3.1.2
 
 
 
@@ -130,7 +134,7 @@ dependencies:
 #  # Font Awesome Icons is a Flutter plugin for using Font Awesome icons in a Flutter app. (Example of use: Icon(FontAwesomeIcons.addressBook))
 #  font_awesome_flutter: ^10.7.0
 #  # Icofont Icons is a Flutter plugin for using Icofont icons in a Flutter app. (Example of use: Icon(IcoFontIcons.addressBook))
-#  icofont_flutter: ^1.4.0
+  icofont_flutter: ^1.4.0
 
 #  # -----------------  MEDIA PACKAGES  -----------------
 #  # Video Player is a Flutter plugin for playing videos in a Flutter app.
@@ -164,6 +168,8 @@ dependencies:
   firebase_storage: ^12.0.1
   advanced_chips_input: ^0.1.5
   diacritic: ^0.1.5
+  firebase_app_check: ^0.3.0+3
+  hugeicons: ^0.0.7
 #  # Firebase Messaging is a Flutter plugin to use the Firebase Cloud Messaging (FCM) API and allow sending push notifications to Android and iOS users.
 #  firebase_messaging: ^15.0.1
 #  # Firebase In-App Messaging is a Flutter plugin to use the Firebase In-App Messaging API and allow sending in-app messages to Android and iOS users.
