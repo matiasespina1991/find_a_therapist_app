@@ -1060,10 +1060,10 @@ class S {
     );
   }
 
-  /// `Your request`
+  /// `Search a therapist`
   String get yourRequest {
     return Intl.message(
-      'Your request',
+      'Search a therapist',
       name: 'yourRequest',
       desc: '',
       args: [],

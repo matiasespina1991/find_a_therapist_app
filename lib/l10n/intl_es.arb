@@ -104,7 +104,7 @@
           "matchedTherapists": "Match de terapeutas:",
           "userProfile": "Perfil de usuario",
             "therapistProfile": "Perfil de terapeuta",
-          "yourRequest": "Tu solicitud",
+          "yourRequest": "Buscar un terapeuta",
           "theRequestInputShouldNotBeEmpty": "El cuadro del texto de solicitud no debe estar vacío.",
           "tellUsWhatYouAreLookingFor": "Cuéntanos qué estás buscando (Describe los problemas que estés enfrentando y tus preferencias en detalle):",
 

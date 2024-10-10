@@ -108,7 +108,7 @@
             "location": "Ort",
             "stateProvince": "Bundesland/Provinz",
             "city": "Stadt",
-         "yourRequest": "Ihre Anfrage",
+         "yourRequest": "Suchen Sie einen Therapeuten",
            "tellUsWhatYouAreLookingFor": "Sag uns, wonach du suchst (Beschreibe deine Probleme und Vorlieben im Detail):",
               "theRequestInputShouldNotBeEmpty": "Die Eingabe sollte nicht leer sein.",
              "requestTextFieldHintText": "Geben Sie hier Ihre Anfrage ein - Geben Sie so viele Informationen wie möglich über Ihre Bedürfnisse, Herausforderungen und was Sie von einem Therapeuten erwarten.   \n  \nz.B.:\nHallo, ich bin eine 32-jährige Person und suche einen Therapeuten. Ich habe Schwierigkeiten mit Angstzuständen, geringem Selbstwertgefühl und finde es in letzter Zeit schwer, Kontakte zu knüpfen. Ich brauche jemanden, der auf kognitive Verhaltenstherapie spezialisiert ist. Ich würde einen farbigen Therapeuten bevorzugen und... ",

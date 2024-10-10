@@ -327,7 +327,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "youAreCurrentlyOfflineMessage": MessageLookupByLibrary.simpleMessage(
             "You are currently offline. Please check your internet connection."),
         "yourProfile": MessageLookupByLibrary.simpleMessage("Your profile"),
-        "yourRequest": MessageLookupByLibrary.simpleMessage("Your request"),
+        "yourRequest":
+            MessageLookupByLibrary.simpleMessage("Search a therapist"),
         "yourTherapistProfile":
             MessageLookupByLibrary.simpleMessage("Your Therapist Profile"),
         "zipCode": MessageLookupByLibrary.simpleMessage("Zip Code")

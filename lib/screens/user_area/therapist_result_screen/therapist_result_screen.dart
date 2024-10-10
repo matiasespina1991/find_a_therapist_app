@@ -97,58 +97,80 @@ class _TherapistResultsScreenState extends State<TherapistResultsScreen> {
                 ),
               ),
             )
-          : ListView.builder(
-              padding: const EdgeInsets.only(bottom: 75, top: 10),
-              physics: const ClampingScrollPhysics(),
-              itemCount: _filteredTherapists.length,
-              itemBuilder: (context, index) {
-                final match = _filteredTherapists[index];
-                final therapist = match['therapist'] as TherapistModel;
-                final matchScore = match['matchScore'] as double;
+          : Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Text(
+                        'match %',
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.black.withOpacity(0.7),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    padding: const EdgeInsets.only(bottom: 75, top: 2),
+                    physics: const ClampingScrollPhysics(),
+                    itemCount: _filteredTherapists.length,
+                    itemBuilder: (context, index) {
+                      final match = _filteredTherapists[index];
+                      final therapist = match['therapist'] as TherapistModel;
+                      final matchScore = match['matchScore'] as double;
 
-                bool shouldAnimate = !_animatedIndexes.contains(index);
+                      bool shouldAnimate = !_animatedIndexes.contains(index);
 
-                // Set a threshold for how many items should have staggered animations
-                const int staggeredAnimationThreshold = 6;
+                      // Set a threshold for how many items should have staggered animations
+                      const int staggeredAnimationThreshold = 6;
 
-                if (matchScore < 0.5) {
-                  return Container();
-                }
+                      if (matchScore < 0.5) {
+                        return Container();
+                      }
 
-                return shouldAnimate
-                    ? (index < staggeredAnimationThreshold
-                        ? FadeInUp(
-                            curve: Curves.decelerate,
-                            from: 10,
-                            delay: Duration(milliseconds: 300 * index),
-                            child: _buildTherapistCard(
-                                therapist, matchScore, index),
-                            controller: (controller) {
-                              controller.addStatusListener((status) {
-                                if (status == AnimationStatus.completed) {
-                                  setState(() {
-                                    _animatedIndexes.add(index);
-                                  });
-                                }
-                              });
-                            },
-                          )
-                        : FadeIn(
-                            duration: const Duration(milliseconds: 200),
-                            controller: (controller) {
-                              controller.addStatusListener((status) {
-                                if (status == AnimationStatus.completed) {
-                                  setState(() {
-                                    _animatedIndexes.add(index);
-                                  });
-                                }
-                              });
-                            },
-                            child: _buildTherapistCard(
-                                therapist, matchScore, index),
-                          ))
-                    : _buildTherapistCard(therapist, matchScore, index);
-              },
+                      return shouldAnimate
+                          ? (index < staggeredAnimationThreshold
+                              ? FadeInUp(
+                                  curve: Curves.decelerate,
+                                  from: 10,
+                                  delay: Duration(milliseconds: 300 * index),
+                                  child: _buildTherapistCard(
+                                      therapist, matchScore, index),
+                                  controller: (controller) {
+                                    controller.addStatusListener((status) {
+                                      if (status == AnimationStatus.completed) {
+                                        setState(() {
+                                          _animatedIndexes.add(index);
+                                        });
+                                      }
+                                    });
+                                  },
+                                )
+                              : FadeIn(
+                                  duration: const Duration(milliseconds: 200),
+                                  controller: (controller) {
+                                    controller.addStatusListener((status) {
+                                      if (status == AnimationStatus.completed) {
+                                        setState(() {
+                                          _animatedIndexes.add(index);
+                                        });
+                                      }
+                                    });
+                                  },
+                                  child: _buildTherapistCard(
+                                      therapist, matchScore, index),
+                                ))
+                          : _buildTherapistCard(therapist, matchScore, index);
+                    },
+                  ),
+                ),
+              ],
             ),
       appBarTitle: S.of(context).matchedTherapists,
       isProtected: true,

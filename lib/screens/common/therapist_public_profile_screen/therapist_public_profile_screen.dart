@@ -555,7 +555,24 @@ class _TherapistPublicProfileScreenState
                             ],
                           ),
                         ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 20.0),
+                      if (widget.therapist.therapistInfo
+                          .professionalCertificates.isNotEmpty)
+                        Text(
+                          S.of(context).professionalCertificates,
+                          style:
+                              Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                        ),
+                      ...widget.therapist.therapistInfo.professionalCertificates
+                          .map((certificate) => ListTile(
+                                title: Text(certificate.title),
+                                subtitle: Text(
+                                    '${certificate.institution}, ${certificate.yearObtained}'),
+                                leading: Image.network(certificate.photoUrl),
+                              )),
+                      const SizedBox(height: 24),
                       Center(
                           child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
@@ -606,23 +623,6 @@ class _TherapistPublicProfileScreenState
                               ],
                             )),
                       ),
-                      const SizedBox(height: 20.0),
-                      if (widget.therapist.therapistInfo
-                          .professionalCertificates.isNotEmpty)
-                        Text(
-                          S.of(context).professionalCertificates,
-                          style:
-                              Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                        ),
-                      ...widget.therapist.therapistInfo.professionalCertificates
-                          .map((certificate) => ListTile(
-                                title: Text(certificate.title),
-                                subtitle: Text(
-                                    '${certificate.institution}, ${certificate.yearObtained}'),
-                                leading: Image.network(certificate.photoUrl),
-                              )),
                     ],
                   ),
                 ),

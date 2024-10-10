@@ -86,9 +86,29 @@ class _WelcomeMainScreenState extends ConsumerState<WelcomeMainScreen> {
                       from: 10,
                       child: Column(
                         children: [
-                          Text(
-                              '${S.of(context).welcomeToPrefix}${AppInfo.appName}!',
-                              style: Theme.of(context).textTheme.headlineSmall),
+                          RichText(
+                            text: TextSpan(
+                              children: <TextSpan>[
+                                TextSpan(
+                                  text: S.of(context).welcomeToPrefix,
+                                  style:
+                                      Theme.of(context).textTheme.headlineSmall,
+                                ),
+                                TextSpan(
+                                  text: '',
+                                  style:
+                                      Theme.of(context).textTheme.headlineSmall,
+                                ),
+                                TextSpan(
+                                  text: AppInfo.appName,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineSmall
+                                      ?.copyWith(fontWeight: FontWeight.w600),
+                                ),
+                              ],
+                            ),
+                          ),
                           const SizedBox(height: 10),
                           Text(S.of(context).welcomeScreenSubtitleDescription,
                               style: Theme.of(context).textTheme.bodyMedium),
